@@ -1,0 +1,150 @@
+.faq-section {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: auto;
+
+}
+
+.FAQSearchContainer {
+    width: 100%;
+}
+
+.faq-block {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    width: 100%;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.Container-column {
+    display: flex;
+    height: 100%;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.column {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    height: 100%;
+    padding: 2vw;
+}
+
+
+.column img{
+    width: 80%;
+    max-width: 1100px;
+
+}
+
+.inner-column {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.column p {
+    font-size: 1.5rem;
+    text-align: center;
+    width: 60%;
+}
+
+.faq-item {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    align-items: flex-start;
+    border-top: 1px solid black;
+    padding: 10px 0px 10px 0;
+
+}
+
+.faq-item h4 {
+    width: 100%;
+    font-size: 1.3rem;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.faq-item p {
+    text-align: justify;
+}
+
+.faq-item svg {
+    min-width: 21px;
+}
+
+
+
+.faq-column {
+    flex: 1;
+    padding-right: 5vw;
+}
+
+.faq-column h4 {
+    margin-bottom: 10px;
+}
+
+
+.faq-column p {
+    font-size: 16px;
+    line-height: 1.4;
+    text-align: justify;
+}
+
+.arrow-icon {
+    transition: transform 0.3s ease;
+}
+
+.arrow-icon.open {
+    transform: rotate(180deg);
+}
+
+
+@media (max-width: 768px) {
+    .faq-item h4 {
+        font-size: 1.2rem;
+        text-align: left;
+    }
+
+    .faq-item p {
+        font-size: 0.8rem;
+    }
+
+    .column {
+
+        width: 100%;
+
+        
+    }
+
+    .faq-block {
+
+        flex-direction: column;
+
+    }
+
+    .column p {
+        font-size: 1rem;
+        text-align: center;
+        width: 100%;
+    }
+
+    .column img{
+        display: block;
+        position: relative;
+        right: 3%;
+        width: 117vw;
+        max-width: 123%;
+    }
+}

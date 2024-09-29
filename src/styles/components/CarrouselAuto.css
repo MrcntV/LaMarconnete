@@ -1,0 +1,207 @@
+.slick-list {
+    margin: 0 auto;
+}
+
+/* isdpf,d */
+.slick-thumb {
+    bottom: -45px;
+}
+
+.slick-dots {
+    margin-left: 0;
+}
+
+.slick-dots {
+    position: absolute;
+    bottom: -25px;
+    display: block;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    text-align: center;
+}
+
+.slick-dots-test li {
+    width: 70px;
+    height: 45px;
+    display: inline-block;
+    margin: 0 5px;
+    padding: 0;
+
+}
+
+
+
+.slick-dots li {
+    position: relative;
+    display: inline-block;
+    margin: 0 5px;
+    padding: 0;
+}
+
+/* Section Commentaire */
+.slick-list {
+    margin: 0 auto;
+}
+
+.slick-dots-comment {
+    display: block;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+    list-style: none;
+    text-align: center;
+    max-height: 50px;
+    overflow: hidden;
+}
+
+.slick-dots-comment li {
+    width: 70px;
+    height: 45px;
+    display: inline-block;
+    margin: 0 5px;
+    padding: 0;
+    text-align: center;
+
+}
+
+.slick-dots-comment button {
+    font-size: 0;
+    line-height: 0;
+    display: block;
+    padding: 5px;
+    color: transparent;
+    border: 0;
+    outline: none;
+    background: grey;
+    opacity: .75;
+
+}
+
+
+.slick-thumb-comment li.slick-active button:before {
+    opacity: .75;
+    color: red;
+}
+
+.slick-dots-comment button:hover {
+    border-radius: 10px;
+    background: black;
+    color: black;
+    outline: none;
+    border: none;
+    color: white;
+    margin: 0;
+    box-shadow: none;
+}
+
+.slick-dots-comment button:hover:after {
+    left: 0;
+    width: 0%;
+
+}
+
+.slick-prev::before,
+.slick-next::before {
+    background-color: #546863;
+    border-radius: 50%;
+    width: auto;
+    height: auto;
+}
+
+.slick-prev,
+.slick-next {
+    box-shadow: none;
+    border: 1px solid;
+
+}
+
+.slick-prev:active,
+.slick-next:active {
+    top: 50%;
+}
+
+.slick-prev:hover::after,
+.slick-next:hover:after {
+    width: 0%;
+
+}
+
+/* ------ */
+
+
+.slide {
+    height: auto;
+}
+
+.slick-slider {
+    width: 100%;
+}
+
+.carrousel-container {
+    max-height: 180px;
+    margin-top: 2vh;
+    margin-bottom: 2vh;
+}
+
+.SlideFooter {
+    max-height: 180px;
+}
+
+.SlideFooter img {
+    max-height: 180px;
+    width: auto;
+}
+
+
+/* FicheProduit */
+
+
+.produit-supplementaire-image {
+    max-height: 80vh;
+    width: auto;
+    border-radius: 15px;
+}
+
+
+/* Vous l'aimez  */
+
+.produit-image-utilisateur {
+    max-height: 360px;
+    width: auto;
+}
+
+
+/* Carrousel produit */
+.slick-thumb li img {
+    -webkit-filter: grayscale(100%);
+    filter: grayscale(100%);
+    border-radius: 5px;
+}
+
+.slick-thumb li.slick-active img {
+    -webkit-filter: grayscale(0);
+    filter: grayscale(0);
+}
+
+@media (max-width: 768px) {
+
+    .slick-slider {
+        width: 100%;
+    }
+
+    .SlideFooter img {
+        max-height: 120px;
+        width: auto;
+    }
+
+    /* fiche produit */
+
+    .produit-supplementaire-image {
+        max-height: auto;
+        width: 100%;
+    }
+
+
+}

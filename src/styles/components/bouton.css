@@ -1,0 +1,77 @@
+.custom-btn {
+  width: 130px;
+  height: 40px;
+  color: #fff;
+  border-radius: 5px;
+  padding: 10px 15px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: row; /* Mettre les éléments en ligne */
+  box-shadow: inset 2px 2px 2px 0px rgba(255, 255, 255, .5),
+    7px 7px 20px 0px rgba(0, 0, 0, .1),
+    4px 4px 5px 0px rgba(0, 0, 0, .1);
+  outline: none;
+  margin: 20px;
+  background: #a6b4aa;
+  border: none;
+  z-index: 1;
+}
+
+.custom-btn:after {
+  position: absolute;
+  content: "";
+  width: 0;
+  height: 100%;
+  top: 0;
+  right: 0;
+  z-index: -1;
+  background-color: #546863;
+  border-radius: 5px;
+  box-shadow: inset 2px 2px 2px 0px rgba(255, 255, 255, .5),
+    7px 7px 20px 0px rgba(0, 0, 0, .1),
+    4px 4px 5px 0px rgba(0, 0, 0, .1);
+  transition: all 0.3s ease;
+}
+
+
+.custom-btn:hover:after {
+  left: 0;
+  width: 100%;
+}
+
+.custom-btn:active {
+  top: 2px;
+}
+
+/* bouton fiche produit */
+
+.produit-ajouter-panier {
+  font-size: 1.1rem;
+  border-radius: 25px;
+  width: 80%;
+}
+
+.produit-ajouter-panier::after {
+  border-radius: 25px;
+}
+
+@media (max-width: 1000px) {
+  .custom-btn {
+
+    @media (max-height: 100vw) {
+      width: 80px;
+    }
+  }
+
+  .custom-btn p {
+
+    @media (max-height: 100vw) {
+      display: none;
+    }
+  }
+}

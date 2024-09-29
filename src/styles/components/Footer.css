@@ -1,0 +1,211 @@
+.Footer-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    width: 100vw;
+    height: 100%;
+}
+
+.Footer-Top {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-top: 50px;
+    margin-bottom: 2vh;
+
+}
+
+.Footer-Top h2 {
+    font-size: 2rem;
+    text-align: center;
+}
+
+.Footer-Top a {
+    font-size: 1.2rem;
+    color: black;
+    text-align: center;
+}
+
+.Footer-Mid {
+    display: flex;
+    width: 100%;
+    height: auto;
+    flex-direction: row;
+    justify-content: space-around;
+    margin: 50px;
+    align-items: center;
+}
+
+.Footer-Mid img {
+    height: 100%;
+    object-fit: cover;
+}
+
+
+.Footer-Bottom-image {
+    width: 100vw;
+    /* Utilise 100% de la largeur de la fenêtre du navigateur */
+    background-image: url(https://lamarconnete.fr/wp-content/uploads/2021/07/La_marcOnnete_footer_1032x565.jpeg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: bottom center;
+}
+
+.Footer-Bottom {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-around;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+    margin-bottom: 50px;
+}
+
+.Footer-Bottom-mid li,
+.Footer-Bottom-gauche li,
+.Footer-Bottom-droite li {
+    text-decoration: none;
+    list-style: none;
+    padding: 1px;
+}
+
+.Footer-Bottom-gauche {
+    display: flex;
+    flex-direction: column;
+}
+
+.Footer-Bottom-droite {
+    display: flex;
+    flex-direction: column;
+}
+
+.Footer-Bottom-mid {
+    display: flex;
+    flex-direction: column;
+}
+
+
+.Footer-Bottom-Reseaux {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    gap: 2vw;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    padding-left: 2vw;
+}
+
+.Footer-Bottom-coupon {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    max-width: 25vw;
+    background-color: #a6b4aa89;
+    border-radius: 25px;
+    padding: 10px;
+
+}
+
+.Footer-Bottom-coupon p {
+    font-size: 0.8rem;
+    text-align: center;
+
+}
+
+.Footer-Bottom-coupon button {
+    width: 40%;
+    padding: 5px;
+    border-radius: 10px;
+    background-color: #546863;
+    outline: none;
+    border: none;
+    font-size: 1rem;
+    margin-top: 1vh;
+    color: white;
+}
+
+.Signature{
+    width: 100%;
+    text-align: center;
+    margin-bottom:2vh ;
+}
+
+.arrow {
+ display: none;
+}
+
+.rotate-arrow {
+   display: none;
+}
+
+@media (max-width: 768px) {
+    .Footer-Bottom {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+        margin-bottom: 50px;
+        gap: 10px;
+    }
+
+    .Footer-Bottom-gauche,
+    .Footer-Bottom-mid,
+    .Footer-Bottom-droite {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+        align-items: center;
+    }
+
+    .Footer-Bottom-coupon {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        max-width: 100%;
+        background-color: #a6b4aa89;
+        border-radius: 25px;
+        padding: 10px;
+    }
+
+    .carrousel-container {
+        display: flex;
+        flex-direction: row;
+        height: 20vh;
+        width: 100%;
+        margin: 0 auto;
+        align-items: center;
+        justify-content: center;
+    }
+.Footer-Bottom-mid li,
+.Footer-Bottom-gauche li,
+.Footer-Bottom-droite li {
+    text-decoration: none;
+    list-style: none;
+    padding: 1px;
+    text-align: center;
+}
+
+
+
+.arrow {
+    display: block;
+    transition: transform 0.3s; /* Animation de transition pour une rotation fluide */
+}
+
+.rotate-arrow {
+    display: block;
+    transform: rotate(180deg);
+}
+
+
+}

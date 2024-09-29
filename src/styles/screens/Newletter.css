@@ -1,0 +1,248 @@
+.Newsletter-section {
+    padding: 2vw;
+}
+
+.Newsletter-description {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: auto;
+}
+
+.NeNewsletter-titre {
+    font-size: 3rem;
+    text-align: center;
+
+}
+
+.NeNewsletter-texte {
+    font-size: 1.5rem;
+    text-align: center;
+    margin: 1.5rem;
+}
+
+
+.Newsletter-coupon {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    height: auto;
+    padding: 1.5rem;
+    background-color: #dce0dc;
+    border-radius: 25px;
+    max-width: 900px;
+    margin-bottom: 2vh;
+    box-shadow: inset 2px 2px 2px 0px rgba(255, 255, 255, .5),
+        7px 7px 20px 0px rgba(0, 0, 0, .1),
+        4px 4px 5px 0px rgba(0, 0, 0, .1);
+}
+
+
+.Newsletter-coupon-texte {
+    font-size: 1.5rem;
+}
+
+.Newsletter-coupon-input {
+    width: 50%;
+    height: 5vh;
+    margin: 1.5rem;
+    border: solid 1px #546863;
+    ;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.Newsletter-coupon-input input {
+    width: 70%;
+    height: 100%;
+    background-color: transparent;
+    color: black;
+    border: none;
+    outline: none;
+    padding: 10px;
+    font-size: 1rem;
+    margin: 0;
+}
+
+.Newsletter-coupon-input input::placeholder {
+    color: #546863;
+    font-size: 1rem;
+    line-height: 100%;
+    height: 100%;
+    vertical-align: middle;
+}
+
+
+
+.Newsletter-coupon-input button {
+    width: 30%;
+    height: 100%;
+    border-radius: 10px;
+    background-color: #546863;
+    outline: none;
+    border: none;
+    font-size: 1rem;
+    color: white;
+    padding: 0;
+    margin: 0;
+    box-shadow: none;
+}
+
+.Newsletter-coupon-input button:hover {
+
+    border-radius: 10px;
+    background-color: #546863;
+    outline: none;
+    border: none;
+    color: white;
+    margin: 0;
+    box-shadow: none;
+}
+
+.Newsletter-coupon-input button::after {
+
+    border-radius: 10px;
+    background-color: #546863;
+    outline: none;
+    border: none;
+    color: white;
+    margin: 0;
+    box-shadow: none;
+}
+
+
+
+.Newsletter-coupon-check {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+
+}
+
+
+/* check box
+---------------------------------------------------------*/
+.form__privacy {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
+    align-items: center;
+}
+
+/* Default style reset */
+[type="checkbox"] {
+    margin: 0;
+    padding: 0;
+    background: none;
+    border: none;
+    border-radius: 0;
+    outline: none;
+    appearance: none;
+}
+
+[type="checkbox"] {
+    position: relative;
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+}
+
+[type="checkbox"]::before,
+[type="checkbox"]::after {
+    position: absolute;
+    display: block;
+    content: "";
+
+}
+
+[type="checkbox"]::before {
+    top: 0;
+    left: 0;
+    width: inherit;
+    height: inherit;
+    border: 1px solid #546863;
+    border-radius: 2px;
+
+}
+
+[type="checkbox"]::after {
+    top: 2px;
+    left: 2px;
+    width: 10px;
+    height: 5px;
+    border-bottom: 5px solid #546863;
+    border-left: 5px solid #546863;
+    transform: rotate(-45deg);
+    transition: opacity 0.3s;
+    opacity: 0;
+}
+
+[type="checkbox"]:checked::after {
+    opacity: 1;
+}
+
+
+
+
+
+
+
+@media (max-width: 768px) {
+
+    .Newsletter-coupon {
+        display: flex;
+        justify-content: center;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        height: auto;
+        padding: 1rem;
+        background-color: #dce0dc;
+        border-radius: 25px;
+    }
+
+    .Newsletter-coupon-input input {
+        width: 70%;
+        height: 100%;
+        background-color: transparent;
+        color: black;
+        border: none;
+        outline: none;
+        padding: 5px;
+    }
+
+    .Newsletter-coupon-input {
+        width: 100%;
+        height: 5vh;
+        margin: 1.5rem;
+        border-radius: 10px;
+    }
+
+    .Newsletter-coupon-input button {
+        width: 30%;
+        height: 100%;
+        border-radius: 10px;
+        background-color: #546863;
+        outline: none;
+        border: none;
+        font-size: 0.8rem;
+        color: white;
+    }
+
+    .NeNewsletter-texte {
+        font-size: 1rem;
+        text-align: center;
+        margin: 1.5rem;
+    }
+
+    .Newsletter-coupon-texte {
+        font-size: 1.5rem;
+    }
+}

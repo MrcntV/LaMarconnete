@@ -1,0 +1,405 @@
+.FlexCentre {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    width: 100%;
+}
+
+.VousAdorez {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+}
+
+.produit-detail-container {
+    flex-direction: row;
+    justify-content: center;
+    align-items: flex-start;
+}
+
+.produit-images {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    height: 100%;
+    width: 50%;
+    max-width: 700px;
+    margin-top: 0;
+    margin-bottom: 0;
+    position: relative;
+    overflow: visible;
+
+
+}
+
+.produit-supplementaires {
+    position: sticky;
+    top: 0;
+    height: 80%;
+    width: 100%;
+}
+
+.produit-main-image {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    height: 50%;
+}
+
+
+.produit-supplementaire-image-container {
+    width: 100%;
+    align-items: center;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+}
+
+
+
+.produit-info {
+    display: flex;
+    flex-direction: column;
+    width: 50%;
+    height: 100%;
+    max-width: 720px;
+    min-height: 100vh;
+    flex-wrap: wrap;
+    align-content: space-between;
+    align-items: baseline;
+}
+
+.produit-header {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    justify-content: center;
+    margin: 2vh;
+}
+
+.produit-titre-Qte {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+    flex-direction: column;
+    align-content: center;
+    align-items: center;
+    gap: 2px;
+}
+
+.produit-titre {
+    text-align: left;
+    margin: 0;
+    font-size: 1.8rem;
+
+}
+
+.produit-Qte {
+    font-size: 1rem;
+}
+
+.produit-etoiles {
+    font-size: 1.2rem;
+}
+
+.produit-description {
+    text-align: justify;
+    margin-top: 2vh;
+    margin-bottom: 2vh;
+    width: 100%;
+    font-size: 0.875rem;
+}
+
+.LesPlusProduits {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    padding-left: 25px;
+    padding-right: 25px;
+    align-items: flex-start;
+    justify-content: center;
+    margin-bottom: 2vh;
+}
+
+.LesPlusProduits li {
+    text-align: left;
+    /* font-size: 0.875rem; */
+    font-size: 1rem;
+    text-align: justify;
+}
+
+.Certficat {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+
+}
+
+.Certficat img {
+    height: 100%;
+    width: 80%;
+}
+
+
+.disponibilite {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    align-items: center;
+    justify-content: flex-end;
+
+}
+
+.dispo {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background-color: green;
+    margin: 10px;
+}
+
+.ButtonAchat {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 20px;
+    align-items: center;
+}
+
+/* CSS pour le sélecteur de quantité */
+.quantite-select {
+    display: flex;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 1vh;
+}
+
+
+/* Styles pour les boutons "+" et "-" */
+.quantite-controls {
+    display: flex;
+    align-items: center;
+    border: 1px solid black;
+    border-radius: 25px;
+    overflow: hidden;
+}
+
+.quantite-controls input {
+    width: 40px;
+    text-align: center;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    margin: 0 10px;
+    padding: 5px;
+}
+
+
+.quantite-btn {
+    background: none;
+    box-shadow: none;
+    color: #000000;
+    border: none;
+    font-size: 15px;
+    cursor: pointer;
+    padding: 10px 10px;
+}
+
+/* Carte Routine */
+
+.Carte-container {
+    display: flex;
+    flex-direction: column;
+    width: auto;
+    height: 100%;
+    align-items: center;
+    justify-content: center;
+ 
+    border-radius: 25px;
+    background: #a6b4aa89;
+    box-shadow: inset 2px 2px 2px 0px rgba(255, 255, 255, .5),
+        7px 7px 20px 0px rgba(0, 0, 0, .1),
+        4px 4px 5px 0px rgba(0, 0, 0, .1);
+}
+
+.Carte-container h6 {
+    color: white;
+    width: 100%;
+}
+
+.Carte {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    height: 100%;
+
+}
+
+.Carte-container p {
+    width: 100%;
+    text-align: left;
+    padding: 5px 0px 5px 10px;
+}
+
+.Carte-container input {
+    margin: 0;
+}
+
+.Carte-containerTextePrix {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+    justify-content: flex-start;
+
+
+}
+
+.Carte-container img {
+    max-height: 250px;
+    width: auto;
+}
+
+.produit-prix {
+    font-size: 1rem;
+    color: #000000;
+
+}
+
+
+/* check box
+---------------------------------------------------------*/
+
+/* Default style reset */
+.Carte-container [type="checkbox"] {
+    margin: 0;
+    padding: 0;
+    background: none;
+    border: none;
+    border-radius: 0;
+    outline: none;
+    appearance: none;
+}
+
+.Carte-container [type="checkbox"] {
+    position: relative;
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+}
+
+    .Carte-container input::before,
+    .Carte-container input::after {
+        position: absolute;
+        display: block;
+        content: "";
+    }
+
+    .Carte-container input::before {
+        top: 0;
+        left: 0;
+        width: inherit;
+        height: inherit;
+        border: 1px solid #ffffff;
+        border-radius: 2px;
+    }
+
+    .Carte-container input::after {
+        top: 2px;
+        left: 2px;
+        width: 10px;
+        height: 5px;
+        border-bottom: 5px solid #ffffff;
+        border-left: 5px solid #ffffff;
+        transform: rotate(-45deg);
+        transition: opacity 0.3s;
+        opacity: 0;
+    }
+
+    .Carte-container input:checked::after {
+        opacity: 1;
+    }
+
+
+.form__routine {
+    display: flex;
+    width: 100%;
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
+    align-items: center;
+    
+    background-color: #546863;
+    color: white;
+    border-radius: 25px 25px 0% 0px;
+    padding: 10px;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    font-size: 0.8rem;
+    gap: 10px;
+    width: 100%;
+}
+
+
+@media (max-width: 768px) {
+    .produit-detail-container {
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+    }
+
+    .produit-header {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        justify-content: center;
+        margin: 0;
+        margin-bottom: 2vh;
+    }
+
+    .produit-info {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+        max-width: 100%;
+        min-height: 100%;
+        flex-wrap: wrap;
+        align-content: space-between;
+        align-items: baseline;
+        padding: 0;
+
+    }
+
+    .produit-images {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+        margin-bottom: 2vh;
+        margin-top: 2vh;
+
+    }
+
+    .produit-titre {
+        text-align: left;
+        margin: 0;
+        font-size: 1.375rem;
+    }
+
+    .produit-Qte {
+        font-size: 0.8rem;
+    }
+
+    .Certficat img {
+        height: 100%;
+        width: 100%;
+    }
+
+}

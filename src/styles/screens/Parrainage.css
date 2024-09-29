@@ -1,0 +1,28 @@
+.Container-img-Parrainage img {
+    margin: 0;
+    border-radius: 25px;
+    box-shadow: inset 2px 2px 2px 0px rgba(255, 255, 255, .5),
+        7px 7px 20px 0px rgba(0, 0, 0, .1),
+        4px 4px 5px 0px rgba(0, 0, 0, .1);
+    max-width: 850px;
+    height: auto;
+
+}
+
+.CommentCaMarche {
+    max-width: 700px;
+    width: 100%;
+}
+
+
+.Parrainage{
+    width: 100%;
+    max-width: 800px;
+    text-align: center;
+    font-size: 1.2rem;
+}
+.CommentCaMarche p {
+    padding: 10px 0px 10px 0px;
+    font-size: 1rem;
+    text-align: left;
+}

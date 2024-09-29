@@ -1,0 +1,73 @@
+.image-container-test {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-end;
+}
+
+.image-wrapper-test {
+    width: calc(20% - 10px);
+    margin-bottom: 20px;
+    position: relative;
+    cursor: pointer;
+}
+
+
+.circle {
+    width: 30px;
+    height: 30px;
+    background-color: #546863;
+    border-radius: 50%;
+    position: absolute;
+    transform: translateX(-50%);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: white;
+    font-size: 18px;
+    cursor: pointer;
+    z-index: 2;
+}
+
+.circle-text{
+    background-color: #546863;
+    color: white;
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    transform: translateY(100%);
+    opacity: 0;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+    border-radius: 10px 10px 5px 5px;
+    text-align: center;
+}
+
+.image-wrapper-test.active .image-text-test {
+    transform: translateY(0);
+    opacity: 1;
+}
+
+
+.circle-1{
+    top: 244px;
+    left: 50px;
+}
+.circle-2 {
+    top: 100px;
+    left: 100px;
+}
+.circle-3 {
+    top: 292px;
+    left: 50px;
+}
+.circle-4 {
+    top: 144px;
+    left: 50px;
+}
+.circle-0 {
+    top: 207px;
+    left: 130px;
+}

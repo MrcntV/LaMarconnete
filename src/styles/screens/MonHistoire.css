@@ -1,0 +1,28 @@
+.IntroHistoire {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+
+.IntroHistoire img {
+    max-width: 800px;
+}
+
+.Timeline-container-2 {
+    display: none;
+}
+
+.Timeline-container-test {
+    display: block;
+}
+
+@media (max-width: 768px) {
+    .Timeline-container-2 {
+        display: block;
+    }
+
+    .Timeline-container-test {
+        display: none;
+    }
+}
