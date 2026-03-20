@@ -8,8 +8,8 @@ const app = express();
 const PORT = 43749;
 
 const GITHUB_WEBHOOK_SECRET = 'J@mltlja345h';
-const PROJECT_PATH = '/LaMarconnete';
-const PM2_APP_NAME = 'mrcntv';
+const PROJECT_PATH = '/Users/vincent-nicolasmarconnet/Desktop/Marconnete';
+const PM2_APP_NAME = 'marconnete';
 
 // JSON uniquement pour l'API
 app.use('/api', express.json());
