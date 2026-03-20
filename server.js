@@ -9,8 +9,8 @@ const PORT = 43749;
 
 // À adapter
 const GITHUB_WEBHOOK_SECRET = 'J@mltlja345h';
-const PROJECT_PATH = '/chemin/vers/ton/projet';
-const PM2_APP_NAME = 'mrcntv';
+const PROJECT_PATH = '/MarconneteTest';
+const PM2_APP_NAME = 'Bac à sable ';
 
 // JSON normal pour l'API
 app.use('/api', express.json());
