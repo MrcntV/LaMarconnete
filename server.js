@@ -75,7 +75,7 @@ app.get('/welcome', (req, res) => {
             <li><strong>Statut API :</strong> <a href="/api/status">/api/status</a></li>
             <li><strong>Webhook GitHub :</strong> <code>/webhook</code></li>
           </ul>
-          <p>Pense à configurer correctement le reverse proxy Nginx et le secret GitHub pour l’auto-déploiement.</p>
+          <p>Pense à configurergvhbjnk,ml;ù correctement le reverse proxy Nginx et le secret GitHub pour l’auto-déploiement.</p>
         </div>
       </body>
     </html>
