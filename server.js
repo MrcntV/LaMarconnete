@@ -7,16 +7,21 @@ const { exec } = require('child_process');
 const app = express();
 const PORT = 43749;
 
-// À adapter
 const GITHUB_WEBHOOK_SECRET = 'J@mltlja345h';
-const PROJECT_PATH = '/MarconneteTest';
-const PM2_APP_NAME = 'Bac à sable ';
+const PROJECT_PATH = '/LaMarconnete';
+const PM2_APP_NAME = 'mrcntv';
 
-// JSON normal pour l'API
+// JSON uniquement pour l'API
 app.use('/api', express.json());
 
 // Fichiers statiques React
 app.use(express.static(path.join(__dirname, 'build')));
+
+// Petit header perso
+app.use((req, res, next) => {
+  res.setHeader('X-Powered-By', 'mrcntv');
+  next();
+});
 
 // Route API status
 app.get('/api/status', (req, res) => {
@@ -75,7 +80,7 @@ app.get('/welcome', (req, res) => {
             <li><strong>Statut API :</strong> <a href="/api/status">/api/status</a></li>
             <li><strong>Webhook GitHub :</strong> <code>/webhook</code></li>
           </ul>
-          <p>Pense à configurergvhbjnk,ml;ù correctement le reverse proxy Nginx et le secret GitHub pour l’auto-déploiement.</p>
+          <p>Le reverse proxy Nginx, le certificat SSL et le webhook GitHub sont maintenant prévus pour un auto-déploiement propre.</p>
         </div>
       </body>
     </html>
@@ -92,19 +97,33 @@ function verifyGitHubSignature(req) {
 
   try {
     return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(digest));
-  } catch {
+  } catch (error) {
+    console.error('Erreur comparaison signature :', error.message);
     return false;
   }
 }
 
+// Route de test webhook
+app.get('/webhook', (req, res) => {
+  res.status(200).send('Webhook endpoint OK');
+});
+
 // Webhook GitHub : raw body obligatoire
 app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
+  console.log('--- WEBHOOK REÇU ---');
+  console.log('Event:', req.headers['x-github-event']);
+  console.log('Delivery:', req.headers['x-github-delivery']);
+  console.log('User-Agent:', req.headers['user-agent']);
+
   if (!verifyGitHubSignature(req)) {
+    console.error('Signature invalide');
     return res.status(401).send('Signature invalide');
   }
 
   const event = req.headers['x-github-event'];
+
   if (event !== 'push') {
+    console.log('Événement ignoré :', event);
     return res.status(200).send('Événement ignoré');
   }
 
@@ -113,26 +132,23 @@ app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
     git pull origin main &&
     npm install &&
     npm run build &&
-    pm2 restart ${PM2_APP_NAME}
+    pm2 restart "${PM2_APP_NAME}"
   `;
 
+  console.log('Commande lancée :', command);
+
   exec(command, (error, stdout, stderr) => {
+    console.log('STDOUT:', stdout || 'Aucune sortie');
+    console.log('STDERR:', stderr || 'Aucune erreur');
+
     if (error) {
-      console.error('Erreur auto pull :', error);
-      console.error(stderr);
+      console.error('Erreur auto pull :', error.message);
       return res.status(500).send('Échec du déploiement');
     }
 
-    console.log('Auto pull OK');
-    console.log(stdout);
-    res.status(200).send('Déploiement effectué');
+    console.log('Déploiement OK');
+    return res.status(200).send('Déploiement effectué');
   });
-});
-
-// Petit header perso
-app.use((req, res, next) => {
-  res.setHeader('X-Powered-By', 'mrcntv');
-  next();
 });
 
 // Fallback React SPA
