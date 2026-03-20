@@ -1,5 +1,5 @@
 #!/bin/bash
-cd /Users/vincent-nicolasmarconnet/Desktop/Marconnete
+cd "$(dirname "$0")"
 
 git fetch origin main
 
