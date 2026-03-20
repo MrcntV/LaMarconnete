@@ -59,8 +59,8 @@ export const Boutique = () => {
                             AltText={produit.AltText}
                             to={produit.to}
                             Titre={produit.Titre}
-                            Etoiles={produit.Etoiles}
-                            Prix={produit.Prix}
+                            Etoiles={produit.Etoiles ?? ""}
+                            Prix={String(produit.Prix)}
                         />
                     ))}
                 </div>
@@ -82,8 +82,8 @@ export const Boutique = () => {
                             AltText={accessoire.AltText}
                             to={accessoire.to}
                             Titre={accessoire.Titre}
-                            Etoiles={accessoire.Etoiles}
-                            Prix={accessoire.Prix}
+                            Etoiles={accessoire.Etoiles ?? ""}
+                            Prix={String(accessoire.Prix)}
                         />
                     ))}
                 </div>

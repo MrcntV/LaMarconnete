@@ -127,7 +127,7 @@ const ProduitDetail = () => {
                 <p>Score Yuka : {produit.ScoreYuka}</p>
                 <p>Score INCI Beauty : {produit.ScoreINCIBeauty}</p>
                 <div className='Certficat'>
-                  {produit.Certificat.map((image, index) => (
+                  {(produit.Certificat ?? []).map((image, index) => (
                     <div className='produit-supplementaire-image-container' key={index}>
                       <img
                         src={image}
@@ -301,7 +301,7 @@ const ProduitDetail = () => {
                   }
                 }]
               }>
-              {produit.ImagesUtilisateurs.map((image, index) => (
+              {(produit.ImagesUtilisateurs ?? []).map((image, index) => (
                 <div key={index}>
                   <img
                     src={image}

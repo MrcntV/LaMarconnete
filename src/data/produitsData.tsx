@@ -52,6 +52,26 @@ export type produits = {
     LienPaiementCouleur0?: LienPaiement[],
     LienPaiementCouleur1?: LienPaiement[],
 
+    Qte?: string;
+    Etoiles?: string;
+    Certificat?: string[];
+    Details?: string;
+    InfosComplementaires?: string;
+    LesPlusProduits1?: string;
+    LesPlusProduits2?: string;
+    LesPlusProduits3?: string;
+    LesPlusProduits4?: string;
+    Compositions1?: string;
+    Compositions2?: string;
+    Compositions3?: string;
+    Routine?: string;
+    RoutinePrice?: number;
+    RoutineTexte?: string;
+    RoutineTexte1?: string;
+    RoutineTexte2?: string;
+    RoutineTitre?: string;
+    ScoreINCIBeauty?: number;
+    ScoreYuka?: number;
     besoinChoixCouleur: boolean;
     besoinChoixTaille: boolean;
 
