@@ -1,3 +1,136 @@
+/* ===== TITRE & COMPTEUR ===== */
+.where-title {
+  font-size: 2rem;
+  text-align: center;
+  color: #546863;
+  margin-bottom: 0.25rem;
+}
+
+.where-counter-block {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.where-counter-block h2 {
+  margin-bottom: 0.5rem;
+}
+
+.where-counter {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  background: #546863;
+  color: white;
+  padding: 8px 20px;
+  border-radius: 999px;
+  font-size: 1.4rem;
+  font-weight: bold;
+}
+
+.where-counter-label {
+  font-size: 1rem;
+  font-weight: normal;
+}
+
+/* ===== BARRE DE RECHERCHE + GEO ===== */
+.where-search-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.where-search-row .search-input {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.where-geo-btn {
+  white-space: nowrap;
+  padding: 10px 16px;
+  background: #546863;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.where-geo-btn:hover {
+  background: #3d4e4a;
+}
+
+.where-postal-row {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.search-input-postal {
+  flex: 1;
+  margin-bottom: 0 !important;
+}
+
+.where-postal-btn {
+  white-space: nowrap;
+  padding: 10px 16px;
+  background: #a6b4aa;
+  color: #1a1a1a;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.2s;
+}
+
+.where-postal-btn:hover {
+  background: #8fa39a;
+}
+
+.where-geo-denied {
+  color: #c0392b;
+  font-size: 0.85rem;
+  margin-bottom: 8px;
+}
+
+/* ===== CARTE ===== */
+.where-map-container {
+  width: 100%;
+  height: 420px;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 2rem;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
+}
+
+@media (max-width: 768px) {
+  .where-title {
+    font-size: 1.4rem;
+  }
+
+  .where-counter {
+    font-size: 1.1rem;
+  }
+
+  .where-search-row,
+  .where-postal-row {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .where-geo-btn,
+  .where-postal-btn {
+    width: 100%;
+  }
+
+  .where-map-container {
+    height: 280px;
+  }
+}
+
+/* ===== LISTE ===== */
 .ListePointsDeVente {
   display: flex;
   flex-direction: column;
