@@ -1,3 +1,68 @@
+/* ===== CALL TO ACTION BANNER ===== */
+.cta-banner {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: space-between;
+  background: linear-gradient(135deg, #546863, #a6b4aa);
+  padding: 2.5rem 5vw;
+  gap: 2rem;
+  width: 100%;
+}
+
+.cta-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.cta-title {
+  color: white;
+  font-size: 1.6rem;
+  margin: 0;
+}
+
+.cta-subtitle {
+  color: rgba(255,255,255,0.85);
+  font-size: 1rem;
+  height: auto;
+}
+
+.cta-btn {
+  white-space: nowrap;
+  background: white !important;
+  color: #546863 !important;
+  font-size: 1rem;
+  padding: 12px 28px;
+  border-radius: 999px;
+  border: none;
+  cursor: pointer;
+  font-weight: 700;
+  transition: transform 0.2s, box-shadow 0.2s;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.15) !important;
+}
+
+.cta-btn:hover {
+  transform: scale(1.04);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.2) !important;
+}
+
+@media (max-width: 768px) {
+  .cta-banner {
+    flex-direction: column;
+    text-align: center;
+    padding: 2rem 5vw;
+  }
+
+  .cta-title {
+    font-size: 1.2rem;
+  }
+
+  .cta-btn {
+    width: 100%;
+  }
+}
+
 @font-face {
   font-family: 'noteworthybold';
   src: url('styles/font/noteworthy-bold-webfont.woff2') format('woff2'),

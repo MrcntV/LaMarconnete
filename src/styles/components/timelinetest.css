@@ -1,100 +1,163 @@
-/* CSS pour la timeline */
-
-/* Ajoutez ceci à votre CSS */
-.Timeline-container-test {
-  height: auto;
-  max-width: 100vw;
-  display: flex;
-  justify-content: flex-start;
-  align-items: center;
-  flex-direction: row;
+/* ===== TIMELINE HORIZONTALE (desktop) ===== */
+.htl-wrapper {
   position: relative;
-  margin-top: 2vw;
-  margin-bottom: 3vh;
-  min-height: 30vh;
-  overflow: hidden;
-  padding-left: 2vw;
-  padding-right: 2vw;
-  width: 100%;
-}
-
-
-.horizontal-timeline {
   display: flex;
   flex-direction: row;
-  height: auto;
+  align-items: center;
   width: 100%;
-  margin: 0;
-  padding: 0;
-  justify-content: center;
-  align-items: flex-start;
-
+  padding: 80px 2vw 80px;
+  min-height: 260px;
 }
 
-.timeline-container {
+.htl-line {
+  position: absolute;
+  top: 50%;
+  left: 2vw;
+  right: 2vw;
+  height: 2px;
+  background-color: #546863;
+  transform: translateY(-50%);
+  z-index: 0;
+}
+
+.htl-item {
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: center;
+  flex: 1;
   position: relative;
-  width: 100%;
-  padding: 0;
-  margin: 0;
-  justify-content: space-between;
-  min-height: 310px;
+  z-index: 1;
+  min-width: 0;
 }
 
-.timeline-contenant {
-  width: 100%;
-  height: 100%;
-  min-height: 150px;
-  max-width: 150px;
-  max-height: 150px;
-  min-width: 150px;
-  overflow: hidden;
+.htl-above {
+  justify-content: flex-end;
+  flex-direction: column;
+}
+
+.htl-below {
+  justify-content: flex-start;
+  flex-direction: column-reverse;
+}
+
+.htl-dot {
+  width: 54px;
+  height: 54px;
   border-radius: 50%;
-  box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.2);
   border: 3px solid #546863;
+  background: white;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(84,104,99,0.18);
 }
 
-.timeline-contenant-image {
+.htl-img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  border-radius: 50%;
 }
 
-.h2-timeline {
-  font-size: 24px;
-  font-weight: bold;
-  margin: 10px 0;
+.htl-text {
+  text-align: center;
+  padding: 6px 4px;
+  max-width: 110px;
 }
 
-.p-timeline {
-  font-size: 0.8rem;
-  line-height: 1.5;
-  color: #333;
+.htl-text-above {
+  padding-bottom: 8px;
+}
+
+.htl-text-below {
+  padding-top: 8px;
+}
+
+.htl-date {
+  display: block;
+  color: #546863;
+  font-size: 0.75rem;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.htl-desc {
+  color: #555;
+  font-size: 0.65rem;
+  line-height: 1.4;
+  margin-top: 2px;
+  height: auto;
+}
+
+/* ===== TIMELINE VERTICALE (mobile) ===== */
+.vtl-wrapper {
+  display: flex;
+  flex-direction: column;
   width: 100%;
-  padding: 5px;
-
+  padding: 1rem 1rem;
+  gap: 0;
 }
 
-.timeline-trait-noir-container {
-  position: relative;
+.vtl-item {
+  display: flex;
+  flex-direction: row;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.vtl-left {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.vtl-dot {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  border: 3px solid #546863;
+  background: white;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 2px 8px rgba(84,104,99,0.15);
+}
+
+.vtl-img {
   width: 100%;
   height: 100%;
+  object-fit: cover;
+  border-radius: 50%;
 }
 
-.timeline-trait-noir {
+.vtl-line {
+  width: 2px;
+  flex: 1;
+  min-height: 28px;
   background-color: #546863;
-  width: 100%;
-  height: 2px;
-  position: absolute;
-  bottom: 0;
+  margin: 4px 0;
+}
+
+.vtl-content {
+  padding-bottom: 20px;
+  padding-top: 4px;
+}
+
+.vtl-date {
+  display: block;
+  color: #546863;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.vtl-desc {
+  color: #555;
+  font-size: 0.78rem;
+  line-height: 1.5;
+  margin-top: 3px;
+  height: auto;
 }
 
 @media (max-width: 768px) {
-
-  .Timeline-container-test {
-    display: none;
-  }
+  .Timeline-container-test { display: none; }
+  .htl-wrapper { display: none; }
 }

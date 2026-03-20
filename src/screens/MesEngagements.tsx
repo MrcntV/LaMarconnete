@@ -55,7 +55,7 @@ const MesEngagements = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6 }}
                 >
-                    Mes Engagements
+                    Nos Engagements
                 </motion.h1>
                 <motion.p
                     className="engagements-intro"

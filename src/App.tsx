@@ -26,6 +26,7 @@ import './styles/components/timelinetest.css'
 import { Headers } from './components/Headers';
 import AnimRoutes from './AnimRoutes';
 import { Footers } from './components/Footers';
+import { CallToAction } from './components/CallToAction';
 
 
 
@@ -34,6 +35,7 @@ function App() {
     <div className='App'>
       <Headers />
       <AnimRoutes />
+      <CallToAction />
       <Footers />
     </div>
   );

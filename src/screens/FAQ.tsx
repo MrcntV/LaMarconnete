@@ -35,11 +35,6 @@ function FAQSection({ title, items }: FAQSectionProps) {
         opacity: { duration: 0.3 },
     };
 
-    // Divisez les éléments en deux colonnes
-    const halfItemCount = Math.ceil(items.length / 2);
-    const leftColumnItems = items.slice(0, halfItemCount);
-    const rightColumnItems = items.slice(halfItemCount);
-
     return (
         <div className="faq-section">
             <motion.h2
@@ -60,64 +55,32 @@ function FAQSection({ title, items }: FAQSectionProps) {
                         exit={{ height: 0, opacity: 0 }}
                         transition={transition1}
                     >
-                        <div className="column">
-                            {leftColumnItems.map((item: FAQItem, index: number) => (
-                                <motion.div
-                                    className="faq-item"
-                                    key={item.id}
-                                    layout
-                                    onClick={() => toggleQuestion(item.id)}
-                                >
-                                    <motion.h4 layout>
-                                        {item.question}{" "}
-                                        {openQuestion === item.id ? (
-                                            <IoIosArrowDown className="arrow-icon open" />
-                                        ) : (
-                                            <IoIosArrowDown className="arrow-icon" />
-                                        )}
-                                    </motion.h4>
+                        {items.map((item: FAQItem) => (
+                            <motion.div
+                                className="faq-item"
+                                key={item.id}
+                                layout
+                                onClick={() => toggleQuestion(item.id)}
+                            >
+                                <motion.h4 layout>
+                                    {item.question}{" "}
+                                    <IoIosArrowDown className={`arrow-icon ${openQuestion === item.id ? "open" : ""}`} />
+                                </motion.h4>
+                                <AnimatePresence>
                                     {openQuestion === item.id && (
                                         <motion.p
                                             initial={{ height: 0, opacity: 0 }}
                                             animate={{ height: "auto", opacity: 1 }}
                                             exit={{ height: 0, opacity: 0 }}
+                                            transition={transition1}
                                             layout
                                         >
                                             {item.answer}
                                         </motion.p>
                                     )}
-                                </motion.div>
-                            ))}
-                        </div>
-                        <div className="column">
-                            {rightColumnItems.map((item: FAQItem, index: number) => (
-                                <motion.div
-                                    className="faq-item"
-                                    key={item.id}
-                                    layout
-                                    onClick={() => toggleQuestion(item.id)}
-                                >
-                                    <motion.h4 layout>
-                                        {item.question}{" "}
-                                        {openQuestion === item.id ? (
-                                            <IoIosArrowDown className="arrow-icon open" />
-                                        ) : (
-                                            <IoIosArrowDown className="arrow-icon" />
-                                        )}
-                                    </motion.h4>
-                                    {openQuestion === item.id && (
-                                        <motion.p
-                                            initial={{ height: 0, opacity: 0 }}
-                                            animate={{ height: "auto", opacity: 1 }}
-                                            exit={{ height: 0, opacity: 0 }}
-                                            layout
-                                        >
-                                            {item.answer}
-                                        </motion.p>
-                                    )}
-                                </motion.div>
-                            ))}
-                        </div>
+                                </AnimatePresence>
+                            </motion.div>
+                        ))}
                     </motion.div>
                 )}
             </AnimatePresence>
