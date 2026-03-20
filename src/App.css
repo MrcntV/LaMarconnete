@@ -302,3 +302,98 @@ span {
     font-size: 1.6rem;
   }
 }
+
+/* ===== RESPONSIVE TABLETTE (768px – 1024px) ===== */
+@media (max-width: 1024px) and (min-width: 769px) {
+  h1 { font-size: 2.8rem; }
+  h2, h3 { font-size: 2.2rem; }
+
+  main { margin-top: 18vh; }
+
+  .Container-column {
+    flex-direction: column !important;
+  }
+
+  .HomeContainer {
+    flex-direction: column;
+  }
+
+  .HomeContainerGauche,
+  .HomeContainerDroit {
+    width: 100%;
+  }
+
+  .produit-detail-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .produit-images,
+  .produit-info {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .Footer-Mid {
+    flex-wrap: wrap;
+    gap: 20px;
+    margin: 20px;
+  }
+}
+
+/* ===== RESPONSIVE MOBILE (≤ 768px) ===== */
+@media (max-width: 768px) {
+  /* Titres */
+  h1 { font-size: 1.9rem; }
+  h2, h3 { font-size: 1.5rem; }
+  h4 { font-size: 1.2rem; }
+  h5 { font-size: 1rem; }
+
+  /* Espacements globaux */
+  main { margin-top: 16vh; }
+  section { padding-left: 4vw; padding-right: 4vw; }
+
+  /* Layouts colonnes → une seule colonne */
+  .Container-column,
+  .HomeContainer,
+  .produit-detail-container {
+    flex-direction: column !important;
+  }
+
+  .HomeContainerGauche,
+  .HomeContainerDroit,
+  .produit-images,
+  .produit-info {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  /* Images produits */
+  .Carte-Produits-Items {
+    width: 45% !important;
+    min-width: 140px;
+  }
+
+  /* Footer */
+  .Footer-Mid {
+    flex-direction: column;
+    align-items: center;
+    margin: 20px 10px;
+    gap: 15px;
+  }
+
+  .Footer-Bottom-coupon {
+    max-width: 90%;
+  }
+
+  /* Inputs */
+  input, textarea, select {
+    width: 100%;
+    max-width: 100%;
+  }
+
+  /* Carte produit liste */
+  .ListePointsDeVente li {
+    width: 95%;
+  }
+}
