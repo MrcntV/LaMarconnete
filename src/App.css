@@ -1,3 +1,34 @@
+/* ===== SCROLL TO TOP BUTTON ===== */
+.scroll-top-btn {
+  position: fixed !important;
+  bottom: 2rem;
+  right: 2rem;
+  width: 48px !important;
+  height: 48px !important;
+  padding: 0 !important;
+  border-radius: 50% !important;
+  background: #546863 !important;
+  color: white !important;
+  font-size: 1.4rem !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.25) !important;
+  z-index: 998;
+  cursor: pointer;
+  border: none;
+  overflow: hidden;
+}
+
+.scroll-top-btn:hover {
+  background: #3d4e4a !important;
+  transform: translateY(-2px);
+}
+
+.scroll-top-btn:after {
+  display: none !important;
+}
+
 /* ===== CALL TO ACTION BANNER ===== */
 .cta-banner {
   display: flex;
@@ -234,11 +265,11 @@ button {
   border-radius: 5px;
   padding: 10px 15px;
   font-weight: 500;
-  background: transparent;
   cursor: pointer;
-  transition: all 0.3s ease;
+  transition: color 0.3s ease, box-shadow 0.3s ease;
   position: relative;
   display: inline-block;
+  overflow: hidden;
   box-shadow: inset 2px 2px 2px 0px rgba(255, 255, 255, .5),
     7px 7px 20px 0px rgba(0, 0, 0, .1),
     4px 4px 5px 0px rgba(0, 0, 0, .1);
@@ -255,19 +286,20 @@ button:after {
   height: 100%;
   top: 0;
   right: 0;
-  z-index: -1;
   background-color: #546863;
   border-radius: 5px;
-  box-shadow: inset 2px 2px 2px 0px rgba(255, 255, 255, .5),
-    7px 7px 20px 0px rgba(0, 0, 0, .1),
-    4px 4px 5px 0px rgba(0, 0, 0, .1);
-  transition: all 0.3s ease;
+  transition: width 0.3s ease;
+  z-index: 0;
 }
 
+button > * {
+  position: relative;
+  z-index: 1;
+}
 
 button:hover:after {
-  left: 0;
   width: 100%;
+  left: 0;
 }
 
 button:active {

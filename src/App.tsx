@@ -14,6 +14,8 @@ import './styles/screens/Contact.css'
 import './styles/screens/Livraison.css'
 import './styles/screens/Glossaire.css'
 import './styles/screens/PlanDuSite.css'
+import './styles/screens/Legal.css'
+import './styles/screens/CarteCadeau.css'
 
 import './styles/components/bouton.css'
 import './styles/components/Header.css'
@@ -29,17 +31,20 @@ import AnimRoutes from './AnimRoutes';
 import { Footers } from './components/Footers';
 import { CallToAction } from './components/CallToAction';
 import HomeMeilleursVentes from './components/HomeMeilleursVentes';
+import { ScrollToTopOnNav, ScrollToTopButton } from './components/ScrollToTop';
 
 
 
 function App() {
   return (
     <div className='App'>
+      <ScrollToTopOnNav />
       <Headers />
       <AnimRoutes />
       <HomeMeilleursVentes titre='Meilleures Ventes' />
       <CallToAction />
       <Footers />
+      <ScrollToTopButton />
     </div>
   );
 }

@@ -65,13 +65,16 @@ export const Footers = () => {
                                         transition={{ duration: 0.3 }} >
                                         <ul>
                                             <li>
-                                                <a href="/Boutique">Hygiène</a>
+                                                <NavLink to="/Boutique">Hygiène</NavLink>
                                             </li>
                                             <li>
-                                                <a href="/Boutique">Soin</a>
+                                                <NavLink to="/Boutique">Soin</NavLink>
                                             </li>
                                             <li>
-                                                <a href="/Boutique">Accessoires</a>
+                                                <NavLink to="/Boutique">Accessoires</NavLink>
+                                            </li>
+                                            <li>
+                                                <NavLink to="/CarteCadeau">Carte Cadeau</NavLink>
                                             </li>
                                         </ul>
                                     </motion.div>
@@ -91,28 +94,25 @@ export const Footers = () => {
                                         transition={{ duration: 0.3 }} >
                                         <ul>
                                             <li>
-                                                <a href="/MonHistoire">Histoire</a>
+                                                <NavLink to="/MonHistoire">Histoire</NavLink>
                                             </li>
                                             <li>
-                                                <a href="/NewsLetter">S’abonner</a>
+                                                <NavLink to="/Newsletter">S'abonner</NavLink>
                                             </li>
                                             <li>
-                                                <a href="/Parrainage">Parrainage</a>
+                                                <NavLink to="/Parrainage">Parrainage</NavLink>
                                             </li>
                                             <li>
-                                                <a href="">Partenaires</a>
+                                                <NavLink to="/DevenirPartenaire">Devenir partenaire</NavLink>
                                             </li>
                                             <li>
-                                                <a href="">Devenir partenaire</a>
+                                                <NavLink to="/Recrutement">Recrutement</NavLink>
                                             </li>
                                             <li>
-                                                <a href="">Recrutement</a>
+                                                <NavLink to="/CGV">CGV</NavLink>
                                             </li>
                                             <li>
-                                                <a href="">CGV</a>
-                                            </li>
-                                            <li>
-                                                <a href="">Politique de confidentialité</a>
+                                                <NavLink to="/MentionsLegales">Mentions légales</NavLink>
                                             </li>
                                         </ul>
                                     </motion.div>

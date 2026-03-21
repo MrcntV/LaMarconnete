@@ -14,6 +14,11 @@ import Contact from "./screens/Contact";
 import Livraison from "./screens/Livraison";
 import Glossaire from "./screens/Glossaire";
 import PlanDuSite from "./screens/PlanDuSite";
+import MentionsLegales from "./screens/MentionsLegales";
+import CGV from "./screens/CGV";
+import Recrutement from "./screens/Recrutement";
+import DevenirPartenaire from "./screens/DevenirPartenaire";
+import CarteCadeau from "./screens/CarteCadeau";
 
 const AnimRoutes = () => {
     const location = useLocation();
@@ -33,6 +38,11 @@ const AnimRoutes = () => {
                 <Route path='/Livraison' element={<Livraison />} />
                 <Route path='/Glossaire' element={<Glossaire />} />
                 <Route path='/PlanDuSite' element={<PlanDuSite />} />
+                <Route path='/MentionsLegales' element={<MentionsLegales />} />
+                <Route path='/CGV' element={<CGV />} />
+                <Route path='/Recrutement' element={<Recrutement />} />
+                <Route path='/DevenirPartenaire' element={<DevenirPartenaire />} />
+                <Route path='/CarteCadeau' element={<CarteCadeau />} />
             </Routes>
         </AnimatePresence>
     )
