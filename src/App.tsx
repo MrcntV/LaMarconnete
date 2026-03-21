@@ -28,9 +28,9 @@ import './styles/components/CarrouselAuto.css'
 import './styles/components/timeline.css'
 import './styles/components/timelinetest.css'
 
-import { Headers } from './components/Headers';
+import { Headers } from './components/01_Headers';
 import AnimRoutes from './AnimRoutes';
-import { Footers } from './components/Footers';
+import { Footers } from './components/02_Footers';
 import { CallToAction } from './components/CallToAction';
 import HomeMeilleursVentes from './components/HomeMeilleursVentes';
 import { ScrollToTopOnNav, ScrollToTopButton } from './components/ScrollToTop';
