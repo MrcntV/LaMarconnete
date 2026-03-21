@@ -206,7 +206,7 @@ LaMarconnete/
 
 ```bash
 node scripts/set-admin-password.js
-```
+``` 
 
 Le script se connecte à MongoDB, liste les comptes admin disponibles, et te guide pas à pas :
 
