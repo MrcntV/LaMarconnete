@@ -213,7 +213,7 @@ Le script se connecte à MongoDB, liste les comptes admin disponibles, et te gui
 ```
 ========================================
    Modifier le mot de passe admin
-========================================
+======================================== 
 
 Comptes admin :
   1. admin@lamarconnete.fr  (Admin marcOnnête — superadmin — ✓ actif)
