@@ -1,4 +1,4 @@
-import { motion } from ‘framer-motion’;
+import { motion } from 'framer-motion';
 import { transition1 } from "../transition"
 
 import { FaTruckFast } from "react-icons/fa6"
@@ -6,11 +6,11 @@ import { IoIosMail, } from "react-icons/io"
 import { CiCreditCard1 } from "react-icons/ci"
 import { IoEarthOutline } from "react-icons/io5"
 
-import HomeMeilleursVentes from ‘../components/HomeMeilleursVentes’;
-import { HomeCommentaires } from ‘../components/Home-Commentaires’;
-import { Coupon } from ‘../components/Coupon’;
-import Bouton from ‘../components/Bouton’;
-import { useContent } from ‘../contexts/ContentContext’;
+import HomeMeilleursVentes from '../components/HomeMeilleursVentes';
+import { HomeCommentaires } from '../components/Home-Commentaires';
+import { Coupon } from '../components/Coupon';
+import Bouton from '../components/Bouton';
+import { useContent } from '../contexts/ContentContext';
 
 export const Home = () => {
     const content = useContent();
@@ -19,14 +19,14 @@ export const Home = () => {
     return (
         <main className="Home">
 
-            <section className=’’>
-                <div className=’HomeContainer’>
-                    <div className=’HomeContainerGauche’>
-                        <h1>{home.mainTitle || "Moins c’est mieux !"}</h1>
+            <section className=''>
+                <div className='HomeContainer'>
+                    <div className='HomeContainerGauche'>
+                        <h1>{home.mainTitle || "Moins c'est mieux !"}</h1>
 
                         <blockquote className="citation">
-                            {home.citation || "A la naissance de ma fille, j’ai été confrontée au marché des cosmétiques bébé, force est de constater que les produits renfermaient trop d’ingrédients, trop du superflu, trop trop de substances inutiles voire nocives. J’ai alors décidé de revenir à l’essentiel en proposant des formules minimalistes qui respectent VRAIMENT la peau de nos bébés parce que MOINS c’est MIEUX !"}
-                            <p className=’signature’>{home.signature || "Anaïs & Léana"}</p>
+                            {home.citation || "A la naissance de ma fille, j'ai été confrontée au marché des cosmétiques bébé, force est de constater que les produits renfermaient trop d'ingrédients, trop du superflu, trop trop de substances inutiles voire nocives. J'ai alors décidé de revenir à l'essentiel en proposant des formules minimalistes qui respectent VRAIMENT la peau de nos bébés parce que MOINS c'est MIEUX !"}
+                            <p className='signature'>{home.signature || "Anaïs & Léana"}</p>
                         </blockquote>
 
 
@@ -64,8 +64,8 @@ export const Home = () => {
             <div className='Presentoire-transition'>
                 <img src="images/IconWeb/FontHomeSectionBas.png" alt="" />
             </div>
-            <section className=’Presentoire’>
-                <h1>{home.sectionEngagesTitle || "La marcOnnête s’engage pour des produits :"}</h1>
+            <section className='Presentoire'>
+                <h1>{home.sectionEngagesTitle || "La marcOnnête s'engage pour des produits :"}</h1>
                 <div className='PresentoireContainer'>
                     <img src="images/La_marcOnnete_Homepage_v2.png" alt="" />
                 </div>
@@ -110,9 +110,9 @@ export const Home = () => {
                             whileInView={{ opacity: 1, scale: 1 }}
                             viewport={{ once: true }} className='Home-Container-logo-compo'>
 
-                            <IoIosMail style={{ fontSize: ‘3.5em’, color: "#546863" }} />
+                            <IoIosMail style={{ fontSize: '3.5em', color: "#546863" }} />
                             <h4>{home.badge3Title || "Service client"}</h4>
-                            <p>{home.badge3Text || "C’est par ici"}</p>
+                            <p>{home.badge3Text || "C'est par ici"}</p>
 
                         </motion.div>      </a>
                     <motion.div
