@@ -74,7 +74,7 @@ export const Headers: React.FC = () => {
           </div>
 
           <div className="Headers-Nav-Centre">
-            <a className='Headers-Nav-haut-mid' href="/"><img src="/images/Logo/Fichier étiquette.png" alt="Logo la MarcOnnête" /></a>
+            <a className='Headers-Nav-haut-mid' href="/"><img src="/images/Logo/LogoMarconnete.png" alt="Logo la MarcOnnête" /></a>
           </div>
           <div className={`Headers-Nav-haut ${scrollingUp ? 'scrolling-up' : 'scrolling-down'}`}>
             <div className="Headers-Nav-Droite">
