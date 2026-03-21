@@ -184,9 +184,9 @@ app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
   const command = `
     cd ${PROJECT_PATH} &&
     git pull origin main &&
-    npm install &&
+    npm install --legacy-peer-deps &&
     npm run build &&
-    pm2 restart "${PM2_APP_NAME}"
+    pm2 startOrRestart ${PROJECT_PATH}/pm2.config.js --env production
   `;
 
   console.log('Commande lancée :', command);

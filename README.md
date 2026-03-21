@@ -1,47 +1,201 @@
-# Getting Started with Create React App
+# La marcOnnête — Documentation technique
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Architecture
 
-## Available Scripts
+| Composant | Port | Description |
+|---|---|---|
+| Site principal | 43749 | React SPA + API Express |
+| Panel admin | 43750 | React admin séparé |
+| MongoDB | 27017 | Base de données utilisateurs/clients |
 
-In the project directory, you can run:
+---
 
-### `npm start`
+## Première installation sur un nouveau serveur (BacASable ou prod)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+### 1. Pré-requis système
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+```bash
+# Node.js 22 (via nvm recommandé)
+nvm install 22 && nvm use 22
 
-### `npm test`
+# PM2
+npm install -g pm2
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+# MongoDB Community
+brew tap mongodb/brew
+brew install mongodb-community
+brew services start mongodb/brew/mongodb-community
+```
 
-### `npm run build`
+### 2. Cloner le projet
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```bash
+git clone https://github.com/MrcntV/LaMarconnete /LaMarconnete
+cd /LaMarconnete
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 3. Variables d'environnement
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```bash
+cp .env.example .env
+nano .env   # remplir JWT_SECRET, MONGODB_URI, Stripe, EmailJS, Colissimo
+```
 
-### `npm run eject`
+Contenu minimal `.env` :
+```
+MONGODB_URI=mongodb://127.0.0.1:27017/marconnete
+JWT_SECRET=changer-cette-valeur-en-prod
+PORT=43749
+ADMIN_PORT=43750
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+### 4. Installer les dépendances
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```bash
+# Site principal
+npm install --legacy-peer-deps
+npm install fork-ts-checker-webpack-plugin@6.5.3 --legacy-peer-deps
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+# Panel admin
+cd admin && npm install --legacy-peer-deps
+npm install fork-ts-checker-webpack-plugin@6.5.3 --legacy-peer-deps
+cd ..
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### 5. Build
 
-## Learn More
+```bash
+# Site principal
+npm run build
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+# Panel admin
+cd admin && npm run build && cd ..
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
-# LaMarconnete
+### 6. Migration des données JSON vers MongoDB
+
+```bash
+node scripts/migrate-to-mongo.js
+```
+
+### 7. Démarrer avec PM2
+
+```bash
+pm2 startOrRestart pm2.config.js --env production
+pm2 save        # sauvegarder pour redémarrage automatique
+pm2 startup     # configurer le démarrage au boot (copier/coller la commande affichée)
+```
+
+---
+
+## Workflow Git — pousser depuis ta machine locale
+
+### Chaque push déclenche un déploiement automatique sur BacASable
+
+```bash
+git add .
+git commit -m "description du changement"
+git push origin main
+```
+
+Le webhook GitHub reçoit le push et lance automatiquement sur BacASable :
+1. `git pull origin main`
+2. `npm install --legacy-peer-deps`
+3. `npm run build`
+4. `pm2 startOrRestart pm2.config.js` — démarre si absent, redémarre sinon
+
+> **Note :** le panel admin (`admin/`) n'est PAS rebuild automatiquement par le webhook.
+> Pour déployer l'admin sur BacASable, builder en local puis committer `admin/build/` :
+>
+> ```bash
+> cd admin && npm run build && cd ..
+> git add admin/build
+> git commit -m "build admin"
+> git push origin main
+> ```
+
+---
+
+## Commandes utiles au quotidien
+
+### PM2 — gérer les processus
+
+```bash
+pm2 list                          # état des deux serveurs
+pm2 logs marconnete               # logs site principal
+pm2 logs marconnete-admin         # logs panel admin
+pm2 restart marconnete            # redémarrer le site principal
+pm2 restart marconnete-admin      # redémarrer le panel admin
+pm2 restart all                   # redémarrer les deux
+
+# Démarrer les deux d'un coup (1ère fois ou après reboot)
+pm2 startOrRestart pm2.config.js --env production
+pm2 save
+```
+
+### Rebuild manuel
+
+```bash
+# Après une modif en dehors d'un push
+npm run build && pm2 restart marconnete
+
+# Admin uniquement
+cd admin && npm run build && cd .. && pm2 restart marconnete-admin
+```
+
+### MongoDB
+
+```bash
+mongosh marconnete                # ouvrir le shell sur la base marconnete
+
+# Dans mongosh :
+show collections
+db.customers.find()
+db.adminusers.find()
+db.customers.countDocuments()
+
+# Gérer le service
+brew services start mongodb/brew/mongodb-community
+brew services stop mongodb/brew/mongodb-community
+brew services restart mongodb/brew/mongodb-community
+```
+
+---
+
+## Accès par défaut
+
+| Accès | Valeur |
+|---|---|
+| Site principal | http://localhost:43749 |
+| Panel admin | http://localhost:43750 |
+| Admin email | admin@lamarconnete.fr |
+| Admin mot de passe | admin123 *(changer en prod)* |
+| MongoDB URI | mongodb://127.0.0.1:27017/marconnete |
+
+---
+
+## Structure du projet
+
+```
+LaMarconnete/
+├── src/               # Frontend React (site public)
+├── admin/             # Frontend React (panel admin)
+│   └── build/         # Build servi par server-admin.js
+├── api/
+│   ├── config/mongoose.js     # Connexion MongoDB
+│   ├── middleware/auth.js      # JWT middleware
+│   ├── models/
+│   │   ├── Customer.js        # Modèle Mongoose clients
+│   │   └── AdminUser.js       # Modèle Mongoose admins
+│   ├── routes/                # Routes API Express
+│   └── db.js                  # Accès JSON (commandes, produits...)
+├── data/              # Fichiers JSON (commandes, produits, stocks...)
+├── scripts/
+│   └── migrate-to-mongo.js   # Migration JSON -> MongoDB
+├── build/             # Build React site public
+├── server.js          # Serveur principal (port 43749)
+├── server-admin.js    # Serveur admin (port 43750)
+├── pm2.config.js      # Config PM2 (2 processus)
+├── .env.example       # Variables d'environnement a copier
+└── MarconneteAdmin.conf  # Config Nginx (a implanter)
+```
