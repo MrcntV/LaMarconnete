@@ -80,7 +80,7 @@ export const Headers: React.FC = () => {
             <div className="Headers-Nav-Droite">
               <div className='Headers-Nav-haut-droite'>
                 <div className='icon'><NavLink to='/FAQ'><FaQuestion style={{ fontSize: '1.2em', color: "#a6b4aa" }} /></NavLink></div>
-                <div className='icon'><a href="https://lamarconnete.fr/mon-compte/"><FaUserAlt style={{ fontSize: '1.2em', color: "#a6b4aa" }} /></a></div>
+                <div className='icon'><NavLink to={localStorage.getItem('customer_token') ? '/mon-compte' : '/connexion'}><FaUserAlt style={{ fontSize: '1.2em', color: "#a6b4aa" }} /></NavLink></div>
                 <div className='icon'><FaCartShopping style={{ fontSize: '1.2em', color: "#a6b4aa" }} /></div>
               </div>
             </div>

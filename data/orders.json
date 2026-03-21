@@ -1,0 +1,76 @@
+[
+  {
+    "id": "order_001",
+    "orderNumber": "MRC-2024-001",
+    "customerId": "cust_001",
+    "customerName": "Marie Dupont",
+    "customerEmail": "marie.dupont@email.com",
+    "date": "2024-03-10T14:30:00.000Z",
+    "status": "delivered",
+    "items": [
+      {
+        "productId": "prod_001",
+        "name": "Baume Hydratant Bébé",
+        "qty": 2,
+        "price": 18.90
+      },
+      {
+        "productId": "prod_002",
+        "name": "Huile de Massage Douce",
+        "qty": 1,
+        "price": 14.50
+      }
+    ],
+    "subtotal": 52.30,
+    "shipping": 4.90,
+    "total": 57.20,
+    "shippingAddress": {
+      "firstName": "Marie",
+      "lastName": "Dupont",
+      "address": "12 rue des Lilas",
+      "city": "Paris",
+      "postalCode": "75011",
+      "country": "France"
+    },
+    "trackingNumber": "6A12345678901",
+    "colissimoLabel": null,
+    "paymentStatus": "paid",
+    "paymentIntentId": "pi_test_1234567890",
+    "notes": "",
+    "invoiceId": "inv_001"
+  },
+  {
+    "id": "order_002",
+    "orderNumber": "MRC-2024-002",
+    "customerId": "cust_002",
+    "customerName": "Thomas Martin",
+    "customerEmail": "thomas.martin@email.com",
+    "date": "2024-03-15T09:15:00.000Z",
+    "status": "shipped",
+    "items": [
+      {
+        "productId": "prod_003",
+        "name": "Shampooing Doux Bébé",
+        "qty": 3,
+        "price": 12.90
+      }
+    ],
+    "subtotal": 38.70,
+    "shipping": 4.90,
+    "total": 43.60,
+    "shippingAddress": {
+      "firstName": "Thomas",
+      "lastName": "Martin",
+      "address": "5 avenue de la République",
+      "city": "Lyon",
+      "postalCode": "69003",
+      "country": "France"
+    },
+    "trackingNumber": "6A98765432109",
+    "colissimoLabel": null,
+    "paymentStatus": "paid",
+    "paymentIntentId": "pi_test_0987654321",
+    "notes": "Livraison en point relais souhaitée",
+    "invoiceId": "inv_002"
+  }
+]

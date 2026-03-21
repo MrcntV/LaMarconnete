@@ -16,6 +16,8 @@ import './styles/screens/Glossaire.css'
 import './styles/screens/PlanDuSite.css'
 import './styles/screens/Legal.css'
 import './styles/screens/CarteCadeau.css'
+import './styles/screens/LoginClient.css'
+import './styles/screens/MonCompte.css'
 
 import './styles/components/bouton.css'
 import './styles/components/Header.css'

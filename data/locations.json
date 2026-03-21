@@ -1,0 +1,41 @@
+[
+  {
+    "id": "loc_001",
+    "name": "Pharmacie des Lilas",
+    "address": "23 rue des Lilas",
+    "city": "Paris",
+    "postalCode": "75011",
+    "lat": 48.8634,
+    "lng": 2.3779,
+    "phone": "01 43 55 12 34",
+    "email": "contact@pharmaciedeslilas.fr",
+    "schedule": "Lun-Ven 9h-19h30 / Sam 9h-18h",
+    "active": true
+  },
+  {
+    "id": "loc_002",
+    "name": "Bio & Beauté Lyon",
+    "address": "8 place Bellecour",
+    "city": "Lyon",
+    "postalCode": "69002",
+    "lat": 45.7578,
+    "lng": 4.8320,
+    "phone": "04 72 41 23 56",
+    "email": "contact@biobeautélyon.fr",
+    "schedule": "Lun-Sam 10h-19h",
+    "active": true
+  },
+  {
+    "id": "loc_003",
+    "name": "Maternité & Bien-être Bordeaux",
+    "address": "15 cours de l'Intendance",
+    "city": "Bordeaux",
+    "postalCode": "33000",
+    "lat": 44.8404,
+    "lng": -0.5805,
+    "phone": "05 56 78 90 12",
+    "email": "contact@maternitebebordeaux.fr",
+    "schedule": "Mar-Sam 10h-19h30",
+    "active": true
+  }
+]

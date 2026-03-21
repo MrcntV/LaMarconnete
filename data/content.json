@@ -1,0 +1,56 @@
+{
+  "hero": {
+    "title": "La marcOnnête",
+    "subtitle": "Cosmétiques naturels et bio pour les tout-petits. Formulés avec amour, sans compromis.",
+    "buttonText": "Découvrir nos produits"
+  },
+  "about": {
+    "title": "Notre Histoire",
+    "text1": "La marcOnnête est née d'une conviction profonde : les bébés méritent ce qu'il y a de meilleur. Fondée par une jeune maman, notre marque propose des cosmétiques bio, doux et efficaces.",
+    "text2": "Chaque produit est formulé avec soin, à partir d'ingrédients naturels sélectionnés pour leur douceur et leur efficacité. Nous refusons les compromis sur la qualité.",
+    "text3": "Nos formules sont développées en collaboration avec des dermatologues et testées sur des peaux sensibles. Parce que la sécurité de votre enfant est notre priorité absolue.",
+    "text4": "Engagée pour la planète, La marcOnnête utilise des emballages recyclables et sourcé ses ingrédients auprès de producteurs locaux certifiés Bio."
+  },
+  "engagements": [
+    {
+      "id": 1,
+      "title": "100% Naturel",
+      "text": "Tous nos ingrédients sont d'origine naturelle, sans substances chimiques controversées."
+    },
+    {
+      "id": 2,
+      "title": "Certifié Bio",
+      "text": "Nos formules sont certifiées bio par des organismes indépendants reconnus."
+    },
+    {
+      "id": 3,
+      "title": "Vegan",
+      "text": "Aucun ingrédient d'origine animale, aucun test sur les animaux."
+    },
+    {
+      "id": 4,
+      "title": "Made in France",
+      "text": "Fabriqué en France, dans des ateliers certifiés, pour un contrôle qualité optimal."
+    },
+    {
+      "id": 5,
+      "title": "Emballages Eco-responsables",
+      "text": "Nos emballages sont recyclables ou compostables, pour minimiser notre impact."
+    },
+    {
+      "id": 6,
+      "title": "Testé Dermatologiquement",
+      "text": "Chaque produit est testé par des dermatologues sur peaux sensibles avant commercialisation."
+    }
+  ],
+  "footer": {
+    "newsletter": {
+      "title": "Rejoignez la communauté marcOnnête",
+      "subtitle": "Inscrivez-vous pour recevoir -10% sur votre première commande et nos actualités."
+    }
+  },
+  "seo": {
+    "homeTitle": "La marcOnnête — Cosmétiques Bio pour Bébés",
+    "homeDescription": "Découvrez La marcOnnête, marque française de cosmétiques naturels et bio pour les bébés. Baume hydratant, huile de massage, shampooing doux. Certifiés Bio, Vegan et Made in France."
+  }
+}

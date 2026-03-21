@@ -1,0 +1,11 @@
+[
+  {
+    "id": "user_001",
+    "email": "admin@lamarconnete.fr",
+    "passwordHash": "$2b$10$YzlqYlvoDfU7Ktq49p9Pa.998/.iwNlJN1xpbFKyCkjtnHAajxlge",
+    "firstName": "Admin",
+    "lastName": "marcOnnête",
+    "role": "superadmin",
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  }
+]

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "nl_001",
+    "email": "marie.dupont@email.com",
+    "firstName": "Marie",
+    "subscribedAt": "2024-01-10T09:00:00.000Z",
+    "active": true,
+    "unsubscribeToken": "token_abc123def456"
+  },
+  {
+    "id": "nl_002",
+    "email": "sophie.leclerc@email.com",
+    "firstName": "Sophie",
+    "subscribedAt": "2024-02-20T11:30:00.000Z",
+    "active": true,
+    "unsubscribeToken": "token_xyz789uvw012"
+  },
+  {
+    "id": "nl_003",
+    "email": "isabelle.blanc@email.com",
+    "firstName": "Isabelle",
+    "subscribedAt": "2024-03-01T08:45:00.000Z",
+    "active": true,
+    "unsubscribeToken": "token_mno345pqr678"
+  }
+]

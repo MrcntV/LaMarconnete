@@ -19,6 +19,8 @@ import CGV from "./screens/CGV";
 import Recrutement from "./screens/Recrutement";
 import DevenirPartenaire from "./screens/DevenirPartenaire";
 import CarteCadeau from "./screens/CarteCadeau";
+import LoginClient from "./screens/LoginClient";
+import MonCompte from "./screens/MonCompte";
 
 const AnimRoutes = () => {
     const location = useLocation();
@@ -43,6 +45,8 @@ const AnimRoutes = () => {
                 <Route path='/Recrutement' element={<Recrutement />} />
                 <Route path='/DevenirPartenaire' element={<DevenirPartenaire />} />
                 <Route path='/CarteCadeau' element={<CarteCadeau />} />
+                <Route path='/connexion' element={<LoginClient />} />
+                <Route path='/mon-compte' element={<MonCompte />} />
             </Routes>
         </AnimatePresence>
     )

@@ -23,4 +23,6 @@ export const appRoutes: AppRoute[] = [
     { path: '/PlanDuSite', label: 'Plan du site', category: 'Aide', showInSitemap: true },
     { path: '/MentionsLegales', label: 'Mentions Légales', category: 'Légal', showInSitemap: true },
     { path: '/CGV', label: 'Conditions Générales de Vente', category: 'Légal', showInSitemap: true },
+    { path: '/connexion', label: 'Mon compte', category: 'Principal', showInSitemap: false },
+    { path: '/mon-compte', label: 'Mon compte', category: 'Principal', showInSitemap: false },
 ];

@@ -2,26 +2,75 @@ const express = require('express');
 const path = require('path');
 const os = require('os');
 const crypto = require('crypto');
+const cors = require('cors');
+const fileUpload = require('express-fileupload');
 const { exec } = require('child_process');
 
 const app = express();
-const PORT = 43749;
+const PORT = process.env.PORT || 43749;
 
 const GITHUB_WEBHOOK_SECRET = 'J@mltlja345h';
 const PROJECT_PATH = __dirname;
 const PM2_APP_NAME = 'marconnete';
 
-// JSON uniquement pour l'API
-app.use('/api', express.json());
+// JWT Secret (set in .env for production)
+const JWT_SECRET = process.env.JWT_SECRET || 'marconnete-secret-jwt-2024';
 
-// Fichiers statiques React
+// CORS — allow admin panel and localhost dev origins
+app.use(cors({
+  origin: [
+    'http://localhost:43750',
+    'http://localhost:3001',
+    'https://admin.lamarconnete.fr'
+  ],
+  credentials: true
+}));
+
+// IMPORTANT: Stripe webhook requires raw body parser.
+// The route /api/stripe/webhook and /api/orders/stripe-webhook
+// use their own express.raw() middleware inside the route files.
+// We skip express.json() for those paths here.
+
+// JSON body parser for /api routes (skip stripe webhook paths)
+app.use('/api', (req, res, next) => {
+  if (req.path === '/stripe/webhook' || req.path === '/orders/stripe-webhook') {
+    return next();
+  }
+  express.json()(req, res, next);
+});
+
+// File upload middleware (for image uploads in products)
+app.use(fileUpload({
+  limits: { fileSize: 10 * 1024 * 1024 }, // 10MB max
+  createParentPath: true,
+  abortOnLimit: true
+}));
+
+// Fichiers statiques React (main site)
 app.use(express.static(path.join(__dirname, 'build')));
+
+// Public assets (uploaded product images etc.)
+app.use('/public', express.static(path.join(__dirname, 'public')));
 
 // Petit header perso
 app.use((req, res, next) => {
   res.setHeader('X-Powered-By', 'mrcntv');
   next();
 });
+
+// =============================================
+// API ROUTES — must be BEFORE the catch-all *
+// =============================================
+app.use('/api/auth', require('./api/routes/auth'));
+app.use('/api/products', require('./api/routes/products'));
+app.use('/api/orders', require('./api/routes/orders'));
+app.use('/api/customers', require('./api/routes/customers'));
+app.use('/api/newsletter', require('./api/routes/newsletter'));
+app.use('/api/locations', require('./api/routes/locations'));
+app.use('/api/invoices', require('./api/routes/invoices'));
+app.use('/api/content', require('./api/routes/content'));
+app.use('/api/stock', require('./api/routes/stock'));
+app.use('/api/stripe', require('./api/routes/stripe'));
 
 // Route API status
 app.get('/api/status', (req, res) => {
@@ -72,13 +121,14 @@ app.get('/welcome', (req, res) => {
       </head>
       <body>
         <div class="card">
-          <h1>Bienvenue sur mrcntv.com 🚀</h1>
+          <h1>Bienvenue sur mrcntv.com</h1>
           <p>Le serveur est bien en ligne et prêt à répondre.</p>
           <ul>
             <li><strong>Port :</strong> ${PORT}</li>
             <li><strong>Heure serveur :</strong> ${new Date().toLocaleString()}</li>
             <li><strong>Statut API :</strong> <a href="/api/status">/api/status</a></li>
             <li><strong>Webhook GitHub :</strong> <code>/webhook</code></li>
+            <li><strong>Admin panel :</strong> <a href="http://localhost:43750">port 43750</a></li>
           </ul>
           <p>Le reverse proxy Nginx, le certificat SSL et le webhook GitHub sont maintenant prévus pour un auto-déploiement propre.</p>
         </div>
@@ -151,11 +201,11 @@ app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
   });
 });
 
-// Fallback React SPA
+// Fallback React SPA — MUST be last
 app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`[Main] Server running on port ${PORT}`);
 });

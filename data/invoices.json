@@ -1,0 +1,55 @@
+[
+  {
+    "id": "inv_001",
+    "invoiceNumber": "FACT-2024-001",
+    "orderId": "order_001",
+    "customerId": "cust_001",
+    "customerName": "Marie Dupont",
+    "date": "2024-03-10T14:30:00.000Z",
+    "items": [
+      {
+        "productId": "prod_001",
+        "name": "Baume Hydratant Bébé",
+        "qty": 2,
+        "price": 18.90,
+        "total": 37.80
+      },
+      {
+        "productId": "prod_002",
+        "name": "Huile de Massage Douce",
+        "qty": 1,
+        "price": 14.50,
+        "total": 14.50
+      }
+    ],
+    "subtotal": 52.30,
+    "taxRate": 20,
+    "taxAmount": 10.46,
+    "total": 57.20,
+    "status": "paid",
+    "pdfPath": null
+  },
+  {
+    "id": "inv_002",
+    "invoiceNumber": "FACT-2024-002",
+    "orderId": "order_002",
+    "customerId": "cust_002",
+    "customerName": "Thomas Martin",
+    "date": "2024-03-15T09:15:00.000Z",
+    "items": [
+      {
+        "productId": "prod_003",
+        "name": "Shampooing Doux Bébé",
+        "qty": 3,
+        "price": 12.90,
+        "total": 38.70
+      }
+    ],
+    "subtotal": 38.70,
+    "taxRate": 20,
+    "taxAmount": 7.74,
+    "total": 43.60,
+    "status": "sent",
+    "pdfPath": null
+  }
+]
