@@ -234,7 +234,7 @@ function Where() {
                             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
                             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                         />
-                        {filtered.map((l) => (
+                        {filtered.filter(l => l.lat != null && l.lng != null).map((l) => (
                             <Marker key={l.id} position={[l.lat, l.lng]}>
                                 <Popup>
                                     <strong>{l.name}</strong><br />

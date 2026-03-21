@@ -126,7 +126,7 @@ export interface Invoice {
   taxRate: number;
   taxAmount: number;
   total: number;
-  status: 'draft' | 'sent' | 'paid';
+  status: 'draft' | 'sent' | 'paid' | 'cancelled';
   pdfPath: string | null;
 }
 
