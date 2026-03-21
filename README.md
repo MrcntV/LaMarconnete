@@ -199,3 +199,34 @@ LaMarconnete/
 ├── .env.example       # Variables d'environnement a copier
 └── MarconneteAdmin.conf  # Config Nginx (a implanter)
 ```
+
+---
+
+## Changer le mot de passe du panel admin
+
+```bash
+node scripts/set-admin-password.js
+```
+
+Le script se connecte à MongoDB, liste les comptes admin disponibles, et te guide pas à pas :
+
+```
+========================================
+   Modifier le mot de passe admin
+========================================
+
+Comptes admin :
+  1. admin@lamarconnete.fr  (Admin marcOnnête — superadmin — ✓ actif)
+
+Numéro du compte : 1
+
+Compte : admin@lamarconnete.fr
+Nouveau mot de passe : ********
+Confirmer            : ********
+
+✓ Mot de passe mis à jour pour admin@lamarconnete.fr
+  Connectez-vous sur le panel admin avec ce nouveau mot de passe.
+```
+
+> **Important :** à faire obligatoirement après chaque installation sur un nouveau serveur.
+> Le mot de passe par défaut `admin123` ne doit jamais rester en production.
