@@ -7,43 +7,54 @@
 require('dotenv').config();
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const readline = require('readline');
 const AdminUser = require('../api/models/AdminUser');
 
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://127.0.0.1:27017/marconnete';
 
-function ask(question, hidden = false) {
+function ask(question) {
+  const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
+  return new Promise((resolve) => {
+    rl.question(question, (answer) => {
+      rl.close();
+      resolve(answer.trim());
+    });
+  });
+}
+
+function askHidden(question) {
   return new Promise((resolve) => {
     process.stdout.write(question);
     const stdin = process.stdin;
+    const wasRaw = stdin.isTTY;
+    if (wasRaw) stdin.setRawMode(true);
     stdin.resume();
     stdin.setEncoding('utf8');
-    if (hidden && stdin.isTTY) stdin.setRawMode(true);
 
     let input = '';
-    stdin.once('data', function handler(data) {
-      const char = data.toString();
-      if (hidden && stdin.isTTY) {
-        // raw mode : lire caractère par caractère jusqu'à Entrée
-        if (char === '\r' || char === '\n') {
-          stdin.setRawMode(false);
-          stdin.removeListener('data', handler);
-          process.stdout.write('\n');
-          resolve(input);
-        } else if (char === '\u0003') { // Ctrl+C
-          process.exit(0);
-        } else if (char === '\u007f') { // Backspace
+
+    function onData(char) {
+      if (char === '\r' || char === '\n') {
+        stdin.removeListener('data', onData);
+        if (wasRaw) stdin.setRawMode(false);
+        stdin.pause();
+        process.stdout.write('\n');
+        resolve(input);
+      } else if (char === '\u0003') {
+        process.stdout.write('\n');
+        process.exit(0);
+      } else if (char === '\u007f' || char === '\b') {
+        if (input.length > 0) {
           input = input.slice(0, -1);
           process.stdout.write('\b \b');
-        } else {
-          input += char;
-          process.stdout.write('*');
-          stdin.once('data', handler); // continuer à lire
         }
       } else {
-        stdin.pause();
-        resolve(char.trim());
+        input += char;
+        process.stdout.write('*');
       }
-    });
+    }
+
+    stdin.on('data', onData);
   });
 }
 
@@ -57,6 +68,7 @@ async function main() {
   if (admins.length === 0) {
     console.log('Aucun compte admin trouvé.');
     console.log("Lance d'abord : node scripts/migrate-to-mongo.js\n");
+    await mongoose.disconnect();
     process.exit(1);
   }
 
@@ -70,21 +82,24 @@ async function main() {
   const idx = parseInt(choiceRaw) - 1;
   if (isNaN(idx) || idx < 0 || idx >= admins.length) {
     console.log('\nChoix invalide.\n');
+    await mongoose.disconnect();
     process.exit(1);
   }
 
   const target = admins[idx];
   console.log(`\nCompte : ${target.email}`);
 
-  const pwd1 = await ask('Nouveau mot de passe : ', true);
+  const pwd1 = await askHidden('Nouveau mot de passe : ');
   if (pwd1.length < 8) {
     console.log('\nMot de passe trop court (8 caractères minimum).\n');
+    await mongoose.disconnect();
     process.exit(1);
   }
 
-  const pwd2 = await ask('Confirmer            : ', true);
+  const pwd2 = await askHidden('Confirmer            : ');
   if (pwd1 !== pwd2) {
     console.log('\nLes mots de passe ne correspondent pas.\n');
+    await mongoose.disconnect();
     process.exit(1);
   }
 
@@ -98,7 +113,8 @@ async function main() {
   process.exit(0);
 }
 
-main().catch(err => {
+main().catch(async (err) => {
   console.error('\nErreur :', err.message, '\n');
+  await mongoose.disconnect();
   process.exit(1);
 });
