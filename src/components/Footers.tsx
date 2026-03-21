@@ -134,10 +134,11 @@ export const Footers = () => {
                                         transition={{ duration: 0.3 }}
                                     >
                                         <ul>
-                                            <li><a href="/Contact">Contact</a></li>
-                                            <li> <NavLink to='/FAQ'>Questions Fréquentes</NavLink></li>
-                                            <li><a href="">Livraison</a></li>
-                                            <li><a href="">Plan du site</a></li>
+                                            <li><NavLink to='/Contact'>Contact</NavLink></li>
+                                            <li><NavLink to='/FAQ'>Questions Fréquentes</NavLink></li>
+                                            <li><NavLink to='/Livraison'>Modalités de livraison</NavLink></li>
+                                            <li><NavLink to='/Glossaire'>Glossaire & Ingrédients</NavLink></li>
+                                            <li><NavLink to='/PlanDuSite'>Plan du site</NavLink></li>
                                         </ul>
                                     </motion.div>
                                 )}

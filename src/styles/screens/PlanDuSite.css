@@ -1,0 +1,10 @@
+.sitemap-section { max-width: 900px; margin: 0 auto; padding: 2rem 2vw 3rem; }
+.sitemap-intro { text-align: center; color: #666; margin-bottom: 2rem; }
+.sitemap-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem; }
+.sitemap-category { background: white; border-radius: 12px; padding: 1.5rem; box-shadow: 0 4px 16px rgba(84,104,99,0.1); border: 1px solid #e0e8e5; }
+.sitemap-cat-title { color: #546863; font-size: 1rem; margin-bottom: 0.8rem; padding-bottom: 0.5rem; border-bottom: 2px solid #a6b4aa; }
+.sitemap-list { list-style: none; padding: 0; margin: 0; }
+.sitemap-list li { margin-bottom: 0.5rem; }
+.sitemap-list a { color: #444; font-size: 0.9rem; transition: color 0.2s; }
+.sitemap-list a:hover { color: #546863; }
+@media (max-width: 600px) { .sitemap-grid { grid-template-columns: 1fr; } }

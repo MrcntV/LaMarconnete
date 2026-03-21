@@ -1,0 +1,19 @@
+.glossaire-section { max-width: 960px; margin: 0 auto; padding: 2rem 2vw 3rem; }
+.glossaire-intro { text-align: center; font-size: 1rem; margin-bottom: 2rem; color: #555; }
+.glossaire-tabs { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; margin-bottom: 2rem; }
+.glossaire-tab { padding: 10px 20px; border-radius: 999px; border: 2px solid #a6b4aa; background: transparent; color: #546863; cursor: pointer; font-size: 0.9rem; transition: all 0.2s; }
+.glossaire-tab:hover { background: #a6b4aa; color: white; }
+.glossaire-tab-active { background: #546863 !important; color: white !important; border-color: #546863 !important; }
+.glossaire-product-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.2rem; flex-wrap: wrap; gap: 10px; }
+.glossaire-product-header h2 { margin: 0; font-size: 1.5rem; }
+.glossaire-product-link { font-size: 0.9rem; color: #546863; text-decoration: underline; }
+.glossaire-table-wrapper { overflow-x: auto; border-radius: 12px; box-shadow: 0 4px 18px rgba(84,104,99,0.12); }
+.glossaire-table { width: 100%; border-collapse: collapse; }
+.glossaire-table thead tr { background: #546863; color: white; }
+.glossaire-table th { padding: 12px 18px; text-align: left; font-size: 0.9rem; }
+.glossaire-table td { padding: 12px 18px; border-bottom: 1px solid #e0e8e5; vertical-align: top; font-size: 0.9rem; }
+.glossaire-table tbody tr:last-child td { border-bottom: none; }
+.glossaire-table tbody tr:nth-child(even) { background: #f4f8f6; }
+.glossaire-nom { font-weight: 700; color: #546863; width: 35%; }
+.glossaire-desc { color: #444; line-height: 1.6; }
+@media (max-width: 768px) { .glossaire-tabs { flex-direction: column; } .glossaire-tab { text-align: center; } .glossaire-nom { width: auto; } }

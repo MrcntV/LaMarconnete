@@ -11,6 +11,9 @@ import { Parrainage } from "./screens/Parrainage";
 import { FAQ } from "./screens/FAQ";
 import ProduitDetail from "./screens/ProduitDetail";
 import Contact from "./screens/Contact";
+import Livraison from "./screens/Livraison";
+import Glossaire from "./screens/Glossaire";
+import PlanDuSite from "./screens/PlanDuSite";
 
 const AnimRoutes = () => {
     const location = useLocation();
@@ -27,7 +30,9 @@ const AnimRoutes = () => {
                 <Route path='/Parrainage' element={<Parrainage />} />
                 <Route path='/FAQ' element={<FAQ />} />
                 <Route path='/Contact' element={<Contact />} />
-
+                <Route path='/Livraison' element={<Livraison />} />
+                <Route path='/Glossaire' element={<Glossaire />} />
+                <Route path='/PlanDuSite' element={<PlanDuSite />} />
             </Routes>
         </AnimatePresence>
     )

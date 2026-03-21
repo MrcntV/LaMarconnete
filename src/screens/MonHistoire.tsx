@@ -1,8 +1,5 @@
-import HomeMeilleursVentes from '../components/HomeMeilleursVentes';
-
 import { motion } from 'framer-motion';
 import MyTimeline from '../components/Timeline';
-import MyTimelinetest from '../components/Timeline2';
 
 const MonHistoire: React.FC = () => {
     return (
@@ -30,13 +27,9 @@ const MonHistoire: React.FC = () => {
                 </div>
             </section>
             <h2>Quelques dates clés …</h2>
-            <section className="Timeline-container-2">
+            <section>
                 <MyTimeline />
             </section>
-            <section className="Timeline-container-test">
-                <MyTimelinetest />
-            </section>
-            <HomeMeilleursVentes titre='Meilleurs Ventes' />
         </motion.main>
     )
 }
