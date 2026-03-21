@@ -6,12 +6,12 @@ const { requireAdmin } = require('../middleware/auth');
 
 const PROJECT = path.join(__dirname, '..', '..');
 
-function runBuild(command, res) {
+function runBuild(cwd, res) {
   res.setHeader('Content-Type', 'text/plain; charset=utf-8');
   res.setHeader('Transfer-Encoding', 'chunked');
   res.flushHeaders();
 
-  const proc = exec(command, { cwd: PROJECT, env: { ...process.env, CI: 'false' } });
+  const proc = exec('npm run build', { cwd, env: { ...process.env, CI: 'false' } });
 
   proc.stdout.on('data', chunk => res.write(chunk));
   proc.stderr.on('data', chunk => res.write(chunk));
@@ -24,12 +24,12 @@ function runBuild(command, res) {
 
 // POST /api/build/site
 router.post('/site', requireAdmin, (req, res) => {
-  runBuild('npm run build --legacy-peer-deps', res);
+  runBuild(PROJECT, res);
 });
 
 // POST /api/build/admin
 router.post('/admin', requireAdmin, (req, res) => {
-  runBuild('npm run build --prefix admin --legacy-peer-deps', res);
+  runBuild(path.join(PROJECT, 'admin'), res);
 });
 
 module.exports = router;

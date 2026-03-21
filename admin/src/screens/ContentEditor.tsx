@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { apiGet, apiPut } from '../api';
 import { ContentData } from '../types';
 
@@ -9,6 +9,9 @@ const ContentEditor: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [success, setSuccess] = useState('');
   const [error, setError] = useState('');
+  const [buildStatus, setBuildStatus] = useState<'idle' | 'running' | 'done' | 'error'>('idle');
+  const [buildLog, setBuildLog] = useState('');
+  const logRef = useRef<HTMLPreElement>(null);
 
   useEffect(() => {
     apiGet('/api/content')
@@ -16,6 +19,34 @@ const ContentEditor: React.FC = () => {
       .catch(err => setError(err.message))
       .finally(() => setLoading(false));
   }, []);
+
+  const handleRebuild = async () => {
+    setBuildStatus('running');
+    setBuildLog('');
+    try {
+      const token = localStorage.getItem('admin_token');
+      const res = await fetch('/api/build/site', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const reader = res.body?.getReader();
+      const decoder = new TextDecoder();
+      if (!reader) throw new Error('Pas de flux');
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        setBuildLog(l => {
+          const updated = l + decoder.decode(value);
+          setTimeout(() => logRef.current?.scrollTo(0, logRef.current.scrollHeight), 0);
+          return updated;
+        });
+      }
+      setBuildStatus('done');
+    } catch (err) {
+      setBuildLog(l => l + '\nErreur : ' + (err instanceof Error ? err.message : String(err)));
+      setBuildStatus('error');
+    }
+  };
 
   const saveSection = async (section: keyof ContentData) => {
     if (!content) return;
@@ -54,9 +85,21 @@ const ContentEditor: React.FC = () => {
         <h2>Contenu du site</h2>
       </div>
 
-      <div className="alert alert-info" style={{ marginBottom: 16 }}>
-        Les modifications seront visibles après le prochain déploiement ou si le frontend est connecté à l'API.
+      <div className="alert alert-info" style={{ marginBottom: 16, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
+        <span>Les modifications sont sauvegardées. Rebuilder le site pour les appliquer immédiatement.</span>
+        <button
+          className={`btn btn-sm ${buildStatus === 'running' ? 'btn-secondary' : buildStatus === 'done' ? 'btn-primary' : buildStatus === 'error' ? 'btn-danger' : 'btn-primary'}`}
+          onClick={handleRebuild}
+          disabled={buildStatus === 'running'}
+        >
+          {buildStatus === 'running' ? '⏳ Build...' : buildStatus === 'done' ? '✓ Site rebuildé' : buildStatus === 'error' ? '✗ Erreur' : '🔨 Rebuilder le site'}
+        </button>
       </div>
+      {buildLog && (
+        <pre ref={logRef} style={{ background: '#0f172a', color: '#94a3b8', padding: 10, borderRadius: 8, fontSize: 11, maxHeight: 200, overflowY: 'auto', whiteSpace: 'pre-wrap', marginBottom: 16 }}>
+          {buildLog}
+        </pre>
+      )}
 
       {error && <div className="alert alert-error">{error}</div>}
       {success && <div className="alert alert-success">{success}</div>}

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Badge from '../components/Badge';
 import ConfirmDialog from '../components/ConfirmDialog';
+import Modal from '../components/Modal';
 import { apiGet, apiPost, apiPut, apiDelete } from '../api';
 import { Location } from '../types';
 
@@ -17,6 +18,7 @@ const Locations: React.FC = () => {
   const [saving, setSaving] = useState(false);
   const [deleteId, setDeleteId] = useState<string | null>(null);
   const [error, setError] = useState('');
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     loadLocations();
@@ -44,6 +46,7 @@ const Locations: React.FC = () => {
     e.preventDefault();
     if (!selected) return;
     setSaving(true);
+    setError('');
     try {
       if (isNew) {
         const created = await apiPost('/api/locations', selected) as Location;
@@ -70,113 +73,167 @@ const Locations: React.FC = () => {
     }
   };
 
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const token = localStorage.getItem('admin_token');
+      const fd = new FormData();
+      fd.append('image', file);
+      const res = await fetch('/api/locations/upload-image', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: fd,
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Erreur upload');
+      set('image', data.path);
+    } catch (err: unknown) {
+      setError(err instanceof Error ? err.message : 'Erreur upload');
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const set = (field: keyof Location, value: unknown) => {
     setSelected(s => s ? { ...s, [field]: value } : s);
   };
+
+  const formContent = selected && (
+    <form onSubmit={handleSave}>
+      <div className="form-group">
+        <label className="form-label">Nom *</label>
+        <input className="input" value={selected.name || ''} onChange={e => set('name', e.target.value)} required />
+      </div>
+      <div className="form-group">
+        <label className="form-label">Adresse</label>
+        <input className="input" value={selected.address || ''} onChange={e => set('address', e.target.value)} />
+      </div>
+      <div className="form-row">
+        <div className="form-group">
+          <label className="form-label">Ville *</label>
+          <input className="input" value={selected.city || ''} onChange={e => set('city', e.target.value)} required />
+        </div>
+        <div className="form-group">
+          <label className="form-label">Code postal *</label>
+          <input className="input" value={selected.postalCode || ''} onChange={e => set('postalCode', e.target.value)} required />
+        </div>
+      </div>
+      <div className="form-group">
+        <label className="form-label">Département (ex: 42, 06, 69)</label>
+        <input className="input" value={selected.département || ''} onChange={e => set('département', e.target.value)} placeholder="42" />
+      </div>
+      <div className="form-row">
+        <div className="form-group">
+          <label className="form-label">Téléphone</label>
+          <input className="input" value={selected.phone || ''} onChange={e => set('phone', e.target.value)} />
+        </div>
+        <div className="form-group">
+          <label className="form-label">Email</label>
+          <input type="email" className="input" value={selected.email || ''} onChange={e => set('email', e.target.value)} />
+        </div>
+      </div>
+      <div className="form-group">
+        <label className="form-label">Horaires</label>
+        <input className="input" value={selected.schedule || ''} onChange={e => set('schedule', e.target.value)} placeholder="Lun-Ven 9h-19h" />
+      </div>
+      <div className="form-row">
+        <div className="form-group">
+          <label className="form-label">Latitude</label>
+          <input type="number" step="any" className="input" value={selected.lat || ''} onChange={e => set('lat', parseFloat(e.target.value) || undefined)} />
+        </div>
+        <div className="form-group">
+          <label className="form-label">Longitude</label>
+          <input type="number" step="any" className="input" value={selected.lng || ''} onChange={e => set('lng', parseFloat(e.target.value) || undefined)} />
+        </div>
+      </div>
+
+      {/* Image */}
+      <div className="form-group">
+        <label className="form-label">Image</label>
+        {selected.image && (
+          <img
+            src={selected.image}
+            alt="aperçu"
+            style={{ width: 80, height: 60, objectFit: 'cover', borderRadius: 6, marginBottom: 8, display: 'block' }}
+            onError={e => (e.currentTarget.style.display = 'none')}
+          />
+        )}
+        <input
+          type="file"
+          accept="image/*"
+          className="input"
+          style={{ padding: '6px' }}
+          onChange={handleImageUpload}
+          disabled={uploading}
+        />
+        {uploading && <p className="text-muted text-sm" style={{ marginTop: 4 }}>Upload en cours...</p>}
+        <input
+          className="input"
+          style={{ marginTop: 6 }}
+          placeholder="ou entrez un chemin manuellement"
+          value={selected.image || ''}
+          onChange={e => set('image', e.target.value)}
+        />
+      </div>
+
+      <div className="form-group">
+        <label className="form-check">
+          <input type="checkbox" checked={selected.active !== false} onChange={e => set('active', e.target.checked)} />
+          <span>Point de vente actif</span>
+        </label>
+      </div>
+      <div className="form-actions">
+        <button type="button" className="btn btn-secondary" onClick={() => setSelected(null)}>Annuler</button>
+        <button type="submit" className="btn btn-primary" disabled={saving || uploading}>
+          {saving ? 'Enregistrement...' : 'Enregistrer'}
+        </button>
+      </div>
+    </form>
+  );
 
   return (
     <div className="screen">
       <div className="screen-header">
         <h2>Points de vente</h2>
-        <button className="btn btn-primary" onClick={handleNew}>+ Ajouter un point de vente</button>
+        <button className="btn btn-primary" onClick={handleNew}>+ Ajouter</button>
       </div>
 
       {error && <div className="alert alert-error">{error}</div>}
 
-      <div className="locations-layout">
-        <div className="locations-list card">
-          {loading ? (
-            <p className="loading-text">Chargement...</p>
-          ) : locations.length === 0 ? (
-            <p className="empty-text">Aucun point de vente</p>
-          ) : (
-            locations.map(loc => (
-              <div key={loc.id} className={`location-item ${!loc.active ? 'location-inactive' : ''}`}>
-                <div className="location-info">
-                  <p className="font-medium">{loc.name}</p>
-                  <p className="text-muted text-sm">{loc.address}, {loc.postalCode} {loc.city}</p>
-                  {loc.phone && <p className="text-sm">{loc.phone}</p>}
-                  <Badge status={loc.active ? 'active' : 'inactive'} />
-                </div>
-                <div className="location-actions">
-                  <button className="btn btn-sm btn-secondary" onClick={() => handleEdit(loc)}>Modifier</button>
-                  <button className="btn btn-sm btn-danger" onClick={() => setDeleteId(loc.id)}>Désactiver</button>
-                </div>
+      <div className="card locations-list">
+        {loading ? (
+          <p className="loading-text">Chargement...</p>
+        ) : locations.length === 0 ? (
+          <p className="empty-text">Aucun point de vente</p>
+        ) : (
+          locations.map(loc => (
+            <div key={loc.id} className={`location-item ${!loc.active ? 'location-inactive' : ''}`}>
+              <div className="location-info">
+                <p className="font-medium">{loc.name}</p>
+                <p className="text-muted text-sm">{loc.address && `${loc.address}, `}{loc.postalCode} {loc.city}{loc.département && ` (${loc.département})`}</p>
+                {loc.phone && <p className="text-sm">{loc.phone}</p>}
+                <Badge status={loc.active ? 'active' : 'inactive'} />
               </div>
-            ))
-          )}
-        </div>
-
-        {selected && (
-          <div className="card">
-            <h3 className="card-section-title">{isNew ? 'Nouveau point de vente' : 'Modifier'}</h3>
-            <form onSubmit={handleSave}>
-              <div className="form-group">
-                <label className="form-label">Nom *</label>
-                <input className="input" value={selected.name || ''} onChange={e => set('name', e.target.value)} required />
+              <div className="location-actions">
+                <button className="btn btn-sm btn-secondary" onClick={() => handleEdit(loc)}>Modifier</button>
+                <button className="btn btn-sm btn-danger" onClick={() => setDeleteId(loc.id)}>Désactiver</button>
               </div>
-              <div className="form-group">
-                <label className="form-label">Adresse *</label>
-                <input className="input" value={selected.address || ''} onChange={e => set('address', e.target.value)} required />
-              </div>
-              <div className="form-row">
-                <div className="form-group">
-                  <label className="form-label">Ville *</label>
-                  <input className="input" value={selected.city || ''} onChange={e => set('city', e.target.value)} required />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">Code postal *</label>
-                  <input className="input" value={selected.postalCode || ''} onChange={e => set('postalCode', e.target.value)} required />
-                </div>
-              </div>
-              <div className="form-group">
-                <label className="form-label">Département (ex: 42, 06, 69)</label>
-                <input className="input" value={selected.département || ''} onChange={e => set('département', e.target.value)} placeholder="42" />
-              </div>
-              <div className="form-row">
-                <div className="form-group">
-                  <label className="form-label">Téléphone</label>
-                  <input className="input" value={selected.phone || ''} onChange={e => set('phone', e.target.value)} />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">Email</label>
-                  <input type="email" className="input" value={selected.email || ''} onChange={e => set('email', e.target.value)} />
-                </div>
-              </div>
-              <div className="form-group">
-                <label className="form-label">Horaires</label>
-                <input className="input" value={selected.schedule || ''} onChange={e => set('schedule', e.target.value)} placeholder="Lun-Ven 9h-19h" />
-              </div>
-              <div className="form-group">
-                <label className="form-label">Image (chemin relatif)</label>
-                <input className="input" value={selected.image || ''} onChange={e => set('image', e.target.value)} placeholder="./images/PointsDeVentes/photo.jpg" />
-              </div>
-              <div className="form-row">
-                <div className="form-group">
-                  <label className="form-label">Latitude</label>
-                  <input type="number" step="any" className="input" value={selected.lat || ''} onChange={e => set('lat', parseFloat(e.target.value) || undefined)} />
-                </div>
-                <div className="form-group">
-                  <label className="form-label">Longitude</label>
-                  <input type="number" step="any" className="input" value={selected.lng || ''} onChange={e => set('lng', parseFloat(e.target.value) || undefined)} />
-                </div>
-              </div>
-              <div className="form-group">
-                <label className="form-check">
-                  <input type="checkbox" checked={selected.active !== false} onChange={e => set('active', e.target.checked)} />
-                  <span>Point de vente actif</span>
-                </label>
-              </div>
-              <div className="form-actions">
-                <button type="button" className="btn btn-secondary" onClick={() => setSelected(null)}>Annuler</button>
-                <button type="submit" className="btn btn-primary" disabled={saving}>
-                  {saving ? 'Enregistrement...' : 'Enregistrer'}
-                </button>
-              </div>
-            </form>
-          </div>
+            </div>
+          ))
         )}
       </div>
+
+      {/* Modal formulaire — fonctionne sur mobile et desktop */}
+      <Modal
+        isOpen={!!selected}
+        onClose={() => setSelected(null)}
+        title={isNew ? 'Nouveau point de vente' : `Modifier — ${selected?.name || ''}`}
+        size="lg"
+      >
+        {formContent}
+      </Modal>
 
       <ConfirmDialog
         isOpen={!!deleteId}

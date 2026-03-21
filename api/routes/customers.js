@@ -4,6 +4,13 @@ const Customer = require('../models/Customer');
 const { readDB } = require('../db');
 const { requireAdmin } = require('../middleware/auth');
 
+// Mappe _id → id pour compatibilité frontend
+const toClient = (c) => {
+  if (!c) return c;
+  const { _id, __v, passwordHash, ...rest } = c;
+  return { id: _id.toString(), ...rest };
+};
+
 // GET /api/customers
 router.get('/', requireAdmin, async (req, res) => {
   try {
@@ -20,7 +27,7 @@ router.get('/', requireAdmin, async (req, res) => {
       .skip((parseInt(page) - 1) * parseInt(limit))
       .limit(parseInt(limit))
       .lean();
-    res.json({ customers, total, page: parseInt(page), limit: parseInt(limit) });
+    res.json({ customers: customers.map(toClient), total, page: parseInt(page), limit: parseInt(limit) });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -31,7 +38,7 @@ router.get('/:id', requireAdmin, async (req, res) => {
   try {
     const customer = await Customer.findById(req.params.id).lean();
     if (!customer) return res.status(404).json({ error: 'Client introuvable' });
-    res.json(customer);
+    res.json(toClient(customer));
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -47,7 +54,7 @@ router.put('/:id', requireAdmin, async (req, res) => {
       { new: true, runValidators: true }
     ).lean();
     if (!customer) return res.status(404).json({ error: 'Client introuvable' });
-    res.json(customer);
+    res.json(toClient(customer));
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
