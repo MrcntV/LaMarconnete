@@ -1,9 +1,11 @@
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const { readDB, writeDB, generateId } = require('../db');
+const Customer = require('../models/Customer');
+const AdminUser = require('../models/AdminUser');
 const { requireAuth, JWT_SECRET } = require('../middleware/auth');
+
+// ─── Admin ────────────────────────────────────────────────────────────────────
 
 // POST /api/auth/admin/login
 router.post('/admin/login', async (req, res) => {
@@ -12,25 +14,29 @@ router.post('/admin/login', async (req, res) => {
     if (!email || !password) {
       return res.status(400).json({ error: 'Email et mot de passe requis' });
     }
-    const users = readDB('users.json');
-    const user = users.find(u => u.email === email);
+    const user = await AdminUser.findOne({ email, active: true }).select('+passwordHash');
     if (!user) {
       return res.status(401).json({ error: 'Identifiants incorrects' });
     }
-    const valid = await bcrypt.compare(password, user.passwordHash);
+    const valid = await user.comparePassword(password);
     if (!valid) {
       return res.status(401).json({ error: 'Identifiants incorrects' });
     }
     const token = jwt.sign(
-      { id: user.id, email: user.email, role: user.role, firstName: user.firstName, lastName: user.lastName },
+      { id: user._id, email: user.email, role: user.role, firstName: user.firstName, lastName: user.lastName },
       JWT_SECRET,
       { expiresIn: '24h' }
     );
-    res.json({ token, user: { id: user.id, email: user.email, role: user.role, firstName: user.firstName, lastName: user.lastName } });
+    res.json({
+      token,
+      user: { id: user._id, email: user.email, role: user.role, firstName: user.firstName, lastName: user.lastName }
+    });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
+
+// ─── Customer ─────────────────────────────────────────────────────────────────
 
 // POST /api/auth/customer/login
 router.post('/customer/login', async (req, res) => {
@@ -39,22 +45,20 @@ router.post('/customer/login', async (req, res) => {
     if (!email || !password) {
       return res.status(400).json({ error: 'Email et mot de passe requis' });
     }
-    const customers = readDB('customers.json');
-    const customer = customers.find(c => c.email === email && c.active);
+    const customer = await Customer.findOne({ email, active: true }).select('+passwordHash');
     if (!customer) {
       return res.status(401).json({ error: 'Identifiants incorrects' });
     }
-    const valid = await bcrypt.compare(password, customer.passwordHash);
+    const valid = await customer.comparePassword(password);
     if (!valid) {
       return res.status(401).json({ error: 'Identifiants incorrects' });
     }
     const token = jwt.sign(
-      { id: customer.id, email: customer.email, customerId: customer.id, firstName: customer.firstName, lastName: customer.lastName },
+      { id: customer._id, email: customer.email, customerId: customer._id, firstName: customer.firstName, lastName: customer.lastName },
       JWT_SECRET,
       { expiresIn: '7d' }
     );
-    const { passwordHash, ...safeCustomer } = customer;
-    res.json({ token, customer: safeCustomer });
+    res.json({ token, customer: customer.toSafeObject() });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -67,51 +71,44 @@ router.post('/customer/register', async (req, res) => {
     if (!email || !password || !firstName || !lastName) {
       return res.status(400).json({ error: 'Tous les champs obligatoires doivent être remplis' });
     }
-    const customers = readDB('customers.json');
-    if (customers.find(c => c.email === email)) {
+    if (password.length < 8) {
+      return res.status(400).json({ error: 'Le mot de passe doit contenir au moins 8 caractères' });
+    }
+    const existing = await Customer.findOne({ email });
+    if (existing) {
       return res.status(409).json({ error: 'Un compte existe déjà avec cet email' });
     }
-    const passwordHash = await bcrypt.hash(password, 10);
-    const newCustomer = {
-      id: generateId('cust'),
+    // passwordHash will be hashed by the pre-save hook
+    const customer = new Customer({
       email,
-      passwordHash,
+      passwordHash: password,
       firstName,
       lastName,
       phone: phone || '',
-      address: '',
-      city: '',
-      postalCode: '',
-      country: 'France',
-      createdAt: new Date().toISOString(),
-      orders: [],
-      newsletter: false,
-      active: true
-    };
-    customers.push(newCustomer);
-    writeDB('customers.json', customers);
+    });
+    await customer.save();
     const token = jwt.sign(
-      { id: newCustomer.id, email: newCustomer.email, customerId: newCustomer.id, firstName: newCustomer.firstName, lastName: newCustomer.lastName },
+      { id: customer._id, email: customer.email, customerId: customer._id, firstName: customer.firstName, lastName: customer.lastName },
       JWT_SECRET,
       { expiresIn: '7d' }
     );
-    const { passwordHash: _, ...safeCustomer } = newCustomer;
-    res.status(201).json({ token, customer: safeCustomer });
+    res.status(201).json({ token, customer: customer.toSafeObject() });
   } catch (err) {
+    if (err.code === 11000) {
+      return res.status(409).json({ error: 'Un compte existe déjà avec cet email' });
+    }
     res.status(500).json({ error: err.message });
   }
 });
 
 // GET /api/auth/customer/me
-router.get('/customer/me', requireAuth, (req, res) => {
+router.get('/customer/me', requireAuth, async (req, res) => {
   try {
-    const customers = readDB('customers.json');
-    const customer = customers.find(c => c.id === req.user.id);
+    const customer = await Customer.findById(req.user.id);
     if (!customer) {
       return res.status(404).json({ error: 'Client introuvable' });
     }
-    const { passwordHash, ...safeCustomer } = customer;
-    res.json(safeCustomer);
+    res.json(customer.toSafeObject());
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -120,29 +117,27 @@ router.get('/customer/me', requireAuth, (req, res) => {
 // PUT /api/auth/customer/me
 router.put('/customer/me', requireAuth, async (req, res) => {
   try {
-    const customers = readDB('customers.json');
-    const idx = customers.findIndex(c => c.id === req.user.id);
-    if (idx === -1) {
+    const { newPassword, passwordHash, _id, email, createdAt, ...updateFields } = req.body;
+    const customer = await Customer.findById(req.user.id).select('+passwordHash');
+    if (!customer) {
       return res.status(404).json({ error: 'Client introuvable' });
     }
-    const { passwordHash, id, email, createdAt, orders, ...updateFields } = req.body;
-    customers[idx] = { ...customers[idx], ...updateFields };
-    if (req.body.newPassword) {
-      customers[idx].passwordHash = await bcrypt.hash(req.body.newPassword, 10);
+    Object.assign(customer, updateFields);
+    if (newPassword) {
+      customer.passwordHash = newPassword; // will be re-hashed by pre-save
     }
-    writeDB('customers.json', customers);
-    const { passwordHash: _, ...safeCustomer } = customers[idx];
-    res.json(safeCustomer);
+    await customer.save();
+    res.json(customer.toSafeObject());
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
 // POST /api/auth/customer/forgot-password
-router.post('/customer/forgot-password', (req, res) => {
+router.post('/customer/forgot-password', async (req, res) => {
   const { email } = req.body;
-  console.log(`[Auth] Forgot password requested for: ${email}`);
-  // TODO: Integrate EmailJS or SMTP for actual email sending
+  console.log(`[Auth] Forgot password for: ${email}`);
+  // TODO: send reset email via EmailJS / SMTP
   res.json({ success: true, message: 'Si cet email existe, un lien de réinitialisation a été envoyé.' });
 });
 

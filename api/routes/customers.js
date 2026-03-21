@@ -1,91 +1,80 @@
 const express = require('express');
 const router = express.Router();
-const { readDB, writeDB } = require('../db');
+const Customer = require('../models/Customer');
+const { readDB } = require('../db');
 const { requireAdmin } = require('../middleware/auth');
 
 // GET /api/customers
-router.get('/', requireAdmin, (req, res) => {
+router.get('/', requireAdmin, async (req, res) => {
   try {
-    const customers = readDB('customers.json');
     const { search, active, page = 1, limit = 20 } = req.query;
-    let filtered = customers;
-    if (active !== undefined) {
-      const isActive = active === 'true';
-      filtered = filtered.filter(c => c.active === isActive);
-    }
+    const query = {};
+    if (active !== undefined) query.active = active === 'true';
     if (search) {
-      const q = search.toLowerCase();
-      filtered = filtered.filter(c =>
-        c.email.toLowerCase().includes(q) ||
-        c.firstName.toLowerCase().includes(q) ||
-        c.lastName.toLowerCase().includes(q)
-      );
+      const q = new RegExp(search, 'i');
+      query.$or = [{ email: q }, { firstName: q }, { lastName: q }];
     }
-    const total = filtered.length;
-    const start = (parseInt(page) - 1) * parseInt(limit);
-    const paginated = filtered.slice(start, start + parseInt(limit));
-    const safe = paginated.map(({ passwordHash, ...c }) => c);
-    res.json({ customers: safe, total, page: parseInt(page), limit: parseInt(limit) });
+    const total = await Customer.countDocuments(query);
+    const customers = await Customer.find(query)
+      .sort({ createdAt: -1 })
+      .skip((parseInt(page) - 1) * parseInt(limit))
+      .limit(parseInt(limit))
+      .lean();
+    res.json({ customers, total, page: parseInt(page), limit: parseInt(limit) });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
 // GET /api/customers/:id
-router.get('/:id', requireAdmin, (req, res) => {
+router.get('/:id', requireAdmin, async (req, res) => {
   try {
-    const customers = readDB('customers.json');
-    const customer = customers.find(c => c.id === req.params.id);
-    if (!customer) {
-      return res.status(404).json({ error: 'Client introuvable' });
-    }
-    const { passwordHash, ...safeCustomer } = customer;
-    res.json(safeCustomer);
+    const customer = await Customer.findById(req.params.id).lean();
+    if (!customer) return res.status(404).json({ error: 'Client introuvable' });
+    res.json(customer);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
 // PUT /api/customers/:id
-router.put('/:id', requireAdmin, (req, res) => {
+router.put('/:id', requireAdmin, async (req, res) => {
   try {
-    const customers = readDB('customers.json');
-    const idx = customers.findIndex(c => c.id === req.params.id);
-    if (idx === -1) {
-      return res.status(404).json({ error: 'Client introuvable' });
-    }
-    const { passwordHash, id, createdAt, ...updateFields } = req.body;
-    customers[idx] = { ...customers[idx], ...updateFields };
-    writeDB('customers.json', customers);
-    const { passwordHash: _, ...safeCustomer } = customers[idx];
-    res.json(safeCustomer);
+    const { passwordHash, _id, createdAt, ...updateFields } = req.body;
+    const customer = await Customer.findByIdAndUpdate(
+      req.params.id,
+      { $set: updateFields },
+      { new: true, runValidators: true }
+    ).lean();
+    if (!customer) return res.status(404).json({ error: 'Client introuvable' });
+    res.json(customer);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// DELETE /api/customers/:id (deactivate)
-router.delete('/:id', requireAdmin, (req, res) => {
+// DELETE /api/customers/:id  — désactive le compte (soft delete)
+router.delete('/:id', requireAdmin, async (req, res) => {
   try {
-    const customers = readDB('customers.json');
-    const idx = customers.findIndex(c => c.id === req.params.id);
-    if (idx === -1) {
-      return res.status(404).json({ error: 'Client introuvable' });
-    }
-    customers[idx].active = false;
-    writeDB('customers.json', customers);
+    const customer = await Customer.findByIdAndUpdate(
+      req.params.id,
+      { active: false },
+      { new: true }
+    );
+    if (!customer) return res.status(404).json({ error: 'Client introuvable' });
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
-// GET /api/customers/:id/orders
-router.get('/:id/orders', requireAdmin, (req, res) => {
+// GET /api/customers/:id/orders — orders are still in JSON for now
+router.get('/:id/orders', requireAdmin, async (req, res) => {
   try {
     const orders = readDB('orders.json');
-    const customerOrders = orders.filter(o => o.customerId === req.params.id);
-    customerOrders.sort((a, b) => new Date(b.date) - new Date(a.date));
+    const customerOrders = orders
+      .filter(o => o.customerId === req.params.id)
+      .sort((a, b) => new Date(b.date) - new Date(a.date));
     res.json(customerOrders);
   } catch (err) {
     res.status(500).json({ error: err.message });

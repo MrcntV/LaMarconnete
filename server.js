@@ -5,9 +5,13 @@ const crypto = require('crypto');
 const cors = require('cors');
 const fileUpload = require('express-fileupload');
 const { exec } = require('child_process');
+const { connectDB } = require('./api/config/mongoose');
 
 const app = express();
 const PORT = process.env.PORT || 43749;
+
+// Connexion MongoDB
+connectDB();
 
 const GITHUB_WEBHOOK_SECRET = 'J@mltlja345h';
 const PROJECT_PATH = __dirname;
