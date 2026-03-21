@@ -88,5 +88,20 @@
     "active": true,
     "createdAt": "2024-01-01T00:00:00.000Z",
     "updatedAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "12345613",
+    "Titre": "Eau nettoyante visage et corps (500 ml)",
+    "type": "cosmetique",
+    "reference": "EN02168",
+    "enStock": true,
+    "ImageProduit": "/Cosmetiques/eau_nettoyante_500ml.jpg",
+    "to": "EauNettoyante500ml",
+    "Prix": 13.90,
+    "stock": 50,
+    "stockAlert": 5,
+    "active": true,
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "updatedAt": "2024-01-01T00:00:00.000Z"
   }
 ]

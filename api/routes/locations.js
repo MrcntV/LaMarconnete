@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const path = require('path');
 const fs = require('fs');
-const Location = require('../models/Location');
+const { readDB, writeDB, generateId } = require('../db');
 const { requireAdmin } = require('../middleware/auth');
 
 const UPLOAD_DIR = path.join(__dirname, '..', '..', 'public', 'images', 'PointsDeVentes');
@@ -23,24 +23,24 @@ router.post('/upload-image', requireAdmin, (req, res) => {
   fs.mkdirSync(UPLOAD_DIR, { recursive: true });
   file.mv(dest, err => {
     if (err) return res.status(500).json({ error: err.message });
-    res.json({ path: `/public/images/PointsDeVentes/${filename}` });
+    res.json({ path: `/images/PointsDeVentes/${filename}` });
   });
 });
 
 // GET /api/locations (public, active only)
-router.get('/', async (req, res) => {
+router.get('/', (req, res) => {
   try {
-    const locations = await Location.find({ active: true }).sort({ département: 1, city: 1 });
-    res.json(locations);
+    const locations = readDB('locations.json');
+    res.json(locations.filter(l => l.active !== false));
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
 // GET /api/locations/all (admin)
-router.get('/all', requireAdmin, async (req, res) => {
+router.get('/all', requireAdmin, (req, res) => {
   try {
-    const locations = await Location.find().sort({ département: 1, city: 1 });
+    const locations = readDB('locations.json');
     res.json(locations);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -48,32 +48,40 @@ router.get('/all', requireAdmin, async (req, res) => {
 });
 
 // POST /api/locations
-router.post('/', requireAdmin, async (req, res) => {
+router.post('/', requireAdmin, (req, res) => {
   try {
-    const location = new Location(req.body);
-    await location.save();
-    res.status(201).json(location);
+    const locations = readDB('locations.json');
+    const newLoc = { id: generateId('loc'), active: true, ...req.body };
+    locations.push(newLoc);
+    writeDB('locations.json', locations);
+    res.status(201).json(newLoc);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
 });
 
 // PUT /api/locations/:id
-router.put('/:id', requireAdmin, async (req, res) => {
+router.put('/:id', requireAdmin, (req, res) => {
   try {
-    const location = await Location.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true });
-    if (!location) return res.status(404).json({ error: 'Point de vente introuvable' });
-    res.json(location);
+    const locations = readDB('locations.json');
+    const idx = locations.findIndex(l => l.id === req.params.id);
+    if (idx === -1) return res.status(404).json({ error: 'Point de vente introuvable' });
+    locations[idx] = { ...locations[idx], ...req.body, id: req.params.id };
+    writeDB('locations.json', locations);
+    res.json(locations[idx]);
   } catch (err) {
     res.status(400).json({ error: err.message });
   }
 });
 
 // DELETE /api/locations/:id (deactivate)
-router.delete('/:id', requireAdmin, async (req, res) => {
+router.delete('/:id', requireAdmin, (req, res) => {
   try {
-    const location = await Location.findByIdAndUpdate(req.params.id, { active: false }, { new: true });
-    if (!location) return res.status(404).json({ error: 'Point de vente introuvable' });
+    const locations = readDB('locations.json');
+    const idx = locations.findIndex(l => l.id === req.params.id);
+    if (idx === -1) return res.status(404).json({ error: 'Point de vente introuvable' });
+    locations[idx].active = false;
+    writeDB('locations.json', locations);
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });

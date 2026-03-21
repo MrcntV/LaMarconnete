@@ -431,6 +431,42 @@ export const produitsData: produits[] = [
         besoinChoixTaille: false,
     },
 
+    // --Eau nettoyante visage et corps
+    {
+        id: "12345613",
+        Titre: "Eau nettoyante visage et corps (500 ml)", type: "cosmetique", AltText: "Eau nettoyante visage et corps La marcOnnête 500ml", to: "EauNettoyante500ml",
+        enStock: true,
+        ImageProduit: "/Cosmetiques/eau_nettoyante_500ml.jpg",
+        ImageProduitSup: "/Cosmetiques/eau_nettoyante_500ml_arriere.jpg",
+        ImagesSupplementaires: [
+            "/images/Produits/Fiche/Cosmetiques/eau_nettoyante_500ml.jpg",
+            "/images/Produits/Fiche/Cosmetiques/eau_nettoyante_500ml_arriere.jpg",
+        ],
+        Prix: 13.90,
+        Description: "Adaptée aux peaux les plus sensibles, l'eau nettoyante La marcOnnête est formulée avec des ingrédients doux ne contenant ni parfum, ni sulfates ni paraben ni phénoxyéthanol. Elle nettoie en douceur et laisse la peau délicate de bébé propre et saine. Sa formule en glycérine et Aloe Vera bio nourrit, protège et adoucit la peau de bébé.",
+        Description2: "L'eau nettoyante La marcOnnête nettoie sans dessécher et laisse la peau délicate de bébé propre et saine. Utilisable dès la naissance et formulé pour les peaux sensibles.",
+        LesPlusProduits: "Certifiée BIO et VEGAN",
+        LesPlusProduits1: "Adaptée aux peaux sensibles, réactives et à tendance atopique",
+        LesPlusProduits2: "Fabriquée en France",
+        Compositions: "Aqua, caprylyl/capryl glucoside, glycerin (1), sodium benzoate, levulinic acid, sodium levulinate, aloe barbadensis leaf powder*, citric acid — Ingrédients issus de l'agriculture biologique 20% — 99% d'ingrédients d'origine naturelle — (1) Sauf 0,20% de glycérine non bio.",
+        ConseilsUtilisaton: "Verser l'eau sur un coton ou une lingette. Appliquer le sur le visage, le corps ou le siège de bébé et frotter délicatement pour éliminer les impuretés. Sans rinçage.",
+        Certificat: ["BIO", "VEGAN", "Made in France"],
+        ScoreYuka: 100,
+        ScoreINCIBeauty: 20,
+        TexteBouton: "Ajouter au panier",
+        besoinChoixCouleur: false,
+        besoinChoixTaille: false,
+        LienPaiementUnique: [
+            {
+                lienDirect: "",
+                priceId: "",
+                productId: "",
+                quantite: 1,
+                couleur: "",
+            }
+        ],
+    },
+
     // --Genesis
     {
         id: "12345612",
