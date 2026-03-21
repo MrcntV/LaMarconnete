@@ -11,6 +11,7 @@ type ProduitsItemsProps = {
   Titre: string;
   Etoiles: string;
   Prix: string;
+  enStock?: boolean;
 };
 
 const ProduitsItems: React.FC<ProduitsItemsProps> = ({
@@ -21,12 +22,12 @@ const ProduitsItems: React.FC<ProduitsItemsProps> = ({
   Etoiles,
   Prix,
   to,
+  enStock = true,
 }) => {
   const imagePath = process.env.PUBLIC_URL + '/images/Produits/Fiche/' + ImageProduit;
   const imagePathSup = process.env.PUBLIC_URL + '/images/Produits/Fiche/' + ImageProduitSup;
 
   const handleItemClick = () => {
-    // Fonction pour faire défiler la page vers le haut
     window.scrollTo({ top: 0, behavior: 'smooth' });
   };
 
@@ -36,15 +37,17 @@ const ProduitsItems: React.FC<ProduitsItemsProps> = ({
       transition={transition1}
       whileInView={{ opacity: 1, scale: 1, transition: { duration: 0.4 } }}
       viewport={{ once: true }}
-      className="Carte-Produits-Items"
+      className={`Carte-Produits-Items${!enStock ? ' out-of-stock' : ''}`}
     >
       <Link
         className="Carte-Produits-Items-haut"
         to={to}
-        onClick={handleItemClick} // Appel de la fonction pour faire défiler vers le haut
+        onClick={handleItemClick}
+        style={!enStock ? { pointerEvents: 'none' } : undefined}
       >
         <img className="Carte-Produits-Items-haut-img" src={imagePath} alt={AltText} />
         <img className="Carte-Produits-Items-haut-img-supperpose" src={imagePathSup} alt={AltText} />
+        {!enStock && <span className="rupture-badge">Rupture de stock</span>}
       </Link>
       <div className="Carte-Produits-Items-bas">
         <Link to={to}>
@@ -52,9 +55,13 @@ const ProduitsItems: React.FC<ProduitsItemsProps> = ({
         </Link>
         <p>{Etoiles}</p>
         <p>{Prix}</p>
-        <Link to={to}>
-          <button className="Panier">Ajouter au panier</button>
-        </Link>
+        {enStock ? (
+          <Link to={to}>
+            <button className="Panier">Ajouter au panier</button>
+          </Link>
+        ) : (
+          <button className="Panier" disabled>Indisponible</button>
+        )}
         <button className="Favori">Ajouter aux favoris</button>
       </div>
     </motion.div>

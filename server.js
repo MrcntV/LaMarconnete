@@ -10,8 +10,30 @@ const { connectDB } = require('./api/config/mongoose');
 const app = express();
 const PORT = process.env.PORT || 43749;
 
-// Connexion MongoDB
-connectDB();
+// Connexion MongoDB + seed auto des locations si la collection est vide
+connectDB().then(async () => {
+  try {
+    const Location = require('./api/models/Location');
+    const count = await Location.countDocuments();
+    if (count === 0) {
+      const fs = require('fs');
+      const locPath = path.join(__dirname, 'data', 'locations.json');
+      if (fs.existsSync(locPath)) {
+        const locs = JSON.parse(fs.readFileSync(locPath, 'utf-8'));
+        await Location.insertMany(locs.map(l => ({
+          name: l.name, address: l.address || '', city: l.city,
+          postalCode: l.postalCode, département: l.département || '',
+          lat: l.lat, lng: l.lng, phone: l.phone || '',
+          email: l.email || '', schedule: l.schedule || '',
+          image: l.image || '', active: l.active !== false,
+        })));
+        console.log(`[Seed] ${locs.length} points de vente importés dans MongoDB`);
+      }
+    }
+  } catch (e) {
+    console.error('[Seed] Erreur seed locations :', e.message);
+  }
+});
 
 const GITHUB_WEBHOOK_SECRET = 'J@mltlja345h';
 const PROJECT_PATH = __dirname;

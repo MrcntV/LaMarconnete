@@ -1,3 +1,31 @@
+.Carte-Produits-Items-haut {
+    position: relative;
+}
+
+.rupture-badge {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0,0,0,0.7);
+    color: white;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 6px 12px;
+    border-radius: 20px;
+    white-space: nowrap;
+    pointer-events: none;
+}
+
+.out-of-stock {
+    opacity: 0.75;
+}
+
+.out-of-stock .Panier:disabled {
+    background: #aaa;
+    cursor: not-allowed;
+}
+
 .NosProduits, .NosAccessoires {
     display: flex;
     width: 100%;

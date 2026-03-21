@@ -37,6 +37,89 @@ router.get('/:id', requireAuth, (req, res) => {
   }
 });
 
+// POST /api/invoices — facture manuelle
+router.post('/', requireAdmin, (req, res) => {
+  try {
+    const { customerName, customerEmail, customerId, items, taxRate = 20, notes = '' } = req.body;
+    if (!customerName || !items || !Array.isArray(items) || items.length === 0) {
+      return res.status(400).json({ error: 'Nom client et au moins un article requis' });
+    }
+
+    const invoices = readDB('invoices.json');
+    const invoiceNumber = `FACT-${new Date().getFullYear()}-${String(invoices.length + 1).padStart(3, '0')}`;
+
+    const lineItems = items.map(item => ({
+      productId: item.productId || '',
+      name: item.name,
+      qty: item.qty,
+      price: item.price,
+      total: parseFloat((item.qty * item.price).toFixed(2)),
+    }));
+
+    const subtotal = parseFloat(lineItems.reduce((s, i) => s + i.total, 0).toFixed(2));
+    const taxAmount = parseFloat((subtotal * taxRate / 100).toFixed(2));
+    const total = parseFloat((subtotal + taxAmount).toFixed(2));
+
+    const newInvoice = {
+      id: generateId('inv'),
+      invoiceNumber,
+      orderId: null,
+      customerId: customerId || null,
+      customerName,
+      customerEmail: customerEmail || '',
+      date: new Date().toISOString(),
+      items: lineItems,
+      subtotal,
+      taxRate,
+      taxAmount,
+      total,
+      status: 'draft',
+      notes,
+      pdfPath: null,
+    };
+
+    invoices.push(newInvoice);
+    writeDB('invoices.json', invoices);
+    res.status(201).json(newInvoice);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
+// PUT /api/invoices/:id/status — changer statut + déduire stock si paid
+router.put('/:id/status', requireAdmin, (req, res) => {
+  try {
+    const { status } = req.body;
+    if (!['draft', 'sent', 'paid', 'cancelled'].includes(status)) {
+      return res.status(400).json({ error: 'Statut invalide' });
+    }
+    const invoices = readDB('invoices.json');
+    const idx = invoices.findIndex(i => i.id === req.params.id);
+    if (idx === -1) return res.status(404).json({ error: 'Facture introuvable' });
+
+    const wasAlreadyPaid = invoices[idx].status === 'paid';
+    invoices[idx].status = status;
+
+    // Déduire le stock quand on passe à "paid" (une seule fois)
+    if (status === 'paid' && !wasAlreadyPaid) {
+      const products = readDB('products.json');
+      for (const item of invoices[idx].items) {
+        const pIdx = products.findIndex(p => p.id === item.productId || p.Titre === item.name);
+        if (pIdx !== -1) {
+          products[pIdx].stock = Math.max(0, (products[pIdx].stock || 0) - item.qty);
+          if (products[pIdx].stock === 0) products[pIdx].enStock = false;
+        }
+      }
+      writeDB('products.json', products);
+    }
+
+    writeDB('invoices.json', invoices);
+    res.json(invoices[idx]);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+});
+
 // POST /api/invoices/generate/:orderId
 router.post('/generate/:orderId', requireAdmin, (req, res) => {
   try {
