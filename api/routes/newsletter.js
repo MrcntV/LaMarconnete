@@ -1,13 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const crypto = require('crypto');
-const { readDB, writeDB, generateId } = require('../db');
+const Newsletter = require('../models/Newsletter');
+const { generateId } = require('../db');
 const { requireAdmin } = require('../middleware/auth');
 
 // GET /api/newsletter/subscribers
-router.get('/subscribers', requireAdmin, (req, res) => {
+router.get('/subscribers', requireAdmin, async (req, res) => {
   try {
-    const subscribers = readDB('newsletter.json');
+    const subscribers = await Newsletter.find();
     res.json(subscribers);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -15,34 +16,31 @@ router.get('/subscribers', requireAdmin, (req, res) => {
 });
 
 // POST /api/newsletter/subscribe
-router.post('/subscribe', (req, res) => {
+router.post('/subscribe', async (req, res) => {
   try {
     const { email, firstName } = req.body;
     if (!email) {
       return res.status(400).json({ error: 'Email requis' });
     }
-    const subscribers = readDB('newsletter.json');
-    const existing = subscribers.find(s => s.email === email);
+    const existing = await Newsletter.findOne({ email: email.toLowerCase().trim() });
     if (existing) {
       if (existing.active) {
         return res.status(409).json({ error: 'Cet email est déjà abonné' });
       }
       // Reactivate
       existing.active = true;
-      writeDB('newsletter.json', subscribers);
+      await existing.save();
       return res.json({ success: true, message: 'Abonnement réactivé' });
     }
     const unsubscribeToken = crypto.randomBytes(20).toString('hex');
-    const newSubscriber = {
+    await Newsletter.create({
       id: generateId('nl'),
       email,
       firstName: firstName || '',
-      subscribedAt: new Date().toISOString(),
+      subscribedAt: new Date(),
       active: true,
-      unsubscribeToken
-    };
-    subscribers.push(newSubscriber);
-    writeDB('newsletter.json', subscribers);
+      unsubscribeToken,
+    });
     // TODO: Send welcome email via EmailJS
     console.log(`[Newsletter] New subscriber: ${email} — welcome email à configurer via EmailJS`);
     res.status(201).json({ success: true, message: 'Inscription réussie' });
@@ -52,15 +50,14 @@ router.post('/subscribe', (req, res) => {
 });
 
 // DELETE /api/newsletter/unsubscribe/:token
-router.delete('/unsubscribe/:token', (req, res) => {
+router.delete('/unsubscribe/:token', async (req, res) => {
   try {
-    const subscribers = readDB('newsletter.json');
-    const idx = subscribers.findIndex(s => s.unsubscribeToken === req.params.token);
-    if (idx === -1) {
+    const subscriber = await Newsletter.findOne({ unsubscribeToken: req.params.token });
+    if (!subscriber) {
       return res.status(404).json({ error: 'Lien de désinscription invalide' });
     }
-    subscribers[idx].active = false;
-    writeDB('newsletter.json', subscribers);
+    subscriber.active = false;
+    await subscriber.save();
     res.json({ success: true, message: 'Désinscription effectuée' });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -68,7 +65,7 @@ router.delete('/unsubscribe/:token', (req, res) => {
 });
 
 // POST /api/newsletter/send
-router.post('/send', requireAdmin, (req, res) => {
+router.post('/send', requireAdmin, async (req, res) => {
   try {
     const { subject, htmlContent, testEmail } = req.body;
     if (!subject || !htmlContent) {
@@ -79,8 +76,7 @@ router.post('/send', requireAdmin, (req, res) => {
       console.log('[Newsletter] EmailJS à configurer dans les paramètres pour l\'envoi réel');
       return res.json({ success: true, message: `Email de test envoyé à ${testEmail}` });
     }
-    const subscribers = readDB('newsletter.json');
-    const active = subscribers.filter(s => s.active);
+    const active = await Newsletter.find({ active: true });
     console.log(`[Newsletter] Sending to ${active.length} subscribers: ${subject}`);
     console.log('[Newsletter] EmailJS à configurer dans les paramètres pour l\'envoi réel');
     res.json({ success: true, message: `Newsletter envoyée à ${active.length} abonnés`, count: active.length });
@@ -90,15 +86,12 @@ router.post('/send', requireAdmin, (req, res) => {
 });
 
 // DELETE /api/newsletter/subscribers/:id
-router.delete('/subscribers/:id', requireAdmin, (req, res) => {
+router.delete('/subscribers/:id', requireAdmin, async (req, res) => {
   try {
-    const subscribers = readDB('newsletter.json');
-    const idx = subscribers.findIndex(s => s.id === req.params.id);
-    if (idx === -1) {
+    const subscriber = await Newsletter.findOneAndDelete({ id: req.params.id });
+    if (!subscriber) {
       return res.status(404).json({ error: 'Abonné introuvable' });
     }
-    subscribers.splice(idx, 1);
-    writeDB('newsletter.json', subscribers);
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });

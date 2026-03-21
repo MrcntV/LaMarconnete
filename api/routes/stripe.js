@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const { readDB, writeDB } = require('../db');
+const Order = require('../models/Order');
 
 // POST /api/stripe/create-payment-intent
 router.post('/create-payment-intent', async (req, res) => {
@@ -35,7 +35,7 @@ router.post('/create-payment-intent', async (req, res) => {
 
 // POST /api/stripe/webhook
 // IMPORTANT: This route requires raw body parser — configured in server.js
-router.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
+router.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
   try {
     const sig = req.headers['stripe-signature'];
     const webhookSecret = process.env.STRIPE_WEBHOOK_SECRET;
@@ -63,24 +63,22 @@ router.post('/webhook', express.raw({ type: 'application/json' }), (req, res) =>
     switch (event.type) {
       case 'payment_intent.succeeded': {
         const pi = event.data.object;
-        const orders = readDB('orders.json');
-        const idx = orders.findIndex(o => o.paymentIntentId === pi.id);
-        if (idx !== -1) {
-          orders[idx].paymentStatus = 'paid';
-          orders[idx].status = 'confirmed';
-          writeDB('orders.json', orders);
-          console.log(`[Stripe] Order ${orders[idx].orderNumber} payment confirmed`);
+        const order = await Order.findOneAndUpdate(
+          { paymentIntentId: pi.id },
+          { paymentStatus: 'paid', status: 'confirmed' },
+          { new: true }
+        );
+        if (order) {
+          console.log(`[Stripe] Order ${order.orderNumber} payment confirmed`);
         }
         break;
       }
       case 'payment_intent.payment_failed': {
         const pi = event.data.object;
-        const orders = readDB('orders.json');
-        const idx = orders.findIndex(o => o.paymentIntentId === pi.id);
-        if (idx !== -1) {
-          orders[idx].paymentStatus = 'failed';
-          writeDB('orders.json', orders);
-        }
+        await Order.findOneAndUpdate(
+          { paymentIntentId: pi.id },
+          { paymentStatus: 'failed' }
+        );
         break;
       }
       default:

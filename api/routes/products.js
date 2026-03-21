@@ -1,13 +1,14 @@
 const express = require('express');
 const router = express.Router();
 const path = require('path');
-const { readDB, writeDB, generateId } = require('../db');
+const Product = require('../models/Product');
+const { generateId } = require('../db');
 const { requireAdmin } = require('../middleware/auth');
 
 // GET /api/products
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   try {
-    const products = readDB('products.json');
+    const products = await Product.find();
     res.json(products);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -15,10 +16,9 @@ router.get('/', (req, res) => {
 });
 
 // GET /api/products/:id
-router.get('/:id', (req, res) => {
+router.get('/:id', async (req, res) => {
   try {
-    const products = readDB('products.json');
-    const product = products.find(p => p.id === req.params.id);
+    const product = await Product.findOne({ id: req.params.id });
     if (!product) {
       return res.status(404).json({ error: 'Produit introuvable' });
     }
@@ -31,12 +31,9 @@ router.get('/:id', (req, res) => {
 // POST /api/products
 router.post('/', requireAdmin, async (req, res) => {
   try {
-    const products = readDB('products.json');
     const newProduct = {
       id: generateId('prod'),
       ...req.body,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
     };
 
     // Handle image upload
@@ -48,9 +45,8 @@ router.post('/', requireAdmin, async (req, res) => {
       newProduct.ImageProduit = `/images/${filename}`;
     }
 
-    products.push(newProduct);
-    writeDB('products.json', products);
-    res.status(201).json(newProduct);
+    const product = await Product.create(newProduct);
+    res.status(201).json(product);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
@@ -59,12 +55,6 @@ router.post('/', requireAdmin, async (req, res) => {
 // PUT /api/products/:id
 router.put('/:id', requireAdmin, async (req, res) => {
   try {
-    const products = readDB('products.json');
-    const idx = products.findIndex(p => p.id === req.params.id);
-    if (idx === -1) {
-      return res.status(404).json({ error: 'Produit introuvable' });
-    }
-
     // Handle image upload
     if (req.files && req.files.image) {
       const image = req.files.image;
@@ -74,24 +64,27 @@ router.put('/:id', requireAdmin, async (req, res) => {
       req.body.ImageProduit = `/images/${filename}`;
     }
 
-    products[idx] = { ...products[idx], ...req.body, updatedAt: new Date().toISOString() };
-    writeDB('products.json', products);
-    res.json(products[idx]);
+    const product = await Product.findOneAndUpdate(
+      { id: req.params.id },
+      { ...req.body },
+      { new: true }
+    );
+    if (!product) {
+      return res.status(404).json({ error: 'Produit introuvable' });
+    }
+    res.json(product);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
 // DELETE /api/products/:id
-router.delete('/:id', requireAdmin, (req, res) => {
+router.delete('/:id', requireAdmin, async (req, res) => {
   try {
-    const products = readDB('products.json');
-    const idx = products.findIndex(p => p.id === req.params.id);
-    if (idx === -1) {
+    const product = await Product.findOneAndDelete({ id: req.params.id });
+    if (!product) {
       return res.status(404).json({ error: 'Produit introuvable' });
     }
-    products.splice(idx, 1);
-    writeDB('products.json', products);
     res.json({ success: true });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -99,17 +92,17 @@ router.delete('/:id', requireAdmin, (req, res) => {
 });
 
 // PUT /api/products/:id/stock
-router.put('/:id/stock', requireAdmin, (req, res) => {
+router.put('/:id/stock', requireAdmin, async (req, res) => {
   try {
-    const products = readDB('products.json');
-    const idx = products.findIndex(p => p.id === req.params.id);
-    if (idx === -1) {
+    const product = await Product.findOneAndUpdate(
+      { id: req.params.id },
+      { stock: parseInt(req.body.stock, 10) },
+      { new: true }
+    );
+    if (!product) {
       return res.status(404).json({ error: 'Produit introuvable' });
     }
-    products[idx].stock = parseInt(req.body.stock, 10);
-    products[idx].updatedAt = new Date().toISOString();
-    writeDB('products.json', products);
-    res.json(products[idx]);
+    res.json(product);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

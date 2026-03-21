@@ -1,10 +1,13 @@
 const express = require('express');
 const router = express.Router();
-const { readDB, writeDB, generateId } = require('../db');
+const Order = require('../models/Order');
+const Invoice = require('../models/Invoice');
+const Customer = require('../models/Customer');
+const { generateId } = require('../db');
 const { requireAuth, requireAdmin } = require('../middleware/auth');
 
 // POST /api/orders/stripe-webhook (must be before /:id routes)
-router.post('/stripe-webhook', express.raw({ type: 'application/json' }), (req, res) => {
+router.post('/stripe-webhook', express.raw({ type: 'application/json' }), async (req, res) => {
   try {
     const payload = req.body;
     let event;
@@ -16,13 +19,10 @@ router.post('/stripe-webhook', express.raw({ type: 'application/json' }), (req, 
     console.log('[Stripe Webhook] Event:', event.type);
     if (event.type === 'payment_intent.succeeded') {
       const paymentIntent = event.data.object;
-      const orders = readDB('orders.json');
-      const idx = orders.findIndex(o => o.paymentIntentId === paymentIntent.id);
-      if (idx !== -1) {
-        orders[idx].paymentStatus = 'paid';
-        orders[idx].status = 'confirmed';
-        writeDB('orders.json', orders);
-      }
+      await Order.findOneAndUpdate(
+        { paymentIntentId: paymentIntent.id },
+        { paymentStatus: 'paid', status: 'confirmed' }
+      );
     }
     res.json({ received: true });
   } catch (err) {
@@ -31,13 +31,12 @@ router.post('/stripe-webhook', express.raw({ type: 'application/json' }), (req, 
 });
 
 // GET /api/orders/customer/:customerId
-router.get('/customer/:customerId', requireAuth, (req, res) => {
+router.get('/customer/:customerId', requireAuth, async (req, res) => {
   try {
     if (req.user.customerId !== req.params.customerId && req.user.role !== 'admin' && req.user.role !== 'superadmin') {
       return res.status(403).json({ error: 'Accès refusé' });
     }
-    const orders = readDB('orders.json');
-    const customerOrders = orders.filter(o => o.customerId === req.params.customerId);
+    const customerOrders = await Order.find({ customerId: req.params.customerId }).sort({ date: -1 });
     res.json(customerOrders);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -45,38 +44,36 @@ router.get('/customer/:customerId', requireAuth, (req, res) => {
 });
 
 // GET /api/orders
-router.get('/', requireAdmin, (req, res) => {
+router.get('/', requireAdmin, async (req, res) => {
   try {
-    const orders = readDB('orders.json');
     const { status, page = 1, limit = 20, search } = req.query;
-    let filtered = orders;
+    const query = {};
     if (status && status !== 'all') {
-      filtered = filtered.filter(o => o.status === status);
+      query.status = status;
     }
     if (search) {
-      const q = search.toLowerCase();
-      filtered = filtered.filter(o =>
-        o.orderNumber.toLowerCase().includes(q) ||
-        o.customerName.toLowerCase().includes(q) ||
-        o.customerEmail.toLowerCase().includes(q)
-      );
+      const q = new RegExp(search, 'i');
+      query.$or = [
+        { orderNumber: q },
+        { customerName: q },
+        { customerEmail: q },
+      ];
     }
-    // Sort by date desc
-    filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
-    const total = filtered.length;
-    const start = (parseInt(page) - 1) * parseInt(limit);
-    const paginated = filtered.slice(start, start + parseInt(limit));
-    res.json({ orders: paginated, total, page: parseInt(page), limit: parseInt(limit) });
+    const total = await Order.countDocuments(query);
+    const orders = await Order.find(query)
+      .sort({ date: -1 })
+      .skip((parseInt(page) - 1) * parseInt(limit))
+      .limit(parseInt(limit));
+    res.json({ orders, total, page: parseInt(page), limit: parseInt(limit) });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
 // GET /api/orders/:id
-router.get('/:id', requireAdmin, (req, res) => {
+router.get('/:id', requireAdmin, async (req, res) => {
   try {
-    const orders = readDB('orders.json');
-    const order = orders.find(o => o.id === req.params.id);
+    const order = await Order.findOne({ id: req.params.id });
     if (!order) {
       return res.status(404).json({ error: 'Commande introuvable' });
     }
@@ -87,34 +84,29 @@ router.get('/:id', requireAdmin, (req, res) => {
 });
 
 // POST /api/orders
-router.post('/', (req, res) => {
+router.post('/', async (req, res) => {
   try {
-    const orders = readDB('orders.json');
-    const orderNumber = `MRC-${new Date().getFullYear()}-${String(orders.length + 1).padStart(3, '0')}`;
-    const newOrder = {
+    const count = await Order.countDocuments();
+    const orderNumber = `MRC-${new Date().getFullYear()}-${String(count + 1).padStart(3, '0')}`;
+    const newOrder = await Order.create({
       id: generateId('order'),
       orderNumber,
       ...req.body,
-      date: new Date().toISOString(),
+      date: new Date(),
       status: 'pending',
       paymentStatus: 'pending',
       trackingNumber: null,
       colissimoLabel: null,
       invoiceId: null,
-      notes: ''
-    };
-    orders.push(newOrder);
-    writeDB('orders.json', orders);
+      notes: '',
+    });
 
     // Update customer orders array if customerId provided
     if (newOrder.customerId) {
-      const customers = readDB('customers.json');
-      const cIdx = customers.findIndex(c => c.id === newOrder.customerId);
-      if (cIdx !== -1) {
-        customers[cIdx].orders = customers[cIdx].orders || [];
-        customers[cIdx].orders.push(newOrder.id);
-        writeDB('customers.json', customers);
-      }
+      await Customer.findByIdAndUpdate(
+        newOrder.customerId,
+        { $push: { orders: newOrder.id } }
+      ).catch(() => {}); // silently ignore if customer not found by _id
     }
 
     res.status(201).json(newOrder);
@@ -124,72 +116,68 @@ router.post('/', (req, res) => {
 });
 
 // PUT /api/orders/:id/status
-router.put('/:id/status', requireAdmin, (req, res) => {
+router.put('/:id/status', requireAdmin, async (req, res) => {
   try {
-    const orders = readDB('orders.json');
-    const idx = orders.findIndex(o => o.id === req.params.id);
-    if (idx === -1) {
+    const order = await Order.findOneAndUpdate(
+      { id: req.params.id },
+      { status: req.body.status },
+      { new: true }
+    );
+    if (!order) {
       return res.status(404).json({ error: 'Commande introuvable' });
     }
-    orders[idx].status = req.body.status;
     if (req.body.status === 'shipped') {
-      // Placeholder for Colissimo webhook
-      console.log(`[Colissimo] Commande ${orders[idx].orderNumber} expédiée — webhook Colissimo à configurer`);
+      console.log(`[Colissimo] Commande ${order.orderNumber} expédiée — webhook Colissimo à configurer`);
     }
-    writeDB('orders.json', orders);
-    res.json(orders[idx]);
+    res.json(order);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
 // PUT /api/orders/:id/tracking
-router.put('/:id/tracking', requireAdmin, (req, res) => {
+router.put('/:id/tracking', requireAdmin, async (req, res) => {
   try {
-    const orders = readDB('orders.json');
-    const idx = orders.findIndex(o => o.id === req.params.id);
-    if (idx === -1) {
+    const order = await Order.findOneAndUpdate(
+      { id: req.params.id },
+      { trackingNumber: req.body.trackingNumber },
+      { new: true }
+    );
+    if (!order) {
       return res.status(404).json({ error: 'Commande introuvable' });
     }
-    orders[idx].trackingNumber = req.body.trackingNumber;
-    writeDB('orders.json', orders);
-    res.json(orders[idx]);
+    res.json(order);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
 // POST /api/orders/:id/invoice
-router.post('/:id/invoice', requireAdmin, (req, res) => {
+router.post('/:id/invoice', requireAdmin, async (req, res) => {
   try {
-    const orders = readDB('orders.json');
-    const order = orders.find(o => o.id === req.params.id);
+    const order = await Order.findOne({ id: req.params.id });
     if (!order) {
       return res.status(404).json({ error: 'Commande introuvable' });
     }
-    const invoices = readDB('invoices.json');
-    const invoiceNumber = `FACT-${new Date().getFullYear()}-${String(invoices.length + 1).padStart(3, '0')}`;
-    const newInvoice = {
+    const count = await Invoice.countDocuments();
+    const invoiceNumber = `FACT-${new Date().getFullYear()}-${String(count + 1).padStart(3, '0')}`;
+    const newInvoice = await Invoice.create({
       id: generateId('inv'),
       invoiceNumber,
       orderId: order.id,
       customerId: order.customerId,
       customerName: order.customerName,
-      date: new Date().toISOString(),
-      items: order.items.map(item => ({ ...item, total: item.qty * item.price })),
+      date: new Date(),
+      items: order.items.map(item => ({ ...item.toObject ? item.toObject() : item, total: item.qty * item.price })),
       subtotal: order.subtotal,
       taxRate: 20,
       taxAmount: parseFloat((order.subtotal * 0.2).toFixed(2)),
       total: order.total,
       status: 'draft',
-      pdfPath: null
-    };
-    invoices.push(newInvoice);
-    writeDB('invoices.json', invoices);
+      pdfPath: null,
+    });
 
-    const oIdx = orders.findIndex(o => o.id === req.params.id);
-    orders[oIdx].invoiceId = newInvoice.id;
-    writeDB('orders.json', orders);
+    await Order.findOneAndUpdate({ id: req.params.id }, { invoiceId: newInvoice.id });
 
     res.status(201).json(newInvoice);
   } catch (err) {

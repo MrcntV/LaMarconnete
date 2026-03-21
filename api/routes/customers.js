@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const Customer = require('../models/Customer');
-const { readDB } = require('../db');
+const Order = require('../models/Order');
 const { requireAdmin } = require('../middleware/auth');
 
 // Mappe _id → id pour compatibilité frontend
@@ -75,13 +75,10 @@ router.delete('/:id', requireAdmin, async (req, res) => {
   }
 });
 
-// GET /api/customers/:id/orders — orders are still in JSON for now
+// GET /api/customers/:id/orders
 router.get('/:id/orders', requireAdmin, async (req, res) => {
   try {
-    const orders = readDB('orders.json');
-    const customerOrders = orders
-      .filter(o => o.customerId === req.params.id)
-      .sort((a, b) => new Date(b.date) - new Date(a.date));
+    const customerOrders = await Order.find({ customerId: req.params.id }).sort({ date: -1 });
     res.json(customerOrders);
   } catch (err) {
     res.status(500).json({ error: err.message });

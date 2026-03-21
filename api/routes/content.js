@@ -1,35 +1,44 @@
 const express = require('express');
 const router = express.Router();
-const { readDB, writeDB } = require('../db');
+const Content = require('../models/Content');
 const { requireAdmin } = require('../middleware/auth');
 
 // GET /api/content
-router.get('/', (req, res) => {
+router.get('/', async (req, res) => {
   try {
-    const content = readDB('content.json');
-    res.json(content);
+    const doc = await Content.findOne({ key: 'main' });
+    if (!doc) {
+      return res.json({});
+    }
+    res.json(doc.toJSON());
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
 // PUT /api/content
-router.put('/', requireAdmin, (req, res) => {
+router.put('/', requireAdmin, async (req, res) => {
   try {
-    writeDB('content.json', req.body);
-    res.json(req.body);
+    const doc = await Content.findOneAndUpdate(
+      { key: 'main' },
+      { key: 'main', ...req.body },
+      { upsert: true, new: true }
+    );
+    res.json(doc.toJSON());
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
 // PUT /api/content/:section
-router.put('/:section', requireAdmin, (req, res) => {
+router.put('/:section', requireAdmin, async (req, res) => {
   try {
-    const content = readDB('content.json');
-    content[req.params.section] = req.body;
-    writeDB('content.json', content);
-    res.json(content);
+    const doc = await Content.findOneAndUpdate(
+      { key: 'main' },
+      { $set: { [req.params.section]: req.body } },
+      { upsert: true, new: true }
+    );
+    res.json(doc.toJSON());
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

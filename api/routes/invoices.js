@@ -1,29 +1,30 @@
 const express = require('express');
 const router = express.Router();
-const { readDB, writeDB, generateId } = require('../db');
+const Invoice = require('../models/Invoice');
+const Order = require('../models/Order');
+const Product = require('../models/Product');
+const { generateId } = require('../db');
 const { requireAdmin, requireAuth } = require('../middleware/auth');
 
 // GET /api/invoices
-router.get('/', requireAdmin, (req, res) => {
+router.get('/', requireAdmin, async (req, res) => {
   try {
-    const invoices = readDB('invoices.json');
     const { status } = req.query;
-    let filtered = invoices;
+    const query = {};
     if (status) {
-      filtered = filtered.filter(i => i.status === status);
+      query.status = status;
     }
-    filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
-    res.json(filtered);
+    const invoices = await Invoice.find(query).sort({ date: -1 });
+    res.json(invoices);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
 // GET /api/invoices/:id
-router.get('/:id', requireAuth, (req, res) => {
+router.get('/:id', requireAuth, async (req, res) => {
   try {
-    const invoices = readDB('invoices.json');
-    const invoice = invoices.find(i => i.id === req.params.id);
+    const invoice = await Invoice.findOne({ id: req.params.id });
     if (!invoice) {
       return res.status(404).json({ error: 'Facture introuvable' });
     }
@@ -38,15 +39,15 @@ router.get('/:id', requireAuth, (req, res) => {
 });
 
 // POST /api/invoices — facture manuelle
-router.post('/', requireAdmin, (req, res) => {
+router.post('/', requireAdmin, async (req, res) => {
   try {
     const { customerName, customerEmail, customerId, items, taxRate = 20, notes = '' } = req.body;
     if (!customerName || !items || !Array.isArray(items) || items.length === 0) {
       return res.status(400).json({ error: 'Nom client et au moins un article requis' });
     }
 
-    const invoices = readDB('invoices.json');
-    const invoiceNumber = `FACT-${new Date().getFullYear()}-${String(invoices.length + 1).padStart(3, '0')}`;
+    const count = await Invoice.countDocuments();
+    const invoiceNumber = `FACT-${new Date().getFullYear()}-${String(count + 1).padStart(3, '0')}`;
 
     const lineItems = items.map(item => ({
       productId: item.productId || '',
@@ -60,14 +61,14 @@ router.post('/', requireAdmin, (req, res) => {
     const taxAmount = parseFloat((subtotal * taxRate / 100).toFixed(2));
     const total = parseFloat((subtotal + taxAmount).toFixed(2));
 
-    const newInvoice = {
+    const newInvoice = await Invoice.create({
       id: generateId('inv'),
       invoiceNumber,
       orderId: null,
       customerId: customerId || null,
       customerName,
       customerEmail: customerEmail || '',
-      date: new Date().toISOString(),
+      date: new Date(),
       items: lineItems,
       subtotal,
       taxRate,
@@ -76,10 +77,8 @@ router.post('/', requireAdmin, (req, res) => {
       status: 'draft',
       notes,
       pdfPath: null,
-    };
+    });
 
-    invoices.push(newInvoice);
-    writeDB('invoices.json', invoices);
     res.status(201).json(newInvoice);
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -87,78 +86,71 @@ router.post('/', requireAdmin, (req, res) => {
 });
 
 // PUT /api/invoices/:id/status — changer statut + déduire stock si paid
-router.put('/:id/status', requireAdmin, (req, res) => {
+router.put('/:id/status', requireAdmin, async (req, res) => {
   try {
     const { status } = req.body;
     if (!['draft', 'sent', 'paid', 'cancelled'].includes(status)) {
       return res.status(400).json({ error: 'Statut invalide' });
     }
-    const invoices = readDB('invoices.json');
-    const idx = invoices.findIndex(i => i.id === req.params.id);
-    if (idx === -1) return res.status(404).json({ error: 'Facture introuvable' });
 
-    const wasAlreadyPaid = invoices[idx].status === 'paid';
-    invoices[idx].status = status;
+    const invoice = await Invoice.findOne({ id: req.params.id });
+    if (!invoice) return res.status(404).json({ error: 'Facture introuvable' });
+
+    const wasAlreadyPaid = invoice.status === 'paid';
+    invoice.status = status;
 
     // Déduire le stock quand on passe à "paid" (une seule fois)
     if (status === 'paid' && !wasAlreadyPaid) {
-      const products = readDB('products.json');
-      for (const item of invoices[idx].items) {
-        const pIdx = products.findIndex(p => p.id === item.productId || p.Titre === item.name);
-        if (pIdx !== -1) {
-          products[pIdx].stock = Math.max(0, (products[pIdx].stock || 0) - item.qty);
-          if (products[pIdx].stock === 0) products[pIdx].enStock = false;
-        }
+      for (const item of invoice.items) {
+        await Product.findOneAndUpdate(
+          { id: item.productId },
+          { $inc: { stock: -item.qty } }
+        );
       }
-      writeDB('products.json', products);
     }
 
-    writeDB('invoices.json', invoices);
-    res.json(invoices[idx]);
+    await invoice.save();
+    res.json(invoice);
   } catch (err) {
     res.status(500).json({ error: err.message });
   }
 });
 
 // POST /api/invoices/generate/:orderId
-router.post('/generate/:orderId', requireAdmin, (req, res) => {
+router.post('/generate/:orderId', requireAdmin, async (req, res) => {
   try {
-    const orders = readDB('orders.json');
-    const order = orders.find(o => o.id === req.params.orderId);
+    const order = await Order.findOne({ id: req.params.orderId });
     if (!order) {
       return res.status(404).json({ error: 'Commande introuvable' });
     }
-    const invoices = readDB('invoices.json');
-    const existing = invoices.find(i => i.orderId === order.id);
+    const existing = await Invoice.findOne({ orderId: order.id });
     if (existing) {
       return res.json(existing);
     }
-    const invoiceNumber = `FACT-${new Date().getFullYear()}-${String(invoices.length + 1).padStart(3, '0')}`;
+    const count = await Invoice.countDocuments();
+    const invoiceNumber = `FACT-${new Date().getFullYear()}-${String(count + 1).padStart(3, '0')}`;
     const subtotal = order.subtotal;
     const taxAmount = parseFloat((subtotal * 0.2).toFixed(2));
-    const newInvoice = {
+    const newInvoice = await Invoice.create({
       id: generateId('inv'),
       invoiceNumber,
       orderId: order.id,
       customerId: order.customerId,
       customerName: order.customerName,
-      date: new Date().toISOString(),
-      items: order.items.map(item => ({ ...item, total: item.qty * item.price })),
+      date: new Date(),
+      items: order.items.map(item => ({
+        ...(item.toObject ? item.toObject() : item),
+        total: item.qty * item.price,
+      })),
       subtotal,
       taxRate: 20,
       taxAmount,
       total: order.total,
       status: 'draft',
-      pdfPath: null
-    };
-    invoices.push(newInvoice);
-    writeDB('invoices.json', invoices);
+      pdfPath: null,
+    });
 
-    const oIdx = orders.findIndex(o => o.id === req.params.orderId);
-    if (oIdx !== -1) {
-      orders[oIdx].invoiceId = newInvoice.id;
-      writeDB('orders.json', orders);
-    }
+    await Order.findOneAndUpdate({ id: req.params.orderId }, { invoiceId: newInvoice.id });
 
     res.status(201).json(newInvoice);
   } catch (err) {
@@ -167,10 +159,9 @@ router.post('/generate/:orderId', requireAdmin, (req, res) => {
 });
 
 // GET /api/invoices/:id/download
-router.get('/:id/download', requireAuth, (req, res) => {
+router.get('/:id/download', requireAuth, async (req, res) => {
   try {
-    const invoices = readDB('invoices.json');
-    const invoice = invoices.find(i => i.id === req.params.id);
+    const invoice = await Invoice.findOne({ id: req.params.id });
     if (!invoice) {
       return res.status(404).json({ error: 'Facture introuvable' });
     }

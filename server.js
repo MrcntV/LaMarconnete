@@ -10,17 +10,90 @@ const { connectDB } = require('./api/config/mongoose');
 const app = express();
 const PORT = process.env.PORT || 43749;
 
-// Connexion MongoDB + seed auto des locations si la collection est vide
+// Connexion MongoDB + seed auto de toutes les collections si vides
 console.log('[MongoDB] Connexion en cours...');
 connectDB().then(async () => {
+  const fs = require('fs');
+
+  // Seed Products
+  try {
+    const Product = require('./api/models/Product');
+    if (await Product.countDocuments() === 0) {
+      const f = path.join(__dirname, 'data', 'products.json');
+      if (fs.existsSync(f)) {
+        const items = JSON.parse(fs.readFileSync(f, 'utf-8'));
+        await Product.insertMany(items, { ordered: false });
+        console.log(`[Seed] ${items.length} produits importés`);
+      }
+    }
+  } catch (e) {
+    console.error('[Seed] Erreur seed products :', e.message);
+  }
+
+  // Seed Orders
+  try {
+    const Order = require('./api/models/Order');
+    if (await Order.countDocuments() === 0) {
+      const f = path.join(__dirname, 'data', 'orders.json');
+      if (fs.existsSync(f)) {
+        const items = JSON.parse(fs.readFileSync(f, 'utf-8'));
+        if (items.length > 0) { await Order.insertMany(items, { ordered: false }); console.log(`[Seed] ${items.length} commandes importées`); }
+      }
+    }
+  } catch (e) {
+    console.error('[Seed] Erreur seed orders :', e.message);
+  }
+
+  // Seed Invoices
+  try {
+    const Invoice = require('./api/models/Invoice');
+    if (await Invoice.countDocuments() === 0) {
+      const f = path.join(__dirname, 'data', 'invoices.json');
+      if (fs.existsSync(f)) {
+        const items = JSON.parse(fs.readFileSync(f, 'utf-8'));
+        if (items.length > 0) { await Invoice.insertMany(items, { ordered: false }); console.log(`[Seed] ${items.length} factures importées`); }
+      }
+    }
+  } catch (e) {
+    console.error('[Seed] Erreur seed invoices :', e.message);
+  }
+
+  // Seed Newsletter
+  try {
+    const Newsletter = require('./api/models/Newsletter');
+    if (await Newsletter.countDocuments() === 0) {
+      const f = path.join(__dirname, 'data', 'newsletter.json');
+      if (fs.existsSync(f)) {
+        const items = JSON.parse(fs.readFileSync(f, 'utf-8'));
+        if (items.length > 0) { await Newsletter.insertMany(items, { ordered: false }); console.log(`[Seed] ${items.length} abonnés newsletter importés`); }
+      }
+    }
+  } catch (e) {
+    console.error('[Seed] Erreur seed newsletter :', e.message);
+  }
+
+  // Seed Content (single doc)
+  try {
+    const Content = require('./api/models/Content');
+    if (await Content.countDocuments() === 0) {
+      const f = path.join(__dirname, 'data', 'content.json');
+      if (fs.existsSync(f)) {
+        const data = JSON.parse(fs.readFileSync(f, 'utf-8'));
+        await Content.create({ key: 'main', ...data });
+        console.log('[Seed] Contenu importé');
+      }
+    }
+  } catch (e) {
+    console.error('[Seed] Erreur seed content :', e.message);
+  }
+
+  // Seed Locations
   try {
     const Location = require('./api/models/Location');
-    const count = await Location.countDocuments();
-    if (count === 0) {
-      const fs = require('fs');
-      const locPath = path.join(__dirname, 'data', 'locations.json');
-      if (fs.existsSync(locPath)) {
-        const locs = JSON.parse(fs.readFileSync(locPath, 'utf-8'));
+    if (await Location.countDocuments() === 0) {
+      const f = path.join(__dirname, 'data', 'locations.json');
+      if (fs.existsSync(f)) {
+        const locs = JSON.parse(fs.readFileSync(f, 'utf-8'));
         await Location.insertMany(locs.map(l => ({
           name: l.name, address: l.address || '', city: l.city,
           postalCode: l.postalCode, département: l.département || '',
@@ -28,7 +101,7 @@ connectDB().then(async () => {
           email: l.email || '', schedule: l.schedule || '',
           image: l.image || '', active: l.active !== false,
         })));
-        console.log(`[Seed] ${locs.length} points de vente importés dans MongoDB`);
+        console.log(`[Seed] ${locs.length} points de vente importés`);
       }
     }
   } catch (e) {
@@ -38,6 +111,9 @@ connectDB().then(async () => {
   app.listen(PORT, () => {
     console.log(`[Main] Server running on port ${PORT}`);
   });
+}).catch(err => {
+  console.error('[MongoDB] Fatal:', err.message);
+  process.exit(1);
 });
 
 const GITHUB_WEBHOOK_SECRET = 'J@mltlja345h';
