@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
+import { useContent } from '../contexts/ContentContext';
 
-const engagements = [
+const defaultEngagements = [
     {
         icon: '✨',
         titre: 'La simplicité',
@@ -23,7 +24,7 @@ const engagements = [
     },
     {
         icon: '♻️',
-        titre: 'Le respect de l\'environnement',
+        titre: "Le respect de l'environnement",
         texte: "Les procédés de fabrication nocifs pour l'Homme ou l'environnement sont bannis et les ingrédients naturels et biodégradables privilégiés. Nos produits sont dépourvus de sur-emballages et leur conditionnement est 100% recyclable et garanti sans bisphénol A. Tous nos supports de communication sont certifiés FSC, PEFC voire Imprim'vert.",
     },
     {
@@ -43,6 +44,10 @@ const cardVariants = {
 };
 
 const MesEngagements = () => {
+    const content = useContent();
+    const engagementsPage = content.engagementsPage || {};
+    const engagements = engagementsPage.items || defaultEngagements;
+
     return (
         <motion.main
             initial={{ opacity: 0 }}
@@ -55,7 +60,7 @@ const MesEngagements = () => {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.6 }}
                 >
-                    Nos Engagements
+                    {engagementsPage.title || "Nos Engagements"}
                 </motion.h1>
                 <motion.p
                     className="engagements-intro"
@@ -63,17 +68,13 @@ const MesEngagements = () => {
                     animate={{ opacity: 1 }}
                     transition={{ duration: 0.6, delay: 0.2 }}
                 >
-                    Chez La marcOnnête, nous croyons en la puissance des actions concrètes et responsables.
-                    Prendre des engagements, ce n'est pas simplement parler, c'est avant tout agir !
-                    À travers chacune de ses actions, La marcOnnête s'engage pour le bien-être de vos tout-petits
-                    et de notre planète en proposant une gamme spécialement conçue pour la préservation des peaux
-                    comme de l'environnement.
+                    {engagementsPage.intro || "Chez La marcOnnête, nous croyons en la puissance des actions concrètes et responsables. Prendre des engagements, ce n'est pas simplement parler, c'est avant tout agir ! À travers chacune de ses actions, La marcOnnête s'engage pour le bien-être de vos tout-petits et de notre planète en proposant une gamme spécialement conçue pour la préservation des peaux comme de l'environnement."}
                 </motion.p>
             </section>
 
             <section className="engagements-grid-section">
                 <div className="engagements-grid">
-                    {engagements.map((eng, i) => (
+                    {engagements.map((eng: { icon: string; titre: string; texte: string }, i: number) => (
                         <motion.div
                             key={eng.titre}
                             className="engagement-card"

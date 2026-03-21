@@ -1,4 +1,6 @@
 
+import { ContentProvider } from './contexts/ContentContext';
+
 import './App.css';
 
 import './styles/screens/ProduitDetails.css';
@@ -39,15 +41,17 @@ import { ScrollToTopOnNav, ScrollToTopButton } from './components/ScrollToTop';
 
 function App() {
   return (
-    <div className='App'>
-      <ScrollToTopOnNav />
-      <Headers />
-      <AnimRoutes />
-      <HomeMeilleursVentes titre='Meilleures Ventes' />
-      <CallToAction />
-      <Footers />
-      <ScrollToTopButton />
-    </div>
+    <ContentProvider>
+      <div className='App'>
+        <ScrollToTopOnNav />
+        <Headers />
+        <AnimRoutes />
+        <HomeMeilleursVentes titre='Meilleures Ventes' />
+        <CallToAction />
+        <Footers />
+        <ScrollToTopButton />
+      </div>
+    </ContentProvider>
   );
 }
 

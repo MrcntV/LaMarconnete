@@ -110,7 +110,12 @@ const ContentEditor: React.FC = () => {
           { key: 'about', label: 'Notre Histoire' },
           { key: 'engagements', label: 'Nos Engagements' },
           { key: 'footer', label: 'Footer' },
-          { key: 'seo', label: 'SEO' }
+          { key: 'seo', label: 'SEO' },
+          { key: 'home', label: 'Accueil' },
+          { key: 'histoire', label: 'Notre Histoire (page)' },
+          { key: 'engagementsPage', label: 'Engagements (page)' },
+          { key: 'livraison', label: 'Livraison' },
+          { key: 'faq', label: 'FAQ' },
         ].map(t => (
           <button key={t.key} className={`tab-btn ${tab === t.key ? 'tab-btn-active' : ''}`} onClick={() => setTab(t.key)}>
             {t.label}
@@ -220,6 +225,216 @@ const ContentEditor: React.FC = () => {
             <p className="text-muted text-sm">{content.seo.homeDescription.length}/160 caractères recommandés</p>
           </div>
           <button className="btn btn-primary" onClick={() => saveSection('seo')} disabled={saving}>Enregistrer</button>
+        </div>
+      )}
+
+      {tab === 'home' && content.home && (
+        <div className="card">
+          <h3 className="card-section-title">Accueil — Textes principaux</h3>
+          {[
+            { field: 'mainTitle', label: 'Titre principal' },
+            { field: 'signature', label: 'Signature' },
+            { field: 'sectionEngagesTitle', label: "Titre section engagements" },
+            { field: 'badge1Title', label: 'Badge 1 — Titre' },
+            { field: 'badge1Text', label: 'Badge 1 — Texte' },
+            { field: 'badge2Title', label: 'Badge 2 — Titre' },
+            { field: 'badge2Text', label: 'Badge 2 — Texte' },
+            { field: 'badge3Title', label: 'Badge 3 — Titre' },
+            { field: 'badge3Text', label: 'Badge 3 — Texte' },
+            { field: 'badge4Title', label: 'Badge 4 — Titre' },
+            { field: 'badge4Text', label: 'Badge 4 — Texte' },
+          ].map(({ field, label }) => (
+            <div key={field} className="form-group">
+              <label className="form-label">{label}</label>
+              <input className="input" value={(content.home as unknown as Record<string, string>)[field] || ''} onChange={e => setField(`home.${field}`, e.target.value)} />
+            </div>
+          ))}
+          <div className="form-group">
+            <label className="form-label">Citation</label>
+            <textarea className="input textarea" rows={4} value={content.home.citation || ''} onChange={e => setField('home.citation', e.target.value)} />
+          </div>
+          <button className="btn btn-primary" onClick={() => saveSection('home')} disabled={saving}>Enregistrer</button>
+        </div>
+      )}
+
+      {tab === 'histoire' && content.histoire && (
+        <div className="card">
+          <h3 className="card-section-title">Notre Histoire (page)</h3>
+          <div className="form-group">
+            <label className="form-label">Titre</label>
+            <input className="input" value={content.histoire.title || ''} onChange={e => setField('histoire.title', e.target.value)} />
+          </div>
+          {[1, 2, 3, 4].map(n => (
+            <div key={n} className="form-group">
+              <label className="form-label">Paragraphe {n}</label>
+              <textarea className="input textarea" rows={4} value={(content.histoire as unknown as Record<string, string>)[`p${n}`] || ''} onChange={e => setField(`histoire.p${n}`, e.target.value)} />
+            </div>
+          ))}
+          <div className="form-group">
+            <label className="form-label">Titre timeline</label>
+            <input className="input" value={content.histoire.timelineTitle || ''} onChange={e => setField('histoire.timelineTitle', e.target.value)} />
+          </div>
+          <button className="btn btn-primary" onClick={() => saveSection('histoire')} disabled={saving}>Enregistrer</button>
+        </div>
+      )}
+
+      {tab === 'engagementsPage' && content.engagementsPage && (
+        <div className="card">
+          <h3 className="card-section-title">Engagements (page)</h3>
+          <div className="form-group">
+            <label className="form-label">Titre</label>
+            <input className="input" value={content.engagementsPage.title || ''} onChange={e => setField('engagementsPage.title', e.target.value)} />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Intro</label>
+            <textarea className="input textarea" rows={4} value={content.engagementsPage.intro || ''} onChange={e => setField('engagementsPage.intro', e.target.value)} />
+          </div>
+          {content.engagementsPage.items.map((item, idx) => (
+            <div key={idx} className="engagement-row">
+              <div className="form-row">
+                <div className="form-group">
+                  <label className="form-label">Engagement {idx + 1} — Icône</label>
+                  <input className="input" value={item.icon} onChange={e => {
+                    const updated = [...content.engagementsPage.items];
+                    updated[idx] = { ...updated[idx], icon: e.target.value };
+                    setContent({ ...content, engagementsPage: { ...content.engagementsPage, items: updated } });
+                  }} />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Titre</label>
+                  <input className="input" value={item.titre} onChange={e => {
+                    const updated = [...content.engagementsPage.items];
+                    updated[idx] = { ...updated[idx], titre: e.target.value };
+                    setContent({ ...content, engagementsPage: { ...content.engagementsPage, items: updated } });
+                  }} />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">Texte</label>
+                  <textarea className="input textarea" rows={3} value={item.texte} onChange={e => {
+                    const updated = [...content.engagementsPage.items];
+                    updated[idx] = { ...updated[idx], texte: e.target.value };
+                    setContent({ ...content, engagementsPage: { ...content.engagementsPage, items: updated } });
+                  }} />
+                </div>
+              </div>
+            </div>
+          ))}
+          <button className="btn btn-primary" onClick={() => saveSection('engagementsPage')} disabled={saving}>Enregistrer</button>
+        </div>
+      )}
+
+      {tab === 'livraison' && content.livraison && (
+        <div className="card">
+          <h3 className="card-section-title">Livraison</h3>
+          <div className="form-group">
+            <label className="form-label">Titre</label>
+            <input className="input" value={content.livraison.title || ''} onChange={e => setField('livraison.title', e.target.value)} />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Intro</label>
+            <textarea className="input textarea" rows={2} value={content.livraison.intro || ''} onChange={e => setField('livraison.intro', e.target.value)} />
+          </div>
+          <h4 style={{ margin: '16px 0 8px' }}>Tableau des modes de livraison</h4>
+          {content.livraison.shipping.map((row, idx) => (
+            <div key={idx} className="form-row" style={{ gap: 8, marginBottom: 8 }}>
+              <div className="form-group">
+                <label className="form-label">Mode</label>
+                <input className="input" value={row.mode} onChange={e => {
+                  const updated = [...content.livraison.shipping];
+                  updated[idx] = { ...updated[idx], mode: e.target.value };
+                  setContent({ ...content, livraison: { ...content.livraison, shipping: updated } });
+                }} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Détail</label>
+                <input className="input" value={row.detail} onChange={e => {
+                  const updated = [...content.livraison.shipping];
+                  updated[idx] = { ...updated[idx], detail: e.target.value };
+                  setContent({ ...content, livraison: { ...content.livraison, shipping: updated } });
+                }} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Délai</label>
+                <input className="input" value={row.delay} onChange={e => {
+                  const updated = [...content.livraison.shipping];
+                  updated[idx] = { ...updated[idx], delay: e.target.value };
+                  setContent({ ...content, livraison: { ...content.livraison, shipping: updated } });
+                }} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Prix</label>
+                <input className="input" value={row.price} onChange={e => {
+                  const updated = [...content.livraison.shipping];
+                  updated[idx] = { ...updated[idx], price: e.target.value };
+                  setContent({ ...content, livraison: { ...content.livraison, shipping: updated } });
+                }} />
+              </div>
+            </div>
+          ))}
+          <h4 style={{ margin: '16px 0 8px' }}>Infos complémentaires</h4>
+          {[
+            { titleField: 'info1Title', textField: 'info1Text', label: 'Info 1' },
+            { titleField: 'info2Title', textField: 'info2Text', label: 'Info 2' },
+            { titleField: 'info3Title', textField: 'info3Text', label: 'Info 3' },
+          ].map(({ titleField, textField, label }) => (
+            <div key={titleField} className="form-row" style={{ gap: 8, marginBottom: 8 }}>
+              <div className="form-group">
+                <label className="form-label">{label} — Titre</label>
+                <input className="input" value={(content.livraison as unknown as Record<string, string>)[titleField] || ''} onChange={e => setField(`livraison.${titleField}`, e.target.value)} />
+              </div>
+              <div className="form-group">
+                <label className="form-label">{label} — Texte</label>
+                <textarea className="input textarea" rows={2} value={(content.livraison as unknown as Record<string, string>)[textField] || ''} onChange={e => setField(`livraison.${textField}`, e.target.value)} />
+              </div>
+            </div>
+          ))}
+          <button className="btn btn-primary" onClick={() => saveSection('livraison')} disabled={saving}>Enregistrer</button>
+        </div>
+      )}
+
+      {tab === 'faq' && content.faq && (
+        <div className="card">
+          <h3 className="card-section-title">FAQ</h3>
+          {content.faq.map((section, sIdx) => (
+            <details key={sIdx} style={{ marginBottom: 16, border: '1px solid #e2e8f0', borderRadius: 8, padding: 12 }}>
+              <summary style={{ cursor: 'pointer', fontWeight: 600, marginBottom: 8 }}>
+                Section : {section.title}
+              </summary>
+              <div className="form-group">
+                <label className="form-label">Titre de la section</label>
+                <input className="input" value={section.title} onChange={e => {
+                  const updated = [...content.faq];
+                  updated[sIdx] = { ...updated[sIdx], title: e.target.value };
+                  setContent({ ...content, faq: updated });
+                }} />
+              </div>
+              {section.items.map((item, iIdx) => (
+                <div key={item.id} style={{ borderTop: '1px solid #f1f5f9', paddingTop: 8, marginTop: 8 }}>
+                  <div className="form-group">
+                    <label className="form-label">Q{iIdx + 1} — Question</label>
+                    <input className="input" value={item.question} onChange={e => {
+                      const updatedFaq = [...content.faq];
+                      const updatedItems = [...updatedFaq[sIdx].items];
+                      updatedItems[iIdx] = { ...updatedItems[iIdx], question: e.target.value };
+                      updatedFaq[sIdx] = { ...updatedFaq[sIdx], items: updatedItems };
+                      setContent({ ...content, faq: updatedFaq });
+                    }} />
+                  </div>
+                  <div className="form-group">
+                    <label className="form-label">Q{iIdx + 1} — Réponse</label>
+                    <textarea className="input textarea" rows={3} value={item.answer} onChange={e => {
+                      const updatedFaq = [...content.faq];
+                      const updatedItems = [...updatedFaq[sIdx].items];
+                      updatedItems[iIdx] = { ...updatedItems[iIdx], answer: e.target.value };
+                      updatedFaq[sIdx] = { ...updatedFaq[sIdx], items: updatedItems };
+                      setContent({ ...content, faq: updatedFaq });
+                    }} />
+                  </div>
+                </div>
+              ))}
+            </details>
+          ))}
+          <button className="btn btn-primary" onClick={() => saveSection('faq')} disabled={saving}>Enregistrer</button>
         </div>
       )}
     </div>

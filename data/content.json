@@ -52,5 +52,95 @@
   "seo": {
     "homeTitle": "La marcOnnête — Cosmétiques Bio pour Bébés",
     "homeDescription": "Découvrez La marcOnnête, marque française de cosmétiques naturels et bio pour les bébés. Baume hydratant, huile de massage, shampooing doux. Certifiés Bio, Vegan et Made in France."
-  }
+  },
+  "home": {
+    "mainTitle": "Moins c'est mieux !",
+    "citation": "A la naissance de ma fille, j'ai été confrontée au marché des cosmétiques bébé, force est de constater que les produits renfermaient trop d'ingrédients, trop du superflu, trop trop de substances inutiles voire nocives. J'ai alors décidé de revenir à l'essentiel en proposant des formules minimalistes qui respectent VRAIMENT la peau de nos bébés parce que MOINS c'est MIEUX !",
+    "signature": "Anaïs & Léana",
+    "sectionEngagesTitle": "La marcOnnête s'engage pour des produits :",
+    "badge1Title": "Produits engagés",
+    "badge1Text": "Vegan et recyclables",
+    "badge2Title": "Livraison rapide",
+    "badge2Text": "Sous 2 à 5 jours et neutre en carbonne",
+    "badge3Title": "Service client",
+    "badge3Text": "C'est par ici",
+    "badge4Title": "Paiement sécurisé",
+    "badge4Text": "Par carte bancaire ou Paypal"
+  },
+  "histoire": {
+    "title": "Une histoire d'amour et de simplicité",
+    "p1": "Peu de temps après l'obtention d'un doctorat en chimie, je donne naissance à ma fille, Léana, qui apporte avec elle une profonde transformation. Cette petite merveille a transformé mon monde, apportant une nouvelle inspiration et une motivation inégalée.",
+    "p2": "Sa douceur et sa fragilité me rappelaient constamment de faire de mon mieux pour protéger sa peau et sa santé. Cependant, face à un marché saturé d'ingrédients aussi complexes que superflus, je me suis rapidement aperçue que la quête de produits respectueux de cette vulnérabilité était ardue.",
+    "p3": "C'est alors que j'ai ressenti le besoin pressant de revenir à l'essentiel, de privilégier le minimalisme et d'en faire bénéficier d'autres parents. C'est ainsi qu'est née La marcOnnête, fruit de l'amour maternel et de l'expertise scientifique.",
+    "p4": "Chaque produit incarne une intention simple mais puissante : prendre soin de la peau des bébés et de leur santé avec des formules simples, sans artifice.",
+    "timelineTitle": "Quelques dates clés …"
+  },
+  "engagementsPage": {
+    "title": "Nos Engagements",
+    "intro": "Chez La marcOnnête, nous croyons en la puissance des actions concrètes et responsables. Prendre des engagements, ce n'est pas simplement parler, c'est avant tout agir ! À travers chacune de ses actions, La marcOnnête s'engage pour le bien-être de vos tout-petits et de notre planète en proposant une gamme spécialement conçue pour la préservation des peaux comme de l'environnement.",
+    "items": [
+      { "icon": "✨", "titre": "La simplicité", "texte": "Nous sommes convaincus que les produits les plus simples sont bien souvent les meilleurs ! C'est pourquoi nous allons à l'essentiel en proposant des produits formulés avec un minimum d'ingrédients vraiment essentiels." },
+      { "icon": "🚫", "titre": "Le sans parfum", "texte": "Tous les parfums sont bannis de nos produits car il s'agit de la première cause de réactions allergiques ! Les huiles essentielles, qui sont également des cocktails d'allergènes, sont aussi exclues des formules afin d'éviter d'éventuelles irritations ou autres réactions cutanées." },
+      { "icon": "🌿", "titre": "La bio", "texte": "Toute notre gamme est certifiée BIO par COSMECERT. Nous allons au-delà des exigences de la charte COSMEBIO avec un minimum de 98,9% d'ingrédients d'origine naturelle. Plus qu'une simple certification, c'est une véritable philosophie." },
+      { "icon": "⭐", "titre": "La qualité", "texte": "Les substances controversées (phénoxyéthanol, parabènes, BHT, perturbateurs endocriniens…) et les composés irritants sont exclus des formules. Nos produits d'hygiène renferment un tensioactif non-ionique doux à base de sucre afin de nettoyer en délicatesse, sans agresser. Tous nos produits font l'objet de nombreux tests garantissant une haute tolérance pour être utilisés en toute sécurité dès la naissance." },
+      { "icon": "♻️", "titre": "Le respect de l'environnement", "texte": "Les procédés de fabrication nocifs pour l'Homme ou l'environnement sont bannis et les ingrédients naturels et biodégradables privilégiés. Nos produits sont dépourvus de sur-emballages et leur conditionnement est 100% recyclable et garanti sans bisphénol A. Tous nos supports de communication sont certifiés FSC, PEFC voire Imprim'vert." },
+      { "icon": "🇫🇷", "titre": "La fabrication française", "texte": "Nous sommes fiers de valoriser notre savoir-faire français en proposant des produits de haute qualité. Ce choix nous permet également de soutenir l'économie de notre beau pays et de limiter notre empreinte carbone en favorisant les circuits courts !" }
+    ]
+  },
+  "livraison": {
+    "title": "Modalités de livraison",
+    "intro": "Nous livrons exclusivement en France métropolitaine, en Corse et à Monaco.",
+    "shipping": [
+      { "mode": "Point relais", "detail": "Retrait en bureau de poste ou point relais", "delay": "2 – 5 jours ouvrés", "price": "6,10 €" },
+      { "mode": "À domicile sans signature", "detail": "Dépôt dans la boîte aux lettres ou devant la porte", "delay": "2 – 5 jours ouvrés", "price": "6,95 €" },
+      { "mode": "À domicile avec signature", "detail": "Remise en main propre contre signature", "delay": "2 – 5 jours ouvrés", "price": "8,35 €" }
+    ],
+    "info1Title": "Suivi de commande",
+    "info1Text": "Un numéro de suivi vous est envoyé par e-mail dès l'expédition, utilisable sur laposte.fr.",
+    "info2Title": "Délai de traitement",
+    "info2Text": "Les commandes sont traitées sous 1 à 2 jours ouvrés après confirmation du paiement.",
+    "info3Title": "Un problème de livraison ?",
+    "info3Text": "Contactez notre service client via le formulaire de contact ou à contact@lamarconnete.fr"
+  },
+  "faq": [
+    {
+      "title": "Généralités",
+      "items": [
+        { "id": 1, "question": "Où sont fabriqués vos produits ?", "answer": "Toutes nos formules sont développées et produites en France." },
+        { "id": 2, "question": "Vos produits contiennent-ils des allergènes ou des produits controversés ?", "answer": "Tous nos produits ne contiennent aucun ingrédient chimique controversé et sont totalement sains pour le corps. Par exemple, ils ne contiennent pas de parfum (qui est le premier allergène des cosmétiques), d'huiles essentielles, de sulfates ni de parabènes ou de phtalates." },
+        { "id": 3, "question": "Vos produits sont-ils vegan ?", "answer": "Oui, nos formules sont 100% vegan et aucun de nos ingrédients n'est issu de l'exploitation animale ni testé sur eux conformément à la réglementation européenne." },
+        { "id": 4, "question": "Vos produits sont-ils certifiés BIO ?", "answer": "Oui, tous nos produits sont certifiés biologiques Cosmos Organic par l'organisme Cosmécert. De plus, la marcOnnête est une marque adhérente à l'association Cosmébio." },
+        { "id": 5, "question": "Dois-je rincer après l'utilisation de l'eau nettoyante ?", "answer": "Notre eau nettoyante a été développée pour être utilisée sans rinçage. Les tensioactifs sélectionnés sont particulièrement doux pour ne pas faire réagir la peau. Si toutefois, vous souhaitez rincer le produit après utilisation, cela n'impactera pas les propriétés de notre eau nettoyante car votre peau aura été démaquillée et purifiée au préalable." },
+        { "id": 6, "question": "Est-ce que je peux utiliser l'eau nettoyante pour me démaquiller ?", "answer": "Oui, c'est tout à fait possible. Notre eau nettoyante a été développée pour nettoyer efficacement tout en douceur. Elle est également efficace sur le maquillage." },
+        { "id": 7, "question": "Vos produits conviennent-ils aux peaux sensibles ou à tendance atopique ?", "answer": "Nous avons pris soin de proposer des formules 'clean' sans ingrédients controversés, sans parfum, même naturel, et sans aucun allergène. À la différence des produits classiques, nos formules renferment des tensioactifs doux, d'origine naturelle, et sont enrichies en glycérine végétale et Aloe vera BIO permettant de nettoyer sans dessécher la peau. Enfin, nos ingrédients ont été sélectionnés spécialement pour être bien tolérés par ce type de peau." },
+        { "id": 8, "question": "À partir de quel âge vos produits sont-ils utilisés ?", "answer": "Tous nos produits sont utilisables dès la naissance de votre bébé. La qualité et la sécurité de nos produits sont notre priorité, c'est pourquoi ils sont spécialement conçus pour répondre aux besoins de la peau fragile des bébés et des enfants." },
+        { "id": 9, "question": "J'ai une question sur un produit et je n'ai pas trouvé ma réponse dans la FAQ, à qui m'adresser ?", "answer": "Pour poser une question concernant un produit ou la marque, vous pouvez nous écrire via le formulaire de contact en ligne disponible ici ou par mail à contact@lamarconnete.fr" }
+      ]
+    },
+    {
+      "title": "Livraison",
+      "items": [
+        { "id": 1, "question": "Livrez-vous à l'international ?", "answer": "Nous livrons uniquement en France métropolitaine, Andorre, en Corse et à Monaco." },
+        { "id": 2, "question": "Quel est le montant des frais de port ?", "answer": "Pour toute commande en France métropolitaine, Corse et Monaco, les tarifs de livraison à domicile sans signature sont de 6,95 €. 1,40€ supplémentaire sera demandé pour une livraison contre signature. En revanche, si vous optez pour une livraison en point relais la tarif sera de seulement 6,10 €." },
+        { "id": 3, "question": "Quel est le délai de livraison ?", "answer": "Le délai de livraison est de 2 à 5 jours ouvrés." },
+        { "id": 4, "question": "Comment puis-je suivre ma livraison ?", "answer": "Une fois votre commande remise au transporteur, ce dernier vous enverra votre numéro de suivi par e-mail, utilisable sur le site laposte.fr, afin que vous puissiez suivre votre commande." },
+        { "id": 5, "question": "Je rencontre un problème avec la livraison de ma commande, que faire ?", "answer": "Vous pouvez joindre notre service client en nous écrivant via le formulaire en ligne disponible ici ou à l'adresse suivante : contact@lamarconnete.fr, nous serons ravis de pouvoir vous aider !" },
+        { "id": 6, "question": "J'ai reçu des produits endommagés, comment faire ?", "answer": "Vous pouvez contacter notre SAV en remplissant le formulaire de contact en ligne disponible ici ou en nous écrivant à contact@lamarconnete.fr. Merci de nous joindre une ou plusieurs photos de vos produits abîmés. Si le colis dans lequel vous avez reçu vos produits était également en mauvais état alors n'hésitez pas à en faire aussi une photo. Nous reviendrons rapidement vers vous." }
+      ]
+    },
+    {
+      "title": "Commandes",
+      "items": [
+        { "id": 1, "question": "Comment passer commande ?", "answer": "Passer commande sur le site de La marcOnnête est facile et sécurisé. Il vous suffit de sélectionner le ou les articles de votre choix, puis sélectionnez le bouton 'Ajouter au panier' sur la page de descriptif du produit." },
+        { "id": 2, "question": "Puis-je modifier ou annuler ma commande ?", "answer": "Nous vous remercions pour votre commande. Nous vous invitons à prendre contact au plus vite avec notre service client via le formulaire de contact en ligne ou à l'adresse e-mail suivante contact@lamarconnete.fr précisant votre nom/prénom et votre numéro de commande." },
+        { "id": 3, "question": "Le paiement est-il sécurisé ?", "answer": "Oui, nous prenons votre sécurité très au sérieux, c'est pourquoi nous utilisons l'approbation 3D Secure pour tous les paiements et le certificat SSL, pour protéger vos données personnelles et vos informations de carte de crédit contre tout accès non autorisé." },
+        { "id": 4, "question": "Puis-je régler ma commande en chèque cadeaux ?", "answer": "Non, malheureusement nous n'acceptons pas les chèques cadeaux pour régler une commande." },
+        { "id": 5, "question": "Comment utiliser un code de réduction (code promo) ?", "answer": "Une fois que vos articles ont été placés dans votre panier, vous verrez une section pour entrer le code de réduction avec une zone de texte. Entrez simplement le code dans la case et cliquez sur Appliquer. Votre code sera automatiquement appliqué à votre commande et le montant total sera mis à jour." },
+        { "id": 6, "question": "Mon code de réduction ne fonctionne pas, que faire ?", "answer": "Nous sommes désolés pour ce désagrément, nous vous invitons à vérifier la date de validité de votre code de réduction, la conformité à la communication qui en a été faite (orthographe, majuscule, minuscule), association avec une autre promotion." },
+        { "id": 7, "question": "Quand vais-je recevoir les informations de suivi pour ma commande ?", "answer": "Vous recevrez un e-mail du transporteur dans les 1 à 3 jours ouvrés indiquant votre numéro de suivi après l'expédition de votre commande." },
+        { "id": 8, "question": "Est-ce que je peux me faire livrer sur mon lieu de travail ?", "answer": "Oui, vous pouvez vous faire livrer sur votre lieu de travail. Il vous suffit d'indiquer cette adresse de livraison lors de votre commande." },
+        { "id": 9, "question": "Comment supprimer mon compte ?", "answer": "Si vous désirez supprimer votre compte, nous vous invitons à contacter notre service clients via le formulaire de contact en ligne ou à l'adresse mail suivante : contact@lamarconnete.fr" }
+      ]
+    }
+  ]
 }

@@ -431,6 +431,43 @@ export const produitsData: produits[] = [
         besoinChoixTaille: false,
     },
 
+    // --Gel lavant corps & cheveux
+    {
+        id: "12345614",
+        Titre: "Gel lavant corps & cheveux (500 mL)", type: "cosmetique", AltText: "Gel lavant corps & cheveux La marcOnnête 500mL", to: "GelLavant500ml",
+        enStock: true,
+        ImageProduit: "/Cosmetiques/Gel_lavant_face_avant_V6.jpeg",
+        ImageProduitSup: "/Cosmetiques/Gel_lavant_face_avant_hover_V2.jpeg",
+        ImagesSupplementaires: [
+            "/images/Produits/Fiche/Cosmetiques/Gel_lavant_face_avant_V6.jpeg",
+            "/images/Produits/Fiche/Cosmetiques/Gel_lavant_face_avant_hover_V2.jpeg",
+            "/images/Produits/Fiche/Cosmetiques/Gel_lavant_face_arriere_V3.jpeg",
+        ],
+        Prix: 19.90,
+        Description: "Spécialement développé pour les peaux sensibles des bébés, le gel lavant corps & cheveux la marcOnnête est formulé avec des ingrédients très doux ne contenant ni parfum, ni sulfates ni paraben ni phénoxyéthanol. Il nettoie en douceur la peau fragile et les cheveux délicats des bébés dès leur naissance. Sa formule enrichie en glycérine et Aloe Vera bio lui confère des propriétés hydratantes et protectrices participant ainsi à préserver la peau du desséchement.",
+        Description2: "Le gel lavant corps & cheveux La marcOnnête nettoie en douceur la peau fragile et les cheveux délicats des bébés dès leur naissance.",
+        LesPlusProduits: "Certifié BIO et VEGAN",
+        LesPlusProduits1: "Adapté aux peaux sensibles, réactives et à tendance atopique",
+        LesPlusProduits2: "Fabriqué en France",
+        Compositions: "Aqua, caprylyl/capryl glucoside, glycerin**, bentonite, xanthan gum, sodium benzoate, potassium sorbate, citric acid, aloe barbadensis leaf powder* — *Ingrédients issus de l'agriculture biologique — **Ingrédients transformés à partir d'ingrédients issus de l'agriculture biologique: 98,9% d'ingrédients d'origine naturelle.",
+        ConseilsUtilisaton: "Appliquer le gel sur la peau et les cheveux préalablement mouillés. Masser délicatement, rincer soigneusement puis sécher bébé sans frotter et sans oublier les petits plis cutanés.",
+        Certificat: ["BIO", "VEGAN", "Made in France"],
+        ScoreYuka: 100,
+        ScoreINCIBeauty: 20,
+        TexteBouton: "Ajouter au panier",
+        besoinChoixCouleur: false,
+        besoinChoixTaille: false,
+        LienPaiementUnique: [
+            {
+                lienDirect: "",
+                priceId: "",
+                productId: "",
+                quantite: 1,
+                couleur: "",
+            }
+        ],
+    },
+
     // --Eau nettoyante visage et corps
     {
         id: "12345613",

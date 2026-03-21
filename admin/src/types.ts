@@ -151,6 +151,38 @@ export interface ContentData {
     homeTitle: string;
     homeDescription: string;
   };
+  home: {
+    mainTitle: string;
+    citation: string;
+    signature: string;
+    sectionEngagesTitle: string;
+    badge1Title: string; badge1Text: string;
+    badge2Title: string; badge2Text: string;
+    badge3Title: string; badge3Text: string;
+    badge4Title: string; badge4Text: string;
+  };
+  histoire: {
+    title: string;
+    p1: string; p2: string; p3: string; p4: string;
+    timelineTitle: string;
+  };
+  engagementsPage: {
+    title: string;
+    intro: string;
+    items: Array<{ icon: string; titre: string; texte: string }>;
+  };
+  livraison: {
+    title: string;
+    intro: string;
+    shipping: Array<{ mode: string; detail: string; delay: string; price: string }>;
+    info1Title: string; info1Text: string;
+    info2Title: string; info2Text: string;
+    info3Title: string; info3Text: string;
+  };
+  faq: Array<{
+    title: string;
+    items: Array<{ id: number; question: string; answer: string }>;
+  }>;
 }
 
 export interface StockItem {

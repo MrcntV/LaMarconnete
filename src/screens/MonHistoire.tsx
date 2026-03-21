@@ -1,7 +1,11 @@
-import { motion } from 'framer-motion';
-import MyTimeline from '../components/Timeline';
+import { motion } from ‘framer-motion’;
+import MyTimeline from ‘../components/Timeline’;
+import { useContent } from ‘../contexts/ContentContext’;
 
 const MonHistoire: React.FC = () => {
+    const content = useContent();
+    const histoire = content.histoire || {};
+
     return (
         <motion.main
             initial={{ opacity: 0, y: -100 }}
@@ -9,15 +13,15 @@ const MonHistoire: React.FC = () => {
             transition={{ duration: 1 }} >
             <section>
                 <div>
-                    <div className='HomeContainer'>
-                        <div className='HomeContainerGauche'>
-                            <h2>Une histoire d’amour et de simplicité </h2>
-                            <p>Peu de temps après l’obtention d’un doctorat en chimie, je donne naissance à ma fille, Léana, qui apporte avec elle une profonde transformation. Cette petite merveille a transformé mon monde, apportant une nouvelle inspiration et une motivation inégalée. </p>
-                            <p>Sa douceur et sa fragilité me rappelaient constamment de faire de mon mieux pour protéger sa peau et sa santé. Cependant, face à un marché saturé d'ingrédients aussi complexes que superflus, je me suis rapidement aperçue que la quête de produits respectueux de cette vulnérabilité était ardue.</p>
-                            <p>C’est alors que j'ai ressenti le besoin pressant de revenir à l'essentiel, de privilégier le minimalisme et d’en faire bénéficier d’autres parents. C'est ainsi qu'est née La marcOnnête, fruit de l'amour maternel et de l'expertise scientifique.</p>
-                            <p>Chaque produit incarne une intention simple mais puissante : prendre soin de la peau des bébés et de leur santé avec des formules simples, sans artifice. </p>
+                    <div className=’HomeContainer’>
+                        <div className=’HomeContainerGauche’>
+                            <h2>{histoire.title || "Une histoire d’amour et de simplicité"}</h2>
+                            <p>{histoire.p1 || "Peu de temps après l’obtention d’un doctorat en chimie, je donne naissance à ma fille, Léana, qui apporte avec elle une profonde transformation. Cette petite merveille a transformé mon monde, apportant une nouvelle inspiration et une motivation inégalée."}</p>
+                            <p>{histoire.p2 || "Sa douceur et sa fragilité me rappelaient constamment de faire de mon mieux pour protéger sa peau et sa santé. Cependant, face à un marché saturé d’ingrédients aussi complexes que superflus, je me suis rapidement aperçue que la quête de produits respectueux de cette vulnérabilité était ardue."}</p>
+                            <p>{histoire.p3 || "C’est alors que j’ai ressenti le besoin pressant de revenir à l’essentiel, de privilégier le minimalisme et d’en faire bénéficier d’autres parents. C’est ainsi qu’est née La marcOnnête, fruit de l’amour maternel et de l’expertise scientifique."}</p>
+                            <p>{histoire.p4 || "Chaque produit incarne une intention simple mais puissante : prendre soin de la peau des bébés et de leur santé avec des formules simples, sans artifice."}</p>
                         </div>
-                        <div className='HomeContainerDroit'>
+                        <div className=’HomeContainerDroit’>
                             <img src="images/AnaisLeanavP.png" alt="" />
                         </div>
                     </div>
@@ -26,7 +30,7 @@ const MonHistoire: React.FC = () => {
                     </div>
                 </div>
             </section>
-            <h2>Quelques dates clés …</h2>
+            <h2>{histoire.timelineTitle || "Quelques dates clés …"}</h2>
             <section>
                 <MyTimeline />
             </section>

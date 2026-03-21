@@ -1,10 +1,21 @@
 import { motion } from 'framer-motion';
+import { useContent } from '../contexts/ContentContext';
+
+const defaultShipping = [
+    { mode: "Point relais", detail: "Retrait en bureau de poste ou point relais", delay: "2 – 5 jours ouvrés", price: "6,10 €" },
+    { mode: "À domicile sans signature", detail: "Dépôt dans la boîte aux lettres ou devant la porte", delay: "2 – 5 jours ouvrés", price: "6,95 €" },
+    { mode: "À domicile avec signature", detail: "Remise en main propre contre signature", delay: "2 – 5 jours ouvrés", price: "8,35 €" },
+];
 
 export default function Livraison() {
+    const content = useContent();
+    const livraison = content.livraison || {};
+    const shipping = livraison.shipping || defaultShipping;
+
     return (
         <motion.main initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5 }}>
             <section className="livraison-section">
-                <h1>Modalités de livraison</h1>
+                <h1>{livraison.title || "Modalités de livraison"}</h1>
 
                 <motion.p
                     className="livraison-intro"
@@ -12,7 +23,7 @@ export default function Livraison() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ delay: 0.2 }}
                 >
-                    Nous livrons exclusivement en <strong>France métropolitaine</strong>, en <strong>Corse</strong> et à <strong>Monaco</strong>.
+                    {livraison.intro || "Nous livrons exclusivement en France métropolitaine, en Corse et à Monaco."}
                 </motion.p>
 
                 <motion.div
@@ -30,30 +41,16 @@ export default function Livraison() {
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>
-                                    <strong>Point relais</strong>
-                                    <span className="livraison-detail">Retrait en bureau de poste ou point relais</span>
-                                </td>
-                                <td>2 – 5 jours ouvrés</td>
-                                <td className="livraison-prix">6,10 €</td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <strong>À domicile sans signature</strong>
-                                    <span className="livraison-detail">Dépôt dans la boîte aux lettres ou devant la porte</span>
-                                </td>
-                                <td>2 – 5 jours ouvrés</td>
-                                <td className="livraison-prix">6,95 €</td>
-                            </tr>
-                            <tr>
-                                <td>
-                                    <strong>À domicile avec signature</strong>
-                                    <span className="livraison-detail">Remise en main propre contre signature</span>
-                                </td>
-                                <td>2 – 5 jours ouvrés</td>
-                                <td className="livraison-prix">8,35 €</td>
-                            </tr>
+                            {shipping.map((row: { mode: string; detail: string; delay: string; price: string }, i: number) => (
+                                <tr key={i}>
+                                    <td>
+                                        <strong>{row.mode}</strong>
+                                        <span className="livraison-detail">{row.detail}</span>
+                                    </td>
+                                    <td>{row.delay}</td>
+                                    <td className="livraison-prix">{row.price}</td>
+                                </tr>
+                            ))}
                         </tbody>
                     </table>
                 </motion.div>
@@ -67,22 +64,22 @@ export default function Livraison() {
                     <div className="livraison-info-card">
                         <span className="livraison-info-icon">📦</span>
                         <div>
-                            <strong>Suivi de commande</strong>
-                            <p>Un numéro de suivi vous est envoyé par e-mail dès l'expédition, utilisable sur laposte.fr.</p>
+                            <strong>{livraison.info1Title || "Suivi de commande"}</strong>
+                            <p>{livraison.info1Text || "Un numéro de suivi vous est envoyé par e-mail dès l'expédition, utilisable sur laposte.fr."}</p>
                         </div>
                     </div>
                     <div className="livraison-info-card">
                         <span className="livraison-info-icon">⏱️</span>
                         <div>
-                            <strong>Délai de traitement</strong>
-                            <p>Les commandes sont traitées sous 1 à 2 jours ouvrés après confirmation du paiement.</p>
+                            <strong>{livraison.info2Title || "Délai de traitement"}</strong>
+                            <p>{livraison.info2Text || "Les commandes sont traitées sous 1 à 2 jours ouvrés après confirmation du paiement."}</p>
                         </div>
                     </div>
                     <div className="livraison-info-card">
                         <span className="livraison-info-icon">❓</span>
                         <div>
-                            <strong>Un problème de livraison ?</strong>
-                            <p>Contactez notre service client via le formulaire de <a href="/Contact">contact</a> ou à <a href="mailto:contact@lamarconnete.fr">contact@lamarconnete.fr</a></p>
+                            <strong>{livraison.info3Title || "Un problème de livraison ?"}</strong>
+                            <p>{livraison.info3Text || "Contactez notre service client via le formulaire de contact ou à contact@lamarconnete.fr"}</p>
                         </div>
                     </div>
                 </motion.div>

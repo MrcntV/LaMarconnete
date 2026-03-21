@@ -11,6 +11,7 @@ const app = express();
 const PORT = process.env.PORT || 43749;
 
 // Connexion MongoDB + seed auto des locations si la collection est vide
+console.log('[MongoDB] Connexion en cours...');
 connectDB().then(async () => {
   try {
     const Location = require('./api/models/Location');
@@ -33,6 +34,10 @@ connectDB().then(async () => {
   } catch (e) {
     console.error('[Seed] Erreur seed locations :', e.message);
   }
+
+  app.listen(PORT, () => {
+    console.log(`[Main] Server running on port ${PORT}`);
+  });
 });
 
 const GITHUB_WEBHOOK_SECRET = 'J@mltlja345h';
@@ -238,6 +243,3 @@ app.get('*', (req, res) => {
   res.sendFile(path.join(__dirname, 'build', 'index.html'));
 });
 
-app.listen(PORT, () => {
-  console.log(`[Main] Server running on port ${PORT}`);
-});

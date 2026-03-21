@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import SearchBar from "../components/SearchBar";
 import { IoIosArrowDown } from "react-icons/io";
 import { motion, AnimatePresence } from "framer-motion";
+import { useContent } from "../contexts/ContentContext";
 
 interface FAQItem {
     id: number;
@@ -92,7 +93,9 @@ export default FAQSection;
 
 
 export const FAQ = () => {
-    const faqData = [
+    const content = useContent();
+
+    const hardcodedFaqData = [
         {
             title: "Généralités",
             items: [
@@ -230,12 +233,14 @@ export const FAQ = () => {
         },
     ];
 
+    const faqData = content.faq || hardcodedFaqData;
+
     return (
         <main>
             <section>
                 <h1>Bonjour, comment puis-je vous aider ?</h1>
                 <SearchBar />
-                {faqData.map((section, index) => (
+                {faqData.map((section: { title: string; items: FAQItem[] }, index: number) => (
                     <FAQSection key={index} title={section.title} items={section.items} />
                 ))}
             </section>

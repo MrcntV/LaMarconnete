@@ -103,5 +103,20 @@
     "active": true,
     "createdAt": "2024-01-01T00:00:00.000Z",
     "updatedAt": "2024-01-01T00:00:00.000Z"
+  },
+  {
+    "id": "12345614",
+    "Titre": "Gel lavant corps & cheveux (500 mL)",
+    "type": "cosmetique",
+    "reference": "GL0326",
+    "enStock": true,
+    "ImageProduit": "/Cosmetiques/Gel_lavant_face_avant_V6.jpeg",
+    "to": "GelLavant500ml",
+    "Prix": 19.90,
+    "stock": 50,
+    "stockAlert": 5,
+    "active": true,
+    "createdAt": "2024-01-01T00:00:00.000Z",
+    "updatedAt": "2024-01-01T00:00:00.000Z"
   }
 ]
