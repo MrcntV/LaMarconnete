@@ -230,3 +230,58 @@ Confirmer            : ********
 
 > **Important :** à faire obligatoirement après chaque installation sur un nouveau serveur.
 > Le mot de passe par défaut `admin123` ne doit jamais rester en production.
+
+---
+
+## Domaines et configuration Nginx
+
+### Domaines en production
+
+| URL | Serveur |
+|---|---|
+| https://mrcntv.com | Site principal (port 43749) |
+| https://admin.mrcntv.com | Panel admin (port 43750) |
+
+Les domaines sont définis dans `.env` :
+```
+SITE_DOMAIN=mrcntv.com
+ADMIN_DOMAIN=admin.mrcntv.com
+```
+
+`server.js` lit ces variables pour configurer le CORS automatiquement.
+
+### Installer le fichier Nginx sur le serveur
+
+```bash
+# Copier le fichier de config
+sudo cp /LaMarconnete/Marconnete.conf /etc/nginx/sites-available/Marconnete.conf
+
+# Activer (supprimer l'ancien lien si nécessaire)
+sudo rm -f /etc/nginx/sites-enabled/Marconnete.conf
+sudo ln -s /etc/nginx/sites-available/Marconnete.conf /etc/nginx/sites-enabled/
+
+# Tester et recharger
+sudo nginx -t && sudo systemctl reload nginx
+```
+
+### Générer les certificats SSL (Let's Encrypt)
+
+```bash
+# Les 3 domaines en une commande
+sudo certbot --nginx -d mrcntv.com -d www.mrcntv.com -d admin.mrcntv.com
+```
+
+### Changer de domaine
+
+1. Modifier `.env` :
+   ```
+   SITE_DOMAIN=nouveaudomaine.com
+   ADMIN_DOMAIN=admin.nouveaudomaine.com
+   ```
+2. Mettre à jour `Marconnete.conf` (remplacer `mrcntv.com` et `admin.mrcntv.com`)
+3. Générer les nouveaux certificats SSL avec certbot
+4. Recharger nginx + redémarrer pm2 :
+   ```bash
+   sudo systemctl reload nginx
+   pm2 restart all
+   ```

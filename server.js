@@ -20,12 +20,17 @@ const PM2_APP_NAME = 'marconnete';
 // JWT Secret (set in .env for production)
 const JWT_SECRET = process.env.JWT_SECRET || 'marconnete-secret-jwt-2024';
 
-// CORS — allow admin panel and localhost dev origins
+// CORS — origines autorisées (lues depuis .env)
+const ADMIN_DOMAIN = process.env.ADMIN_DOMAIN || 'admin.mrcntv.com';
+const SITE_DOMAIN  = process.env.SITE_DOMAIN  || 'mrcntv.com';
+
 app.use(cors({
   origin: [
+    `https://${ADMIN_DOMAIN}`,
+    `https://${SITE_DOMAIN}`,
+    `https://www.${SITE_DOMAIN}`,
     'http://localhost:43750',
     'http://localhost:3001',
-    'https://admin.lamarconnete.fr'
   ],
   credentials: true
 }));
