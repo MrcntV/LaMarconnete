@@ -11,7 +11,9 @@
     "postalCode": "75011",
     "country": "France",
     "createdAt": "2024-01-10T09:00:00.000Z",
-    "orders": ["order_001"],
+    "orders": [
+      "order_001"
+    ],
     "newsletter": true,
     "active": true
   },
@@ -27,7 +29,25 @@
     "postalCode": "69003",
     "country": "France",
     "createdAt": "2024-02-05T10:00:00.000Z",
-    "orders": ["order_002"],
+    "orders": [
+      "order_002"
+    ],
+    "newsletter": false,
+    "active": true
+  },
+  {
+    "id": "cust_mmzni4kx_0dnj2",
+    "email": "marie@test.fr",
+    "passwordHash": "$2b$10$sE2/BbG9DJzyAixS9UFcw.fflWXZhEHdX9C3utMLTJkxWV4oKIyO.",
+    "firstName": "Marie",
+    "lastName": "Dupont",
+    "phone": "",
+    "address": "",
+    "city": "",
+    "postalCode": "",
+    "country": "France",
+    "createdAt": "2026-03-21T01:30:14.577Z",
+    "orders": [],
     "newsletter": false,
     "active": true
   }
