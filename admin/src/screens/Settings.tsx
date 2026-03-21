@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
+import { apiPost } from '../api';
 
 const Settings: React.FC = () => {
   const [passwordForm, setPasswordForm] = useState({ current: '', newPass: '', confirm: '' });
@@ -8,6 +9,38 @@ const Settings: React.FC = () => {
   const [shopForm, setShopForm] = useState({ taxRate: '20', currency: 'EUR', freeShippingThreshold: '50' });
   const [notifForm, setNotifForm] = useState({ orderEmail: 'admin@lamarconnete.fr' });
   const [saved, setSaved] = useState<Record<string, boolean>>({});
+  const [buildStatus, setBuildStatus] = useState<Record<string, 'idle' | 'running' | 'done' | 'error'>>({ site: 'idle', admin: 'idle' });
+  const [buildLog, setBuildLog] = useState<Record<string, string>>({ site: '', admin: '' });
+  const logRef = useRef<HTMLPreElement>(null);
+
+  const handleBuild = async (target: 'site' | 'admin') => {
+    setBuildStatus(s => ({ ...s, [target]: 'running' }));
+    setBuildLog(l => ({ ...l, [target]: '' }));
+    try {
+      const token = localStorage.getItem('admin_token');
+      const res = await fetch(`/api/build/${target}`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const reader = res.body?.getReader();
+      const decoder = new TextDecoder();
+      if (!reader) throw new Error('Pas de flux');
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value);
+        setBuildLog(l => {
+          const updated = { ...l, [target]: l[target] + chunk };
+          setTimeout(() => logRef.current?.scrollTo(0, logRef.current.scrollHeight), 0);
+          return updated;
+        });
+      }
+      setBuildStatus(s => ({ ...s, [target]: 'done' }));
+    } catch (err) {
+      setBuildLog(l => ({ ...l, [target]: l[target] + '\nErreur : ' + (err instanceof Error ? err.message : String(err)) }));
+      setBuildStatus(s => ({ ...s, [target]: 'error' }));
+    }
+  };
 
   const handleSave = (section: string) => {
     setSaved(s => ({ ...s, [section]: true }));
@@ -134,6 +167,43 @@ const Settings: React.FC = () => {
           </div>
           <button className="btn btn-primary" onClick={() => handleSave('notif')}>Enregistrer</button>
         </div>
+      </div>
+
+      {/* ── Déploiement ──────────────────────────────────────────── */}
+      <div className="card" style={{ marginTop: 24 }}>
+        <h3 className="card-section-title">Déploiement</h3>
+        <p className="text-muted" style={{ marginBottom: 16, fontSize: 13 }}>
+          Rebuild les applications React directement depuis le panel. À utiliser après modification de contenu ou de code.
+        </p>
+        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap' }}>
+          <button
+            className={`btn ${buildStatus.site === 'running' ? 'btn-secondary' : buildStatus.site === 'done' ? 'btn-primary' : buildStatus.site === 'error' ? 'btn-danger' : 'btn-primary'}`}
+            onClick={() => handleBuild('site')}
+            disabled={buildStatus.site === 'running' || buildStatus.admin === 'running'}
+          >
+            {buildStatus.site === 'running' ? '⏳ Build site...' : buildStatus.site === 'done' ? '✓ Site buildé' : buildStatus.site === 'error' ? '✗ Erreur site' : '🔨 Build site (mrcntv.com)'}
+          </button>
+          <button
+            className={`btn ${buildStatus.admin === 'running' ? 'btn-secondary' : buildStatus.admin === 'done' ? 'btn-primary' : buildStatus.admin === 'error' ? 'btn-danger' : 'btn-secondary'}`}
+            onClick={() => handleBuild('admin')}
+            disabled={buildStatus.site === 'running' || buildStatus.admin === 'running'}
+          >
+            {buildStatus.admin === 'running' ? '⏳ Build admin...' : buildStatus.admin === 'done' ? '✓ Admin buildé' : buildStatus.admin === 'error' ? '✗ Erreur admin' : '🔨 Build admin (admin.mrcntv.com)'}
+          </button>
+        </div>
+
+        {(buildLog.site || buildLog.admin) && (
+          <pre
+            ref={logRef}
+            style={{
+              marginTop: 16, background: '#0f172a', color: '#94a3b8',
+              padding: 12, borderRadius: 8, fontSize: 11,
+              maxHeight: 300, overflowY: 'auto', whiteSpace: 'pre-wrap', wordBreak: 'break-all',
+            }}
+          >
+            {buildLog.site || buildLog.admin}
+          </pre>
+        )}
       </div>
     </div>
   );

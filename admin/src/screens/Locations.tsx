@@ -5,8 +5,8 @@ import { apiGet, apiPost, apiPut, apiDelete } from '../api';
 import { Location } from '../types';
 
 const emptyLocation: Partial<Location> = {
-  name: '', address: '', city: '', postalCode: '',
-  phone: '', email: '', schedule: '', lat: undefined, lng: undefined, active: true
+  name: '', address: '', city: '', postalCode: '', département: '',
+  phone: '', email: '', schedule: '', image: '', lat: undefined, lng: undefined, active: true
 };
 
 const Locations: React.FC = () => {
@@ -129,6 +129,10 @@ const Locations: React.FC = () => {
                   <input className="input" value={selected.postalCode || ''} onChange={e => set('postalCode', e.target.value)} required />
                 </div>
               </div>
+              <div className="form-group">
+                <label className="form-label">Département (ex: 42, 06, 69)</label>
+                <input className="input" value={selected.département || ''} onChange={e => set('département', e.target.value)} placeholder="42" />
+              </div>
               <div className="form-row">
                 <div className="form-group">
                   <label className="form-label">Téléphone</label>
@@ -142,6 +146,10 @@ const Locations: React.FC = () => {
               <div className="form-group">
                 <label className="form-label">Horaires</label>
                 <input className="input" value={selected.schedule || ''} onChange={e => set('schedule', e.target.value)} placeholder="Lun-Ven 9h-19h" />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Image (chemin relatif)</label>
+                <input className="input" value={selected.image || ''} onChange={e => set('image', e.target.value)} placeholder="./images/PointsDeVentes/photo.jpg" />
               </div>
               <div className="form-row">
                 <div className="form-group">

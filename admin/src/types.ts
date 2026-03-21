@@ -104,11 +104,13 @@ export interface Location {
   address: string;
   city: string;
   postalCode: string;
+  département?: string;
   lat?: number;
   lng?: number;
   phone?: string;
   email?: string;
   schedule?: string;
+  image?: string;
   active: boolean;
 }
 

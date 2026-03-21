@@ -80,6 +80,7 @@ app.use('/api/invoices', require('./api/routes/invoices'));
 app.use('/api/content', require('./api/routes/content'));
 app.use('/api/stock', require('./api/routes/stock'));
 app.use('/api/stripe', require('./api/routes/stripe'));
+app.use('/api/build', require('./api/routes/build'));
 
 // Route API status
 app.get('/api/status', (req, res) => {
