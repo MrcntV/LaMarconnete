@@ -175,6 +175,7 @@ app.use('/api/stock', require('./api/routes/stock'));
 app.use('/api/stripe', require('./api/routes/stripe'));
 app.use('/api/build', require('./api/routes/build'));
 app.use('/api/settings', require('./api/routes/settings'));
+app.use('/api/media', require('./api/routes/media'));
 
 // Route API status
 app.get('/api/status', (req, res) => {

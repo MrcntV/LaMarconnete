@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { apiGet } from '../api';
+import ImageManager from '../components/ImageManager';
 
 const PRODUCT_TYPES = ['cosmetique', 'vetement', 'album', 'accessoire'];
 const CERTIFICATIONS = ['BIO', 'VEGAN', 'Made in France'];
@@ -21,11 +22,6 @@ const empty: Record<string, any> = {
   active: true, enStock: true, besoinChoixCouleur: false, besoinChoixTaille: false,
 };
 
-function imageUrl(path: string) {
-  if (!path) return '';
-  if (path.startsWith('http')) return path;
-  return `${BASE}${path}`;
-}
 
 const ProductForm: React.FC = () => {
   const { id } = useParams();
@@ -36,7 +32,6 @@ const ProductForm: React.FC = () => {
   const [loading, setLoading] = useState(!isNew);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
-  const [uploading, setUploading] = useState<string | null>(null);
 
   const token = localStorage.getItem('admin_token');
 
@@ -54,33 +49,6 @@ const ProductForm: React.FC = () => {
   const toggleCert = (cert: string) => {
     const cur: string[] = form.Certificat || [];
     set('Certificat', cur.includes(cert) ? cur.filter(c => c !== cert) : [...cur, cert]);
-  };
-
-  const handleUpload = async (file: File, field: string, suppIdx?: number) => {
-    const key = suppIdx != null ? `supp_${suppIdx}` : field;
-    setUploading(key);
-    const fd = new FormData();
-    fd.append('image', file);
-    try {
-      const res = await fetch(`${BASE}/api/products/upload-image`, {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-        body: fd,
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Erreur upload');
-      if (suppIdx != null) {
-        const imgs = [...(form.ImagesSupplementaires as string[])];
-        imgs[suppIdx] = data.path;
-        set('ImagesSupplementaires', imgs);
-      } else {
-        set(field, data.path);
-      }
-    } catch (err: any) {
-      setError(err.message);
-    } finally {
-      setUploading(null);
-    }
   };
 
   const handleSave = async (e: React.FormEvent) => {
@@ -106,8 +74,6 @@ const ProductForm: React.FC = () => {
   };
 
   if (loading) return <div className="loading-page">Chargement...</div>;
-
-  const suppImages: string[] = form.ImagesSupplementaires || [];
 
   return (
     <div className="screen">
@@ -230,66 +196,18 @@ const ProductForm: React.FC = () => {
         {/* ── Images ── */}
         <div className="card">
           <h3 className="card-section-title">Images</h3>
-          <div className="form-grid-2" style={{ marginBottom: 20 }}>
-            {/* Image principale */}
-            <div className="form-group">
-              <label className="form-label">Image principale (carte produit)</label>
-              {form.ImageProduit && (
-                <img src={imageUrl(form.ImageProduit)} alt="" style={{ width: 100, height: 100, objectFit: 'cover', borderRadius: 8, border: '1px solid var(--border)', marginBottom: 8, display: 'block' }} />
-              )}
-              <div style={{ display: 'flex', gap: 8 }}>
-                <input className="input" value={form.ImageProduit} onChange={e => set('ImageProduit', e.target.value)} placeholder="/images/Produits/..." style={{ flex: 1 }} />
-                <label htmlFor="up-main" className="btn btn-secondary" style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}>
-                  {uploading === 'ImageProduit' ? 'Upload...' : 'Uploader'}
-                </label>
-                <input id="up-main" type="file" accept="image/*" style={{ display: 'none' }}
-                  onChange={e => { const f = e.target.files?.[0]; if (f) handleUpload(f, 'ImageProduit'); e.target.value = ''; }} />
-              </div>
-            </div>
-
-            {/* Image survol */}
-            <div className="form-group">
-              <label className="form-label">Image survol (carte produit)</label>
-              {form.ImageProduitSup && (
-                <img src={imageUrl(form.ImageProduitSup)} alt="" style={{ width: 100, height: 100, objectFit: 'cover', borderRadius: 8, border: '1px solid var(--border)', marginBottom: 8, display: 'block' }} />
-              )}
-              <div style={{ display: 'flex', gap: 8 }}>
-                <input className="input" value={form.ImageProduitSup} onChange={e => set('ImageProduitSup', e.target.value)} placeholder="/images/Produits/..." style={{ flex: 1 }} />
-                <label htmlFor="up-sup" className="btn btn-secondary" style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}>
-                  {uploading === 'ImageProduitSup' ? 'Upload...' : 'Uploader'}
-                </label>
-                <input id="up-sup" type="file" accept="image/*" style={{ display: 'none' }}
-                  onChange={e => { const f = e.target.files?.[0]; if (f) handleUpload(f, 'ImageProduitSup'); e.target.value = ''; }} />
-              </div>
-            </div>
-          </div>
-
-          {/* Images supplémentaires (galerie) */}
-          <div className="form-group">
-            <label className="form-label">Images galerie (fiche produit)</label>
-            {suppImages.map((img, i) => (
-              <div key={i} style={{ display: 'flex', gap: 8, marginBottom: 10, alignItems: 'center' }}>
-                {img && (
-                  <img src={imageUrl(img)} alt="" style={{ width: 56, height: 56, objectFit: 'cover', borderRadius: 6, border: '1px solid var(--border)', flexShrink: 0 }} />
-                )}
-                {!img && uploading === `supp_${i}` && (
-                  <div style={{ width: 56, height: 56, background: 'var(--border)', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 11, color: 'var(--text-muted)', flexShrink: 0 }}>...</div>
-                )}
-                <input className="input" value={img} onChange={e => { const imgs = [...suppImages]; imgs[i] = e.target.value; set('ImagesSupplementaires', imgs); }} placeholder="/images/Produits/..." style={{ flex: 1 }} />
-                <label htmlFor={`up-supp-${i}`} className="btn btn-secondary" style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}>
-                  {uploading === `supp_${i}` ? '...' : 'Upload'}
-                </label>
-                <input id={`up-supp-${i}`} type="file" accept="image/*" style={{ display: 'none' }}
-                  onChange={e => { const f = e.target.files?.[0]; if (f) handleUpload(f, 'ImagesSupplementaires', i); e.target.value = ''; }} />
-                <button type="button" className="btn btn-danger" style={{ padding: '6px 10px', flexShrink: 0 }}
-                  onClick={() => set('ImagesSupplementaires', suppImages.filter((_, j) => j !== i))}>✕</button>
-              </div>
-            ))}
-            <button type="button" className="btn btn-secondary"
-              onClick={() => set('ImagesSupplementaires', [...suppImages, ''])}>
-              + Ajouter une image
-            </button>
-          </div>
+          <p style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 12 }}>
+            Uploadez vos images puis assignez leur rôle : <strong>Principale</strong> (carte produit), <strong>Survol</strong> (hover carte) ou <strong>Galerie</strong> (fiche produit).
+          </p>
+          <ImageManager
+            productId={form.id || ''}
+            selected={form.ImagesSupplementaires || []}
+            featured={form.ImageProduit || ''}
+            featuredHover={form.ImageProduitSup || ''}
+            onChangeSelected={paths => set('ImagesSupplementaires', paths)}
+            onChangeFeatured={path => set('ImageProduit', path)}
+            onChangeFeaturedHover={path => set('ImageProduitSup', path)}
+          />
         </div>
 
         {/* ── Les plus produit ── */}
