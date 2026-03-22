@@ -20,6 +20,8 @@ const empty: Record<string, any> = {
   Certificat: [] as string[], ScoreINCIBeauty: 0, ScoreYuka: 0, Etoiles: '',
   stock: 0, stockAlert: 5,
   active: true, enStock: true, besoinChoixCouleur: false, besoinChoixTaille: false,
+  OptionsCouleur: '',
+  poids: 0, longueur: 0, largeur: 0, hauteur: 0,
 };
 
 
@@ -190,6 +192,24 @@ const ProductForm: React.FC = () => {
                 <span>En stock</span>
               </label>
             </div>
+            <div className="form-group">
+              <label className="form-check">
+                <input type="checkbox" checked={form.besoinChoixCouleur || false} onChange={e => set('besoinChoixCouleur', e.target.checked)} />
+                <span>Choix de couleur requis</span>
+              </label>
+            </div>
+            <div className="form-group">
+              <label className="form-check">
+                <input type="checkbox" checked={form.besoinChoixTaille || false} onChange={e => set('besoinChoixTaille', e.target.checked)} />
+                <span>Choix de taille requis</span>
+              </label>
+            </div>
+            {form.besoinChoixCouleur && (
+              <div className="form-group">
+                <label className="form-label">Options couleurs (séparées par des virgules)</label>
+                <input className="input" value={form.OptionsCouleur || ''} onChange={e => set('OptionsCouleur', e.target.value)} placeholder="Blanc, Beige, Rose" />
+              </div>
+            )}
           </div>
         </div>
 
@@ -247,6 +267,32 @@ const ProductForm: React.FC = () => {
           <div className="card">
             <h3 className="card-section-title">Infos complémentaires</h3>
             <textarea className="input textarea" rows={6} value={form.InfosComplementaires} onChange={e => set('InfosComplementaires', e.target.value)} placeholder="Poids : 0,548 kg" />
+          </div>
+        </div>
+
+        {/* ── Livraison / Colissimo ── */}
+        <div className="card">
+          <h3 className="card-section-title">Livraison / Colissimo</h3>
+          <p style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 12 }}>
+            Le poids est utilisé pour afficher les informations de livraison sur la fiche produit.
+          </p>
+          <div className="form-grid-2">
+            <div className="form-group">
+              <label className="form-label">Poids (grammes)</label>
+              <input type="number" min="0" className="input" value={form.poids || 0} onChange={e => set('poids', parseInt(e.target.value, 10) || 0)} placeholder="ex : 548" />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Longueur (mm)</label>
+              <input type="number" min="0" className="input" value={form.longueur || 0} onChange={e => set('longueur', parseInt(e.target.value, 10) || 0)} />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Largeur (mm)</label>
+              <input type="number" min="0" className="input" value={form.largeur || 0} onChange={e => set('largeur', parseInt(e.target.value, 10) || 0)} />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Hauteur (mm)</label>
+              <input type="number" min="0" className="input" value={form.hauteur || 0} onChange={e => set('hauteur', parseInt(e.target.value, 10) || 0)} />
+            </div>
           </div>
         </div>
 

@@ -1,5 +1,6 @@
 
 import { ContentProvider } from './contexts/ContentContext';
+import { CartProvider } from './contexts/CartContext';
 
 import './App.css';
 
@@ -41,6 +42,7 @@ import { ScrollToTopOnNav, ScrollToTopButton } from './components/ScrollToTop';
 
 function App() {
   return (
+    <CartProvider>
     <ContentProvider>
       <div className='App'>
         <ScrollToTopOnNav />
@@ -52,6 +54,7 @@ function App() {
         <ScrollToTopButton />
       </div>
     </ContentProvider>
+    </CartProvider>
   );
 }
 

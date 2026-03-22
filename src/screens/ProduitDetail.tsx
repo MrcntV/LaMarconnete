@@ -3,13 +3,24 @@ import { useParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { IoIosArrowDown } from "react-icons/io";
 import HomeMeilleursVentes from '../components/HomeMeilleursVentes';
+import { useCart } from '../contexts/CartContext';
 
 import Slider from 'react-slick';
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
+const TAILLES = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+
+const estimerDelai = (poids: number): string => {
+  if (!poids || poids <= 0) return 'Livraison Colissimo 2-3 jours ouvrés';
+  if (poids <= 500) return 'Livraison Colissimo 2-3 jours ouvrés (petit colis ≤ 500g)';
+  if (poids <= 2000) return 'Livraison Colissimo 2-3 jours ouvrés (colis ≤ 2 kg)';
+  return 'Livraison Colissimo 2-3 jours ouvrés (colis > 2 kg)';
+};
+
 const ProduitDetail = () => {
   const { productId } = useParams();
+  const { addItem, totalItems } = useCart();
 
   const [produit, setProduit] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -25,8 +36,13 @@ const ProduitDetail = () => {
   const toggleUtilisation = () => setUtilisationOpen(!UtilisationOpen);
 
   const [quantite, setQuantite] = useState(1);
-  const incrementQuantite = () => setQuantite(quantite + 1);
-  const decrementQuantite = () => { if (quantite > 1) setQuantite(quantite - 1); };
+  const incrementQuantite = () => setQuantite(q => q + 1);
+  const decrementQuantite = () => setQuantite(q => Math.max(1, q - 1));
+
+  const [couleur, setCouleur] = useState('');
+  const [taille, setTaille] = useState('');
+  const [ajoutConfirm, setAjoutConfirm] = useState(false);
+  const [erreurVariant, setErreurVariant] = useState('');
 
   useEffect(() => {
     if (!productId) return;
@@ -40,7 +56,42 @@ const ProduitDetail = () => {
       .catch(() => setLoading(false));
   }, [productId]);
 
+  const handleAjouterPanier = () => {
+    if (!produit) return;
+    if (produit.besoinChoixCouleur && !couleur) {
+      setErreurVariant('Veuillez choisir une couleur.');
+      return;
+    }
+    if (produit.besoinChoixTaille && !taille) {
+      setErreurVariant('Veuillez choisir une taille.');
+      return;
+    }
+    setErreurVariant('');
+    addItem({
+      id: produit._id || produit.id || produit.to || produit.Titre,
+      titre: produit.Titre,
+      prix: produit.Prix,
+      image: produit.ImageProduit || (produit.ImagesSupplementaires?.[0] ?? ''),
+      quantite,
+      couleur: couleur || undefined,
+      taille: taille || undefined,
+      reference: produit.reference,
+    });
+    setAjoutConfirm(true);
+    setTimeout(() => setAjoutConfirm(false), 2500);
+  };
+
+  const handleAchat1Clic = () => {
+    handleAjouterPanier();
+    // TODO: redirect to checkout
+  };
+
   if (loading) return <main><p style={{ textAlign: 'center', padding: '4rem' }}>Chargement...</p></main>;
+
+  const enStock = produit?.enStock !== false && (produit?.stock == null || produit?.stock > 0);
+  const couleurs: string[] = produit?.OptionsCouleur
+    ? (Array.isArray(produit.OptionsCouleur) ? produit.OptionsCouleur : produit.OptionsCouleur.split(',').map((c: string) => c.trim()).filter(Boolean))
+    : [];
 
   return (
     <main>
@@ -55,7 +106,6 @@ const ProduitDetail = () => {
                   dots={true}
                   dotsClass='slick-dots-test slick-thumb'
                   arrows={false}
-
                   customPaging={(i) => (
                     <a key={i}>
                       <img
@@ -65,7 +115,6 @@ const ProduitDetail = () => {
                       />
                     </a>
                   )}
-
                   infinite={true}
                   speed={500}
                   slidesToShow={1}
@@ -74,7 +123,6 @@ const ProduitDetail = () => {
                     breakpoint: 700,
                     settings: { slidesToShow: 1, slidesToScroll: 1, dots: true }
                   }]}>
-
                   {(produit.ImagesSupplementaires ?? []).map((image: string, index: number) => (
                     <div className='produit-supplementaire-image-container' key={index}>
                       <img
@@ -87,20 +135,29 @@ const ProduitDetail = () => {
                 </Slider>
               </div>
             </section>
+
             <section className="produit-info">
               <div className="produit-header">
                 <div className="produit-titre-Qte">
-                  <h2 className="produit-titre">{produit.Titre}</h2><h6 className="produit-Qte">({produit.Qte})</h6>
+                  <h2 className="produit-titre">{produit.Titre}</h2>
+                  <h6 className="produit-Qte">({produit.Qte})</h6>
                 </div>
                 <div className="FlexCentre">
                   <p className="produit-etoiles">{produit.Etoiles}</p>
-                  <h5 className="produit-prix"> {produit.Prix}</h5>
+                  <h5 className="produit-prix">
+                    {produit.PrixBarre && (
+                      <span className="produit-prix-barre">{Number(produit.PrixBarre).toFixed(2)} €</span>
+                    )}
+                    {Number(produit.Prix).toFixed(2)} €
+                  </h5>
                 </div>
                 <p className="produit-description">{produit.Description}</p>
                 <div className="LesPlusProduits">
                   {produit.LesPlusProduits && <li>✔️{produit.LesPlusProduits}</li>}
                   {produit.LesPlusProduits1 && <li>✔️{produit.LesPlusProduits1}</li>}
                   {produit.LesPlusProduits2 && <li>✔️{produit.LesPlusProduits2}</li>}
+                  {produit.LesPlusProduits3 && <li>✔️{produit.LesPlusProduits3}</li>}
+                  {produit.LesPlusProduits4 && <li>✔️{produit.LesPlusProduits4}</li>}
                 </div>
 
                 {produit.ScoreYuka != null && <p>Score Yuka : {produit.ScoreYuka}</p>}
@@ -113,24 +170,89 @@ const ProduitDetail = () => {
                   ))}
                 </div>
 
+                {/* Choix couleur */}
+                {produit.besoinChoixCouleur && couleurs.length > 0 && (
+                  <div className="variant-select">
+                    <label className="variant-label">Couleur :</label>
+                    <div className="variant-options">
+                      {couleurs.map((c: string) => (
+                        <button
+                          key={c}
+                          type="button"
+                          className={`variant-btn${couleur === c ? ' selected' : ''}`}
+                          onClick={() => setCouleur(c)}
+                        >{c}</button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Choix taille */}
+                {produit.besoinChoixTaille && (
+                  <div className="variant-select">
+                    <label className="variant-label">Taille :</label>
+                    <div className="variant-options">
+                      {TAILLES.map(t => (
+                        <button
+                          key={t}
+                          type="button"
+                          className={`variant-btn${taille === t ? ' selected' : ''}`}
+                          onClick={() => setTaille(t)}
+                        >{t}</button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {erreurVariant && <p className="variant-erreur">{erreurVariant}</p>}
+
                 <div>
-                  <div>
-                    <div className="quantite-select">
-                      <label htmlFor="quantite">Quantité :</label>
-                      <div className="quantite-controls">
-                        <button className="quantite-btn" onClick={decrementQuantite}>-</button>
-                        <input type="text" id="quantite" name="quantite" value={quantite} readOnly />
-                        <button className="quantite-btn" onClick={incrementQuantite}>+</button>
-                      </div>
+                  <div className="quantite-select">
+                    <label htmlFor="quantite">Quantité :</label>
+                    <div className="quantite-controls">
+                      <button className="quantite-btn" onClick={decrementQuantite}>-</button>
+                      <input type="text" id="quantite" name="quantite" value={quantite} readOnly />
+                      <button className="quantite-btn" onClick={incrementQuantite}>+</button>
                     </div>
-                    <div className='disponibilite'>
-                      <p>{produit.enStock && produit.stock > 0 ? 'En stock' : 'Rupture de stock'}</p>
-                      <div className='dispo'></div>
+                  </div>
+
+                  <div className='disponibilite'>
+                    <p style={{ color: enStock ? '#16a34a' : '#dc2626' }}>
+                      {enStock ? 'En stock' : 'Rupture de stock'}
+                    </p>
+                    <div className='dispo' style={{ background: enStock ? '#16a34a' : '#dc2626' }}></div>
+                  </div>
+
+                  {ajoutConfirm && (
+                    <div className="ajout-confirm">
+                      ✓ Ajouté au panier ({totalItems} article{totalItems > 1 ? 's' : ''})
                     </div>
-                    <div className='ButtonAchat'>
-                      <button className="produit-ajouter-panier">Ajouter au panier</button>
-                      <button className="produit-ajouter-panier">Acheter en 1 clic</button>
-                    </div>
+                  )}
+
+                  <div className='ButtonAchat'>
+                    <button
+                      className="produit-ajouter-panier"
+                      onClick={handleAjouterPanier}
+                      disabled={!enStock}
+                    >
+                      {produit.TexteBouton || 'Ajouter au panier'}
+                    </button>
+                    <button
+                      className="produit-ajouter-panier"
+                      onClick={handleAchat1Clic}
+                      disabled={!enStock}
+                    >
+                      Acheter en 1 clic
+                    </button>
+                  </div>
+
+                  {/* Livraison */}
+                  <div className="produit-livraison">
+                    <p className="produit-livraison-titre">🚚 Livraison</p>
+                    <p>{estimerDelai(produit.poids)}</p>
+                    {produit.poids > 0 && (
+                      <p className="produit-livraison-poids">Poids : {produit.poids < 1000 ? `${produit.poids} g` : `${(produit.poids / 1000).toFixed(2)} kg`}</p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -153,11 +275,12 @@ const ProduitDetail = () => {
                       className="produit-details-text"
                       key="details"
                     >
-                      {produit.Details}
+                      {produit.Description2 || produit.Details}
                     </motion.p>
                   )}
                 </AnimatePresence>
               </motion.div>
+
               <motion.div layout className="faq-item">
                 <motion.h4 layout onClick={toggleCompositions}>
                   Composition{" "}
@@ -181,6 +304,7 @@ const ProduitDetail = () => {
                   )}
                 </AnimatePresence>
               </motion.div>
+
               <motion.div layout className="faq-item">
                 <motion.h4 layout onClick={toggleUtilisation}>
                   Conseils d'utilisation{" "}
@@ -204,6 +328,7 @@ const ProduitDetail = () => {
                   )}
                 </AnimatePresence>
               </motion.div>
+
               <motion.div layout className="faq-item">
                 <motion.h4 layout onClick={toggleInfos}>
                   Infos complementaires{" "}
@@ -227,22 +352,17 @@ const ProduitDetail = () => {
                   )}
                 </AnimatePresence>
               </motion.div>
-
             </section>
-
           </section>
+
           <section>
             <div className='Carte-container'>
-
               <div className="form__routine">
                 <input id="checkbox" name="checkbox" type="checkbox" required />
                 <label htmlFor="checkbox">
-                  <h6>
-                    {produit.RoutineTitre}
-                  </h6>
+                  <h6>{produit.RoutineTitre}</h6>
                 </label>
               </div>
-
               <div className='Carte'>
                 <div className='Carte-containerTextePrix'>
                   <p>{produit.RoutineTexte}</p>
@@ -256,6 +376,7 @@ const ProduitDetail = () => {
               </div>
             </div>
           </section>
+
           <section className='VousAdorez'>
             <h2>Vous l'adorez !</h2>
             <Slider
@@ -280,7 +401,6 @@ const ProduitDetail = () => {
             </Slider>
           </section>
         </div>
-
       )}
 
       <HomeMeilleursVentes titre='Vous pourriez également aimer' />
