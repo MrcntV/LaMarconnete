@@ -30,6 +30,7 @@ import './styles/components/Home-Commentaires.css'
 import './styles/components/CarrouselAuto.css'
 import './styles/components/timeline.css'
 import './styles/components/timelinetest.css'
+import './styles/components/WelcomePopup.css'
 
 import { Headers } from './components/01_Headers';
 import AnimRoutes from './AnimRoutes';
@@ -37,6 +38,7 @@ import { Footers } from './components/02_Footers';
 import { CallToAction } from './components/CallToAction';
 import HomeMeilleursVentes from './components/HomeMeilleursVentes';
 import { ScrollToTopOnNav, ScrollToTopButton } from './components/ScrollToTop';
+import WelcomePopup from './components/WelcomePopup';
 
 
 
@@ -52,6 +54,7 @@ function App() {
         <CallToAction />
         <Footers />
         <ScrollToTopButton />
+        <WelcomePopup />
       </div>
     </ContentProvider>
     </CartProvider>

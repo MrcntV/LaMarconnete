@@ -127,9 +127,20 @@ const Dashboard: React.FC = () => {
           </div>
 
           <div className="card">
-            <div className="card-header"><h3>Graphique des ventes</h3></div>
-            <div className="chart-placeholder">
-              <p>Graphique — connecter Stripe pour les données réelles</p>
+            <div className="card-header"><h3>Récapitulatif financier (mois en cours)</h3></div>
+            <div style={{ fontSize: 13, lineHeight: '1.8' }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+                <span>CA brut</span>
+                <strong>{caThisMois.toFixed(2)} €</strong>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', color: '#ef4444' }}>
+                <span>Frais Stripe (~2.9% + 0.30€/cmd)</span>
+                <span>−{(caThisMois * 0.029 + orders.filter(o => { const d = new Date(o.date); const now = new Date(); return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear(); }).length * 0.30).toFixed(2)} €</span>
+              </div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', fontWeight: 700, color: '#16a34a', borderTop: '1px solid var(--border)', paddingTop: 4, marginTop: 4 }}>
+                <span>Net estimé</span>
+                <span>{(caThisMois - (caThisMois * 0.029 + orders.filter(o => { const d = new Date(o.date); const now = new Date(); return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear(); }).length * 0.30)).toFixed(2)} €</span>
+              </div>
             </div>
           </div>
         </div>

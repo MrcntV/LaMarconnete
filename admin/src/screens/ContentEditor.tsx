@@ -75,12 +75,12 @@ const ContentEditor: React.FC = () => {
     }
   };
 
-  const saveSection = async (section: keyof ContentData) => {
+  const saveSection = async (section: string) => {
     if (!content) return;
     setSaving(true);
     setSuccess('');
     try {
-      await apiPut(`/api/content/${section}`, content[section]);
+      await apiPut(`/api/content/${section}`, (content as any)[section]);
       setSuccess('Section enregistrée avec succès.');
       setTimeout(() => setSuccess(''), 3000);
     } catch (err: unknown) {
@@ -143,6 +143,7 @@ const ContentEditor: React.FC = () => {
           { key: 'engagementsPage', label: 'Engagements (page)' },
           { key: 'livraison', label: 'Livraison' },
           { key: 'faq', label: 'FAQ' },
+          { key: 'popup', label: 'Popup d\'accueil' },
         ].map(t => (
           <button key={t.key} className={`tab-btn ${tab === t.key ? 'tab-btn-active' : ''}`} onClick={() => setTab(t.key)}>
             {t.label}
@@ -491,6 +492,90 @@ const ContentEditor: React.FC = () => {
             </details>
           ))}
           <button className="btn btn-primary" onClick={() => saveSection('faq')} disabled={saving}>Enregistrer</button>
+        </div>
+      )}
+
+      {tab === 'popup' && (
+        <div className="card">
+          <h3 className="card-section-title">Popup d'accueil</h3>
+          <p style={{ fontSize: 12, color: 'var(--text-muted)', marginBottom: 16 }}>
+            Affiché automatiquement aux visiteurs selon la fréquence choisie.
+          </p>
+          <div className="form-group">
+            <label className="form-check">
+              <input type="checkbox"
+                checked={content?.welcomePopup?.active || false}
+                onChange={e => setContent({ ...content!, welcomePopup: { ...(content?.welcomePopup || {}), active: e.target.checked } })} />
+              <span>Popup actif</span>
+            </label>
+          </div>
+          <div className="form-group">
+            <label className="form-label">Titre</label>
+            <input className="input" value={content?.welcomePopup?.titre || ''}
+              onChange={e => setContent({ ...content!, welcomePopup: { ...(content?.welcomePopup || {}), titre: e.target.value } })} />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Texte</label>
+            <textarea className="input textarea" rows={3} value={content?.welcomePopup?.texte || ''}
+              onChange={e => setContent({ ...content!, welcomePopup: { ...(content?.welcomePopup || {}), texte: e.target.value } })} />
+          </div>
+          <div className="form-group">
+            <label className="form-label">Image (URL ou chemin)</label>
+            <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+              <input className="input" value={content?.welcomePopup?.image || ''}
+                onChange={e => setContent({ ...content!, welcomePopup: { ...(content?.welcomePopup || {}), image: e.target.value } })} />
+              <label htmlFor="popup-img-upload" className="btn btn-secondary" style={{ cursor: 'pointer', whiteSpace: 'nowrap' }}>
+                📷 Uploader
+              </label>
+              <input id="popup-img-upload" type="file" accept="image/*" style={{ display: 'none' }}
+                onChange={async e => {
+                  const file = e.target.files?.[0];
+                  if (!file) return;
+                  const fd = new FormData();
+                  fd.append('image', file);
+                  const res = await fetch(`${BASE}/api/media/content/upload`, { method: 'POST', headers: { Authorization: `Bearer ${token}` }, body: fd });
+                  const data = await res.json();
+                  if (res.ok) setContent({ ...content!, welcomePopup: { ...(content?.welcomePopup || {}), image: data.path } });
+                }} />
+            </div>
+            {content?.welcomePopup?.image && (
+              <img src={`${BASE}${content.welcomePopup.image}`} alt="" style={{ marginTop: 8, maxHeight: 120, borderRadius: 8, objectFit: 'contain' }} />
+            )}
+          </div>
+          <div className="form-grid-2">
+            <div className="form-group">
+              <label className="form-label">Code promo affiché</label>
+              <input className="input" placeholder="BIENVENUE10" value={content?.welcomePopup?.promoCode || ''}
+                onChange={e => setContent({ ...content!, welcomePopup: { ...(content?.welcomePopup || {}), promoCode: e.target.value } })} />
+            </div>
+            <div className="form-group">
+              <label className="form-label">Fréquence</label>
+              <select className="input select" value={content?.welcomePopup?.frequency || 'once'}
+                onChange={e => setContent({ ...content!, welcomePopup: { ...(content?.welcomePopup || {}), frequency: e.target.value } })}>
+                <option value="once">Une seule fois</option>
+                <option value="daily">Une fois par jour</option>
+                <option value="always">À chaque visite</option>
+              </select>
+            </div>
+            <div className="form-group">
+              <label className="form-label">Délai d'affichage (ms)</label>
+              <input type="number" className="input" value={content?.welcomePopup?.delayMs || 1500}
+                onChange={e => setContent({ ...content!, welcomePopup: { ...(content?.welcomePopup || {}), delayMs: parseInt(e.target.value) || 1500 } })} />
+            </div>
+          </div>
+          <div className="form-grid-2">
+            <div className="form-group">
+              <label className="form-label">Texte bouton CTA</label>
+              <input className="input" placeholder="Découvrir nos produits" value={content?.welcomePopup?.ctaLabel || ''}
+                onChange={e => setContent({ ...content!, welcomePopup: { ...(content?.welcomePopup || {}), ctaLabel: e.target.value } })} />
+            </div>
+            <div className="form-group">
+              <label className="form-label">URL bouton CTA</label>
+              <input className="input" placeholder="/produits" value={content?.welcomePopup?.ctaUrl || ''}
+                onChange={e => setContent({ ...content!, welcomePopup: { ...(content?.welcomePopup || {}), ctaUrl: e.target.value } })} />
+            </div>
+          </div>
+          <button className="btn btn-primary" onClick={() => saveSection('welcomePopup')} disabled={saving}>Enregistrer le popup</button>
         </div>
       )}
     </div>

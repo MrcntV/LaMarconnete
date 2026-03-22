@@ -183,6 +183,17 @@ export interface ContentData {
     title: string;
     items: Array<{ id: number; question: string; answer: string }>;
   }>;
+  welcomePopup?: {
+    active?: boolean;
+    titre?: string;
+    texte?: string;
+    image?: string;
+    promoCode?: string;
+    ctaLabel?: string;
+    ctaUrl?: string;
+    frequency?: string;
+    delayMs?: number;
+  };
 }
 
 export interface StockItem {

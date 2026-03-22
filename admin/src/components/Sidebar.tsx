@@ -3,7 +3,7 @@ import { NavLink } from 'react-router-dom';
 import {
   FaTachometerAlt, FaBox, FaShoppingCart, FaWarehouse,
   FaUsers, FaFileInvoice, FaEnvelope, FaMapMarkerAlt,
-  FaEdit, FaCog, FaBars, FaTimes, FaHammer, FaTools
+  FaEdit, FaCog, FaBars, FaTimes, FaHammer, FaTools, FaTag
 } from 'react-icons/fa';
 
 const navItems = [
@@ -16,6 +16,7 @@ const navItems = [
   { to: '/newsletter', icon: <FaEnvelope />, label: 'Newsletter' },
   { to: '/locations', icon: <FaMapMarkerAlt />, label: 'Points de vente' },
   { to: '/content', icon: <FaEdit />, label: 'Contenu du site' },
+  { to: '/promo', icon: <FaTag />, label: 'Codes Promo' },
   { to: '/settings', icon: <FaCog />, label: 'Paramètres' }
 ];
 

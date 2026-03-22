@@ -17,6 +17,7 @@ import Locations from './screens/Locations';
 import ContentEditor from './screens/ContentEditor';
 import Invoices from './screens/Invoices';
 import Settings from './screens/Settings';
+import PromoCodes from './screens/PromoCodes';
 
 interface ProtectedProps {
   children: React.ReactNode;
@@ -47,6 +48,7 @@ const App: React.FC = () => {
       <Route path="/content" element={<Protected><ContentEditor /></Protected>} />
       <Route path="/invoices" element={<Protected><Invoices /></Protected>} />
       <Route path="/settings" element={<Protected><Settings /></Protected>} />
+      <Route path="/promo" element={<Protected><PromoCodes /></Protected>} />
       <Route path="*" element={<Navigate to="/dashboard" replace />} />
     </Routes>
   );
