@@ -5,6 +5,25 @@ const Product = require('../models/Product');
 const { generateId } = require('../db');
 const { requireAdmin } = require('../middleware/auth');
 
+const fs = require('fs');
+const UPLOAD_DIR = path.join(__dirname, '..', '..', 'public', 'images', 'Produits');
+
+// POST /api/products/upload-image
+router.post('/upload-image', requireAdmin, (req, res) => {
+  if (!req.files || !req.files.image) return res.status(400).json({ error: 'Aucun fichier reçu' });
+  const file = req.files.image;
+  const ext = path.extname(file.name).toLowerCase();
+  if (!['.jpg', '.jpeg', '.png', '.webp', '.gif'].includes(ext))
+    return res.status(400).json({ error: 'Format non supporté' });
+  fs.mkdirSync(UPLOAD_DIR, { recursive: true });
+  const filename = `prod_${Date.now()}${ext}`;
+  const dest = path.join(UPLOAD_DIR, filename);
+  file.mv(dest, err => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ path: `/images/Produits/${filename}` });
+  });
+});
+
 // GET /api/products[?to=slug]
 router.get('/', async (req, res) => {
   try {
