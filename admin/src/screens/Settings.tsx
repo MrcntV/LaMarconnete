@@ -1,5 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 
+const BASE = process.env.REACT_APP_API_URL || '';
+
 interface EnvVar {
   set: boolean;
   preview: string | null;
@@ -60,7 +62,7 @@ const Settings: React.FC = () => {
   const token = localStorage.getItem('admin_token');
 
   useEffect(() => {
-    fetch('/api/settings/env', { headers: { Authorization: `Bearer ${token}` } })
+    fetch(`${BASE}/api/settings/env`, { headers: { Authorization: `Bearer ${token}` } })
       .then(r => r.json())
       .then(data => { setEnvStatus(data); setEnvLoading(false); })
       .catch(() => setEnvLoading(false));
@@ -70,7 +72,7 @@ const Settings: React.FC = () => {
     setStripeTesting(s => ({ ...s, [mode]: true }));
     setStripeTest(s => ({ ...s, [mode]: null }));
     try {
-      const res = await fetch('/api/settings/stripe/test', {
+      const res = await fetch(`${BASE}/api/settings/stripe/test`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ mode }),
@@ -88,7 +90,7 @@ const Settings: React.FC = () => {
     setBuildStatus(s => ({ ...s, [target]: 'running' }));
     setBuildLog(l => ({ ...l, [target]: '' }));
     try {
-      const res = await fetch(`/api/build/${target}`, {
+      const res = await fetch(`${BASE}/api/build/${target}`, {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}` },
       });
