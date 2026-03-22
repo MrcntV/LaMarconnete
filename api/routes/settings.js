@@ -65,13 +65,35 @@ router.get('/env', requireAdmin, (req, res) => {
       preview: null,
     },
     // Colissimo
-    COLISSIMO_API_KEY: {
-      set: isSet(process.env.COLISSIMO_API_KEY),
+    COLISSIMO_LOGIN: {
+      set: isSet(process.env.COLISSIMO_LOGIN),
+      preview: process.env.COLISSIMO_LOGIN || null,
+    },
+    COLISSIMO_PASSWORD: {
+      set: isSet(process.env.COLISSIMO_PASSWORD),
       preview: null,
     },
-    COLISSIMO_ACCOUNT_NUMBER: {
-      set: isSet(process.env.COLISSIMO_ACCOUNT_NUMBER),
-      preview: process.env.COLISSIMO_ACCOUNT_NUMBER || null,
+    COLISSIMO_CONTRACT: {
+      set: isSet(process.env.COLISSIMO_CONTRACT),
+      preview: process.env.COLISSIMO_CONTRACT || null,
+    },
+    // Google
+    GOOGLE_PLACES_API_KEY: {
+      set: isSet(process.env.GOOGLE_PLACES_API_KEY),
+      preview: process.env.GOOGLE_PLACES_API_KEY ? maskKey(process.env.GOOGLE_PLACES_API_KEY) : null,
+    },
+    GOOGLE_PLACE_ID: {
+      set: isSet(process.env.GOOGLE_PLACE_ID),
+      preview: process.env.GOOGLE_PLACE_ID || null,
+    },
+    // Instagram
+    INSTAGRAM_ACCESS_TOKEN: {
+      set: isSet(process.env.INSTAGRAM_ACCESS_TOKEN),
+      preview: process.env.INSTAGRAM_ACCESS_TOKEN ? maskKey(process.env.INSTAGRAM_ACCESS_TOKEN) : null,
+    },
+    INSTAGRAM_USER_ID: {
+      set: isSet(process.env.INSTAGRAM_USER_ID),
+      preview: process.env.INSTAGRAM_USER_ID || null,
     },
     // Admin
     ADMIN_EMAIL: {

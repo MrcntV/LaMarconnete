@@ -31,6 +31,7 @@ interface ColissimoLabel {
   type: 'aller' | 'retour' | 'allerretour';
   trackingNumber?: string;
   labelUrl?: string;
+  labelBase64?: string;
   insurance?: boolean;
   insuranceValue?: number;
   poids?: number;
@@ -217,8 +218,8 @@ const OrderDetail: React.FC = () => {
   const printLabel = (label: ColissimoLabel) => {
     if (label.labelUrl) {
       window.open(`${BASE}${label.labelUrl}`, '_blank');
-    } else if (label.labelBase64 || (label as any).labelBase64) {
-      const base64 = (label as any).labelBase64;
+    } else if (label.labelBase64) {
+      const base64 = label.labelBase64;
       const blob = new Blob([Uint8Array.from(atob(base64), c => c.charCodeAt(0))], { type: 'application/pdf' });
       const url = URL.createObjectURL(blob);
       window.open(url, '_blank');

@@ -177,6 +177,8 @@ app.use('/api/build', require('./api/routes/build'));
 app.use('/api/settings', require('./api/routes/settings'));
 app.use('/api/media', require('./api/routes/media'));
 app.use('/api/promo', require('./api/routes/promo'));
+app.use('/api/reviews', require('./api/routes/reviews'));
+app.use('/api/instagram', require('./api/routes/instagram'));
 
 // Route API status
 app.get('/api/status', (req, res) => {

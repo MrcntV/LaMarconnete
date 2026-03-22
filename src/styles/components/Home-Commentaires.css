@@ -77,6 +77,33 @@
 
 
 
+/* ── Google rating summary ── */
+.google-rating-summary {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 18px;
+    flex-wrap: wrap;
+}
+.google-logo {
+    height: 22px;
+    object-fit: contain;
+}
+.google-stars {
+    font-size: 1rem;
+    letter-spacing: 1px;
+}
+.google-score {
+    font-weight: 700;
+    font-size: 1.1rem;
+    color: #374151;
+}
+.google-total {
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+
 @media (max-width: 768px) {
   .Commantaires {
     display: flex;

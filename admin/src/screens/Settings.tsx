@@ -38,8 +38,16 @@ const ENV_GROUPS = [
     vars: ['EMAILJS_SERVICE_ID', 'EMAILJS_TEMPLATE_ID', 'EMAILJS_PUBLIC_KEY'],
   },
   {
-    title: 'Colissimo',
-    vars: ['COLISSIMO_API_KEY', 'COLISSIMO_ACCOUNT_NUMBER'],
+    title: 'Colissimo (La Poste Pro)',
+    vars: ['COLISSIMO_LOGIN', 'COLISSIMO_PASSWORD', 'COLISSIMO_CONTRACT'],
+  },
+  {
+    title: 'Google Places API (avis)',
+    vars: ['GOOGLE_PLACES_API_KEY', 'GOOGLE_PLACE_ID'],
+  },
+  {
+    title: 'Instagram Graph API',
+    vars: ['INSTAGRAM_ACCESS_TOKEN', 'INSTAGRAM_USER_ID'],
   },
   {
     title: 'Domaines & Notifications',
@@ -52,6 +60,17 @@ const Settings: React.FC = () => {
   const [envLoading, setEnvLoading] = useState(true);
   const [stripeTest, setStripeTest] = useState<Record<string, StripeTestResult | null>>({ test: null, live: null });
   const [stripeTesting, setStripeTesting] = useState<Record<string, boolean>>({ test: false, live: false });
+
+  // Google Reviews
+  const [reviewsStatus, setReviewsStatus] = useState<any>(null);
+  const [reviewsRefreshing, setReviewsRefreshing] = useState(false);
+  const [reviewsMsg, setReviewsMsg] = useState('');
+
+  // Instagram
+  const [instaStatus, setInstaStatus] = useState<any>(null);
+  const [instaRefreshing, setInstaRefreshing] = useState(false);
+  const [instaMsg, setInstaMsg] = useState('');
+  const [instaTokenMsg, setInstaTokenMsg] = useState('');
 
   const [passwordForm, setPasswordForm] = useState({ current: '', newPass: '', confirm: '' });
   const [saved, setSaved] = useState<Record<string, boolean>>({});
@@ -66,6 +85,18 @@ const Settings: React.FC = () => {
       .then(r => r.json())
       .then(data => { setEnvStatus(data); setEnvLoading(false); })
       .catch(() => setEnvLoading(false));
+
+    // Load Google reviews status
+    fetch(`${BASE}/api/reviews`, { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.json())
+      .then(data => setReviewsStatus(data))
+      .catch(() => {});
+
+    // Load Instagram status
+    fetch(`${BASE}/api/instagram/status`, { headers: { Authorization: `Bearer ${token}` } })
+      .then(r => r.json())
+      .then(data => setInstaStatus(data))
+      .catch(() => {});
   }, []);
 
   const testStripe = async (mode: 'test' | 'live') => {
@@ -117,6 +148,50 @@ const Settings: React.FC = () => {
   const handleSave = (section: string) => {
     setSaved(s => ({ ...s, [section]: true }));
     setTimeout(() => setSaved(s => ({ ...s, [section]: false })), 3000);
+  };
+
+  const refreshReviews = async () => {
+    setReviewsRefreshing(true);
+    setReviewsMsg('');
+    try {
+      const res = await fetch(`${BASE}/api/reviews/refresh`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setReviewsStatus(data);
+      setReviewsMsg(`✓ ${data.reviews?.length || 0} avis importés de Google`);
+    } catch (err: any) {
+      setReviewsMsg(`✗ ${err.message}`);
+    } finally {
+      setReviewsRefreshing(false);
+    }
+  };
+
+  const refreshInstagram = async () => {
+    setInstaRefreshing(true);
+    setInstaMsg('');
+    try {
+      const res = await fetch(`${BASE}/api/instagram/refresh`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setInstaStatus(data);
+      setInstaMsg(`✓ ${data.count} posts Instagram importés`);
+    } catch (err: any) {
+      setInstaMsg(`✗ ${err.message}`);
+    } finally {
+      setInstaRefreshing(false);
+    }
+  };
+
+  const refreshInstaToken = async () => {
+    setInstaTokenMsg('');
+    try {
+      const res = await fetch(`${BASE}/api/instagram/refresh-token`, { method: 'POST', headers: { Authorization: `Bearer ${token}` } });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setInstaTokenMsg(`Nouveau token : ${data.newToken?.slice(0, 20)}... (expire dans ${Math.round(data.expiresIn / 86400)} jours) — Mettez à jour INSTAGRAM_ACCESS_TOKEN dans .env`);
+    } catch (err: any) {
+      setInstaTokenMsg(`✗ ${err.message}`);
+    }
   };
 
   const StatusBadge = ({ v }: { v: EnvVar }) => (
@@ -250,6 +325,83 @@ const Settings: React.FC = () => {
           </div>
           <button className="btn btn-primary" onClick={() => handleSave('shop')}>Enregistrer</button>
         </div>
+      </div>
+
+      {/* ── Google Reviews ──────────────────────────────────── */}
+      <div className="card" style={{ marginTop: 24 }}>
+        <h3 className="card-section-title">Avis Google</h3>
+        <p className="text-muted" style={{ fontSize: 13, marginBottom: 12 }}>
+          Les avis sont récupérés depuis la <strong>Google Places API</strong> et affichés sur la page d'accueil.
+          Ils se rafraîchissent automatiquement toutes les 24h.<br />
+          Variables requises : <code>GOOGLE_PLACES_API_KEY</code> + <code>GOOGLE_PLACE_ID</code>
+        </p>
+        {reviewsStatus && (
+          <div style={{ fontSize: 13, marginBottom: 12 }}>
+            {reviewsStatus.configured ? (
+              <span style={{ color: '#166534' }}>
+                ✓ {reviewsStatus.reviews?.length || 0} avis en cache
+                {reviewsStatus.rating && ` · Note : ${reviewsStatus.rating}/5`}
+                {reviewsStatus.lastRefreshed && ` · Mis à jour : ${new Date(reviewsStatus.lastRefreshed).toLocaleString('fr-FR')}`}
+              </span>
+            ) : (
+              <span style={{ color: '#991b1b' }}>✗ Non configuré — avis statiques affichés</span>
+            )}
+          </div>
+        )}
+        {reviewsMsg && <div className={`alert ${reviewsMsg.startsWith('✓') ? 'alert-success' : 'alert-error'}`} style={{ marginBottom: 10 }}>{reviewsMsg}</div>}
+        <button className="btn btn-primary" onClick={refreshReviews} disabled={reviewsRefreshing}>
+          {reviewsRefreshing ? 'Rafraîchissement...' : '🔄 Rafraîchir les avis Google'}
+        </button>
+      </div>
+
+      {/* ── Instagram ──────────────────────────────────────── */}
+      <div className="card" style={{ marginTop: 24 }}>
+        <h3 className="card-section-title">Feed Instagram</h3>
+        <p className="text-muted" style={{ fontSize: 13, marginBottom: 12 }}>
+          Les posts sont récupérés depuis l'<strong>Instagram Graph API</strong> et affichés dans le carrousel du footer.
+          Mise à jour automatique toutes les 24h.<br />
+          Variables requises : <code>INSTAGRAM_ACCESS_TOKEN</code> + <code>INSTAGRAM_USER_ID</code>
+        </p>
+        {instaStatus && (
+          <div style={{ fontSize: 13, marginBottom: 12 }}>
+            {instaStatus.configured ? (
+              <span style={{ color: '#166534' }}>
+                ✓ {instaStatus.postCount} posts en cache
+                {instaStatus.lastRefreshed && ` · Mis à jour : ${new Date(instaStatus.lastRefreshed).toLocaleString('fr-FR')}`}
+              </span>
+            ) : (
+              <span style={{ color: '#991b1b' }}>✗ Non configuré — images statiques affichées</span>
+            )}
+          </div>
+        )}
+        {instaMsg && <div className={`alert ${instaMsg.startsWith('✓') ? 'alert-success' : 'alert-error'}`} style={{ marginBottom: 10 }}>{instaMsg}</div>}
+        <div style={{ display: 'flex', gap: 10, flexWrap: 'wrap', marginBottom: 8 }}>
+          <button className="btn btn-primary" onClick={refreshInstagram} disabled={instaRefreshing}>
+            {instaRefreshing ? 'Rafraîchissement...' : '🔄 Rafraîchir le feed Instagram'}
+          </button>
+          <button className="btn btn-secondary" onClick={refreshInstaToken}>
+            🔑 Renouveler le token
+          </button>
+        </div>
+        {instaTokenMsg && (
+          <div className={`alert ${instaTokenMsg.startsWith('✗') ? 'alert-error' : 'alert-success'}`} style={{ fontSize: 12, wordBreak: 'break-all' }}>
+            {instaTokenMsg}
+          </div>
+        )}
+        <details style={{ marginTop: 12 }}>
+          <summary style={{ cursor: 'pointer', fontSize: 12, color: 'var(--text-muted)' }}>Comment obtenir les identifiants Instagram ?</summary>
+          <div style={{ fontSize: 12, lineHeight: 1.7, marginTop: 8, padding: '10px', background: 'var(--bg)', borderRadius: 6 }}>
+            <ol style={{ margin: 0, paddingLeft: 16 }}>
+              <li>Créez une <strong>application Facebook</strong> sur <a href="https://developers.facebook.com" target="_blank" rel="noopener noreferrer">developers.facebook.com</a></li>
+              <li>Ajoutez le produit <strong>Instagram Basic Display</strong></li>
+              <li>Connectez votre compte Instagram Business dans les paramètres de l'app</li>
+              <li>Générez un token d'accès utilisateur (valide 60 jours)</li>
+              <li>Récupérez votre <strong>User ID</strong> via <code>GET /me?access_token=TOKEN</code></li>
+              <li>Ajoutez dans <code>.env</code> : <code>INSTAGRAM_ACCESS_TOKEN=...</code> et <code>INSTAGRAM_USER_ID=...</code></li>
+              <li>Le token expire tous les 60 jours — utilisez "Renouveler le token" avant expiration</li>
+            </ol>
+          </div>
+        </details>
       </div>
 
       {/* ── Déploiement ──────────────────────────────────────── */}
