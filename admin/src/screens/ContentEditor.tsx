@@ -2,6 +2,8 @@ import React, { useEffect, useState, useRef } from 'react';
 import { apiGet, apiPut } from '../api';
 import { ContentData } from '../types';
 
+const BASE = process.env.REACT_APP_API_URL || '';
+
 const ContentEditor: React.FC = () => {
   const [content, setContent] = useState<ContentData | null>(null);
   const [tab, setTab] = useState('hero');
@@ -11,7 +13,32 @@ const ContentEditor: React.FC = () => {
   const [error, setError] = useState('');
   const [buildStatus, setBuildStatus] = useState<'idle' | 'running' | 'done' | 'error'>('idle');
   const [buildLog, setBuildLog] = useState('');
+  const [iconUploading, setIconUploading] = useState<number | null>(null);
   const logRef = useRef<HTMLPreElement>(null);
+  const token = localStorage.getItem('admin_token');
+
+  const uploadIcon = async (file: File, idx: number) => {
+    setIconUploading(idx);
+    const fd = new FormData();
+    fd.append('image', file);
+    try {
+      const res = await fetch(`${BASE}/api/media/content/upload`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: fd,
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      if (!content) return;
+      const updated = [...content.engagementsPage.items];
+      updated[idx] = { ...updated[idx], icon: data.path };
+      setContent({ ...content, engagementsPage: { ...content.engagementsPage, items: updated } });
+    } catch (e: any) {
+      setError(e.message);
+    } finally {
+      setIconUploading(null);
+    }
+  };
 
   useEffect(() => {
     apiGet('/api/content')
@@ -294,11 +321,40 @@ const ContentEditor: React.FC = () => {
               <div className="form-row">
                 <div className="form-group">
                   <label className="form-label">Engagement {idx + 1} — Icône</label>
-                  <input className="input" value={item.icon} onChange={e => {
-                    const updated = [...content.engagementsPage.items];
-                    updated[idx] = { ...updated[idx], icon: e.target.value };
-                    setContent({ ...content, engagementsPage: { ...content.engagementsPage, items: updated } });
-                  }} />
+                  <div style={{ display: 'flex', gap: 8, alignItems: 'center', marginBottom: 6 }}>
+                    {item.icon && (item.icon.startsWith('/') || item.icon.startsWith('http'))
+                      ? <img src={`${BASE}${item.icon.startsWith('http') ? '' : ''}${item.icon}`} alt="" style={{ width: 48, height: 48, objectFit: 'contain', borderRadius: 6, border: '1px solid var(--border)', background: '#f8fafc' }} />
+                      : item.icon
+                        ? <span style={{ fontSize: 36, lineHeight: 1 }}>{item.icon}</span>
+                        : <div style={{ width: 48, height: 48, background: '#f1f5f9', borderRadius: 6, border: '1px solid var(--border)' }} />
+                    }
+                    <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 4 }}>
+                      <input
+                        className="input"
+                        value={item.icon}
+                        placeholder="Emoji (✨) ou chemin image (/images/...)"
+                        onChange={e => {
+                          const updated = [...content.engagementsPage.items];
+                          updated[idx] = { ...updated[idx], icon: e.target.value };
+                          setContent({ ...content, engagementsPage: { ...content.engagementsPage, items: updated } });
+                        }}
+                      />
+                      <label
+                        htmlFor={`icon-upload-${idx}`}
+                        className="btn btn-secondary"
+                        style={{ cursor: 'pointer', textAlign: 'center', fontSize: 12 }}
+                      >
+                        {iconUploading === idx ? 'Upload...' : '📁 Uploader une image'}
+                      </label>
+                      <input
+                        id={`icon-upload-${idx}`}
+                        type="file"
+                        accept="image/*,.svg"
+                        style={{ display: 'none' }}
+                        onChange={e => { const f = e.target.files?.[0]; if (f) uploadIcon(f, idx); e.target.value = ''; }}
+                      />
+                    </div>
+                  </div>
                 </div>
                 <div className="form-group">
                   <label className="form-label">Titre</label>

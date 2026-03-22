@@ -85,7 +85,10 @@ const MesEngagements = () => {
                             variants={cardVariants}
                             whileHover={{ scale: 1.02, transition: { duration: 0.2 } }}
                         >
-                            <span className="engagement-icon">{eng.icon}</span>
+                            {eng.icon && (eng.icon.startsWith('/') || eng.icon.startsWith('http'))
+                                ? <img src={eng.icon} alt={eng.titre} className="engagement-icon" />
+                                : <span className="engagement-icon">{eng.icon}</span>
+                            }
                             <h3 className="engagement-titre">{eng.titre}</h3>
                             <p className="engagement-texte">{eng.texte}</p>
                         </motion.div>

@@ -51,4 +51,23 @@ router.delete('/', requireAdmin, (req, res) => {
   res.json({ success: true });
 });
 
+// POST /api/media/content/upload — upload une image de contenu (icônes, etc.)
+router.post('/content/upload', requireAdmin, (req, res) => {
+  if (!req.files || !req.files.image) return res.status(400).json({ error: 'Aucun fichier reçu' });
+  const file = req.files.image;
+  const ext = path.extname(file.name).toLowerCase();
+  if (!['.jpg', '.jpeg', '.png', '.webp', '.gif', '.svg'].includes(ext))
+    return res.status(400).json({ error: 'Format non supporté' });
+
+  const dir = path.join(__dirname, '..', '..', 'public', 'images', 'content');
+  fs.mkdirSync(dir, { recursive: true });
+
+  const filename = `${Date.now()}${ext}`;
+  const dest = path.join(dir, filename);
+  file.mv(dest, err => {
+    if (err) return res.status(500).json({ error: err.message });
+    res.json({ path: `/images/content/${filename}` });
+  });
+});
+
 module.exports = router;
