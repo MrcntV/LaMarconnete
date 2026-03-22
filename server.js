@@ -15,31 +15,7 @@ console.log('[MongoDB] Connexion en cours...');
 connectDB().then(async () => {
   const fs = require('fs');
 
-  // Seed/Sync Products (upsert: update content fields, preserve stock/active on existing)
-  try {
-    const Product = require('./api/models/Product');
-    const f = path.join(__dirname, 'data', 'products.json');
-    if (fs.existsSync(f)) {
-      const items = JSON.parse(fs.readFileSync(f, 'utf-8'));
-      const ops = items.map(item => {
-        const { stock, active, stockAlert, createdAt, updatedAt, ...contentFields } = item;
-        return {
-          updateOne: {
-            filter: { id: item.id },
-            update: {
-              $set: contentFields,
-              $setOnInsert: { stock: stock ?? 0, active: active !== false, stockAlert: stockAlert ?? 5 }
-            },
-            upsert: true
-          }
-        };
-      });
-      await Product.bulkWrite(ops);
-      console.log(`[Seed] ${items.length} produits synchronisés`);
-    }
-  } catch (e) {
-    console.error('[Seed] Erreur seed products :', e.message);
-  }
+  // Produits : source de vérité = MongoDB uniquement (pas de seed JSON)
 
   // Seed Orders
   try {
@@ -172,7 +148,9 @@ app.use(fileUpload({
 // Fichiers statiques React (main site)
 app.use(express.static(path.join(__dirname, 'build')));
 
-// Public assets (uploaded product images etc.)
+// Public assets — images uploadées (produits, points de vente, etc.)
+// Accessible à la fois sous /public/... et directement sous /...
+app.use(express.static(path.join(__dirname, 'public')));
 app.use('/public', express.static(path.join(__dirname, 'public')));
 
 // Petit header perso
