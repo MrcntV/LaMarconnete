@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { NavLink } from 'react-router-dom';
 import {
   FaTachometerAlt, FaBox, FaShoppingCart, FaWarehouse,
   FaUsers, FaFileInvoice, FaEnvelope, FaMapMarkerAlt,
-  FaEdit, FaCog, FaBars, FaTimes
+  FaEdit, FaCog, FaBars, FaTimes, FaHammer, FaTools
 } from 'react-icons/fa';
 
 const navItems = [
@@ -21,6 +21,44 @@ const navItems = [
 
 const Sidebar: React.FC = () => {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [buildLog, setBuildLog] = useState('');
+  const [building, setBuilding] = useState<'site' | 'admin' | null>(null);
+  const logRef = useRef<HTMLPreElement>(null);
+
+  const runBuild = async (target: 'site' | 'admin') => {
+    if (building) return;
+    setBuilding(target);
+    setBuildLog(`Build ${target === 'site' ? 'Site' : 'Admin'} en cours...\n`);
+
+    const token = localStorage.getItem('admin_token');
+    try {
+      const res = await fetch(`/api/build/${target}`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      if (!res.body) throw new Error('Pas de stream');
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        const chunk = decoder.decode(value, { stream: true });
+        setBuildLog(prev => {
+          const updated = prev + chunk;
+          setTimeout(() => {
+            if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight;
+          }, 0);
+          return updated;
+        });
+      }
+    } catch (err: any) {
+      setBuildLog(prev => prev + `\nErreur: ${err.message}`);
+    } finally {
+      setBuilding(null);
+    }
+  };
 
   return (
     <>
@@ -51,6 +89,29 @@ const Sidebar: React.FC = () => {
             </NavLink>
           ))}
         </nav>
+
+        <div className="sidebar-deploy">
+          <p className="sidebar-deploy-title">Déploiement</p>
+          <button
+            className={`sidebar-deploy-btn ${building === 'site' ? 'building' : ''}`}
+            onClick={() => runBuild('site')}
+            disabled={!!building}
+          >
+            <FaHammer style={{ marginRight: 6 }} />
+            {building === 'site' ? 'Build en cours...' : 'Build Site'}
+          </button>
+          <button
+            className={`sidebar-deploy-btn ${building === 'admin' ? 'building' : ''}`}
+            onClick={() => runBuild('admin')}
+            disabled={!!building}
+          >
+            <FaTools style={{ marginRight: 6 }} />
+            {building === 'admin' ? 'Build en cours...' : 'Build Admin'}
+          </button>
+          {buildLog && (
+            <pre ref={logRef} className="sidebar-build-log">{buildLog}</pre>
+          )}
+        </div>
 
         <div className="sidebar-footer">
           <span className="sidebar-version">v1.0.0</span>

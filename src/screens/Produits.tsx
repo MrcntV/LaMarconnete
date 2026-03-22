@@ -1,32 +1,20 @@
 import ProduitsItems from "../components/ProduitsItems";
 import { motion } from 'framer-motion';
-import { produitsData } from '../data/produitsData';
-import { accessoiresData } from '../data/accesoiresData';
 import { transition1 } from "../transition";
 import { useEffect, useState } from "react";
 
-type StockMap = Record<string, { enStock: boolean; stock: number }>;
-
 export const Boutique = () => {
-    const [stockMap, setStockMap] = useState<StockMap>({});
+    const [products, setProducts] = useState<any[]>([]);
 
     useEffect(() => {
         fetch('/api/products')
             .then(r => r.json())
-            .then((products: Array<{ id: string; enStock: boolean; stock: number; active: boolean }>) => {
-                const map: StockMap = {};
-                for (const p of products) {
-                    map[p.id] = { enStock: p.enStock && p.stock > 0 && p.active !== false, stock: p.stock };
-                }
-                setStockMap(map);
+            .then((data: any[]) => {
+                const active = data.filter(p => p.active !== false);
+                setProducts(active);
             })
             .catch(() => {});
     }, []);
-
-    const isEnStock = (id: string, fallback: boolean) => {
-        if (id in stockMap) return stockMap[id].enStock;
-        return fallback;
-    };
 
     return (
         <motion.main>
@@ -68,9 +56,9 @@ export const Boutique = () => {
                 </motion.h2>
 
                 <div className="NosProduits">
-                    {produitsData.map((produit) => (
+                    {products.map((produit) => (
                         <ProduitsItems
-                            key={produit.to}
+                            key={produit.to || produit.id}
                             ImageProduit={produit.ImageProduit}
                             ImageProduitSup={produit.ImageProduitSup}
                             AltText={produit.AltText}
@@ -78,31 +66,7 @@ export const Boutique = () => {
                             Titre={produit.Titre}
                             Etoiles={produit.Etoiles ?? ""}
                             Prix={String(produit.Prix)}
-                            enStock={isEnStock(produit.id, produit.enStock)}
-                        />
-                    ))}
-                </div>
-            </section>
-
-            <section>
-                <motion.h2
-                    initial={{ opacity: 0, scale: 0 }}
-                    transition={transition1}
-                    whileInView={{ opacity: 1, scale: 1, transition: { duration: 0.4 } }}
-                    viewport={{ once: true }}>Nos Accessoires
-                </motion.h2>
-                <div className="NosAccessoires">
-                    {accessoiresData.map((accessoire) => (
-                        <ProduitsItems
-                            key={accessoire.to}
-                            ImageProduit={accessoire.ImageProduit}
-                            ImageProduitSup={accessoire.ImageProduitSup}
-                            AltText={accessoire.AltText}
-                            to={accessoire.to}
-                            Titre={accessoire.Titre}
-                            Etoiles={accessoire.Etoiles ?? ""}
-                            Prix={String(accessoire.Prix)}
-                            enStock={isEnStock(accessoire.id, accessoire.enStock)}
+                            enStock={produit.enStock && produit.stock > 0}
                         />
                     ))}
                 </div>

@@ -5,10 +5,12 @@ const Product = require('../models/Product');
 const { generateId } = require('../db');
 const { requireAdmin } = require('../middleware/auth');
 
-// GET /api/products
+// GET /api/products[?to=slug]
 router.get('/', async (req, res) => {
   try {
-    const products = await Product.find();
+    const filter = {};
+    if (req.query.to) filter.to = req.query.to;
+    const products = await Product.find(filter);
     res.json(products);
   } catch (err) {
     res.status(500).json({ error: err.message });

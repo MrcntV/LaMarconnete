@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
-import { produitsData } from '../data/produitsData';
 import { motion, AnimatePresence } from 'framer-motion';
 import { IoIosArrowDown } from "react-icons/io";
 import HomeMeilleursVentes from '../components/HomeMeilleursVentes';
@@ -10,50 +9,38 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 
 const ProduitDetail = () => {
-  const { productId } = useParams(); // Obtient l'ID du produit depuis l'URL
+  const { productId } = useParams();
 
-  // Recherche du produit correspondant en fonction de productId
-  const produit = produitsData.find((produit) => produit.to === productId);
+  const [produit, setProduit] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
   const [detailsOpen, setDetailsOpen] = useState(false);
   const [infosOpen, setInfosOpen] = useState(false);
-  const [caracteristiquesOpen, setCaracteristiquesOpen] = useState(false);
   const [compositionsOpen, setCompositionsOpen] = useState(false);
-  const [UtilisationOpen, setUtilisationOpen] = useState(false)
+  const [UtilisationOpen, setUtilisationOpen] = useState(false);
 
-  const toggleDetails = () => {
-    setDetailsOpen(!detailsOpen);
-  };
+  const toggleDetails = () => setDetailsOpen(!detailsOpen);
+  const toggleInfos = () => setInfosOpen(!infosOpen);
+  const toggleCompositions = () => setCompositionsOpen(!compositionsOpen);
+  const toggleUtilisation = () => setUtilisationOpen(!UtilisationOpen);
 
-  const toggleInfos = () => {
-    setInfosOpen(!infosOpen);
-  };
+  const [quantite, setQuantite] = useState(1);
+  const incrementQuantite = () => setQuantite(quantite + 1);
+  const decrementQuantite = () => { if (quantite > 1) setQuantite(quantite - 1); };
 
-  const toggleCaracteristiques = () => {
-    setCaracteristiquesOpen(!caracteristiquesOpen);
-  };
+  useEffect(() => {
+    if (!productId) return;
+    setLoading(true);
+    fetch(`/api/products?to=${encodeURIComponent(productId)}`)
+      .then(r => r.json())
+      .then((data: any[]) => {
+        if (data && data.length > 0) setProduit(data[0]);
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
+  }, [productId]);
 
-  const toggleCompositions = () => {
-    setCompositionsOpen(!compositionsOpen);
-  };
-  const toggleUtilisation = () => {
-    setUtilisationOpen(!UtilisationOpen);
-  };
-
-
-  const [quantite, setQuantite] = useState(1); // État de la quantité
-
-  // Fonction pour incrémenter la quantité
-  const incrementQuantite = () => {
-    setQuantite(quantite + 1);
-  };
-
-  // Fonction pour décrémenter la quantité (minimum 1)
-  const decrementQuantite = () => {
-    if (quantite > 1) {
-      setQuantite(quantite - 1);
-    }
-  };
+  if (loading) return <main><p style={{ textAlign: 'center', padding: '4rem' }}>Chargement...</p></main>;
 
   return (
     <main>
@@ -72,7 +59,7 @@ const ProduitDetail = () => {
                   customPaging={(i) => (
                     <a key={i}>
                       <img
-                        src={produit.ImagesSupplementaires[i]}
+                        src={(produit.ImagesSupplementaires ?? [])[i]}
                         alt={produit.AltText}
                         className="produit-supplementaire-image-puce"
                       />
@@ -83,18 +70,12 @@ const ProduitDetail = () => {
                   speed={500}
                   slidesToShow={1}
                   slidesToScroll={1}
-                  responsive={
-                    [{
-                      breakpoint: 700,
-                      settings: {
-                        slidesToShow: 1,
-                        slidesToScroll: 1,
-                        dots: true,
-                      }
-                    }]
-                  }>
+                  responsive={[{
+                    breakpoint: 700,
+                    settings: { slidesToShow: 1, slidesToScroll: 1, dots: true }
+                  }]}>
 
-                  {produit.ImagesSupplementaires.map((image, index) => (
+                  {(produit.ImagesSupplementaires ?? []).map((image: string, index: number) => (
                     <div className='produit-supplementaire-image-container' key={index}>
                       <img
                         src={image}
@@ -117,22 +98,17 @@ const ProduitDetail = () => {
                 </div>
                 <p className="produit-description">{produit.Description}</p>
                 <div className="LesPlusProduits">
-                  <li>✔️{produit.LesPlusProduits}</li>
-                  <li>✔️{produit.LesPlusProduits1}</li>
-                  <li>✔️{produit.LesPlusProduits2}</li>
-                  {/* <li>•{produit.LesPlusProduits3}</li>
-                <li>•{produit.LesPlusProduits4}</li> */}
+                  {produit.LesPlusProduits && <li>✔️{produit.LesPlusProduits}</li>}
+                  {produit.LesPlusProduits1 && <li>✔️{produit.LesPlusProduits1}</li>}
+                  {produit.LesPlusProduits2 && <li>✔️{produit.LesPlusProduits2}</li>}
                 </div>
 
-                <p>Score Yuka : {produit.ScoreYuka}</p>
-                <p>Score INCI Beauty : {produit.ScoreINCIBeauty}</p>
+                {produit.ScoreYuka != null && <p>Score Yuka : {produit.ScoreYuka}</p>}
+                {produit.ScoreINCIBeauty != null && <p>Score INCI Beauty : {produit.ScoreINCIBeauty}</p>}
                 <div className='Certficat'>
-                  {(produit.Certificat ?? []).map((image, index) => (
+                  {(produit.Certificat ?? []).map((image: string, index: number) => (
                     <div className='produit-supplementaire-image-container' key={index}>
-                      <img
-                        src={image}
-                        alt={produit.AltText}
-                      />
+                      <img src={image} alt={produit.AltText} />
                     </div>
                   ))}
                 </div>
@@ -148,7 +124,7 @@ const ProduitDetail = () => {
                       </div>
                     </div>
                     <div className='disponibilite'>
-                      <p>En stock</p>
+                      <p>{produit.enStock && produit.stock > 0 ? 'En stock' : 'Rupture de stock'}</p>
                       <div className='dispo'></div>
                     </div>
                     <div className='ButtonAchat'>
@@ -202,8 +178,6 @@ const ProduitDetail = () => {
                     >
                       {produit.Compositions} <br />{produit.Compositions1} <br /> {produit.Compositions2}  <br />{produit.Compositions3}
                     </motion.p>
-
-
                   )}
                 </AnimatePresence>
               </motion.div>
@@ -223,7 +197,7 @@ const ProduitDetail = () => {
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.3 }}
                       className="produit-details-text"
-                      key="compositions"
+                      key="utilisation"
                     >
                       {produit.ConseilsUtilisaton}
                     </motion.p>
@@ -253,7 +227,6 @@ const ProduitDetail = () => {
                   )}
                 </AnimatePresence>
               </motion.div>
-
 
             </section>
 
@@ -291,17 +264,11 @@ const ProduitDetail = () => {
               speed={500}
               slidesToShow={3}
               slidesToScroll={1}
-              responsive={
-                [{
-                  breakpoint: 700,
-                  settings: {
-                    slidesToShow: 1,
-                    slidesToScroll: 1,
-                    dots: false,
-                  }
-                }]
-              }>
-              {(produit.ImagesUtilisateurs ?? []).map((image, index) => (
+              responsive={[{
+                breakpoint: 700,
+                settings: { slidesToShow: 1, slidesToScroll: 1, dots: false }
+              }]}>
+              {(produit.ImagesUtilisateurs ?? []).map((image: string, index: number) => (
                 <div key={index}>
                   <img
                     src={image}
@@ -312,12 +279,12 @@ const ProduitDetail = () => {
               ))}
             </Slider>
           </section>
-        </div >
+        </div>
 
       )}
 
       <HomeMeilleursVentes titre='Vous pourriez également aimer' />
-    </main >
+    </main>
   );
 };
 

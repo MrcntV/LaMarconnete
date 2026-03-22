@@ -15,16 +15,27 @@ console.log('[MongoDB] Connexion en cours...');
 connectDB().then(async () => {
   const fs = require('fs');
 
-  // Seed Products
+  // Seed/Sync Products (upsert: update content fields, preserve stock/active on existing)
   try {
     const Product = require('./api/models/Product');
-    if (await Product.countDocuments() === 0) {
-      const f = path.join(__dirname, 'data', 'products.json');
-      if (fs.existsSync(f)) {
-        const items = JSON.parse(fs.readFileSync(f, 'utf-8'));
-        await Product.insertMany(items, { ordered: false });
-        console.log(`[Seed] ${items.length} produits importés`);
-      }
+    const f = path.join(__dirname, 'data', 'products.json');
+    if (fs.existsSync(f)) {
+      const items = JSON.parse(fs.readFileSync(f, 'utf-8'));
+      const ops = items.map(item => {
+        const { stock, active, stockAlert, createdAt, updatedAt, ...contentFields } = item;
+        return {
+          updateOne: {
+            filter: { id: item.id },
+            update: {
+              $set: contentFields,
+              $setOnInsert: { stock: stock ?? 0, active: active !== false, stockAlert: stockAlert ?? 5 }
+            },
+            upsert: true
+          }
+        };
+      });
+      await Product.bulkWrite(ops);
+      console.log(`[Seed] ${items.length} produits synchronisés`);
     }
   } catch (e) {
     console.error('[Seed] Erreur seed products :', e.message);
@@ -184,6 +195,7 @@ app.use('/api/content', require('./api/routes/content'));
 app.use('/api/stock', require('./api/routes/stock'));
 app.use('/api/stripe', require('./api/routes/stripe'));
 app.use('/api/build', require('./api/routes/build'));
+app.use('/api/settings', require('./api/routes/settings'));
 
 // Route API status
 app.get('/api/status', (req, res) => {
